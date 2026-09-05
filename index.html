@@ -18,7 +18,7 @@
 <div class="topline">
   <div class="shell">
     <div>Location Cost Intelligence</div>
-    <div class="status"><span><i class="dot"></i><b>Preview model</b></span><span>United States</span><span>Updated Sep 2026</span></div>
+    <div class="status"><span><i class="dot"></i><b>Verified address + live evidence</b></span><span>United States</span><span>Updated Sep 2026</span></div>
   </div>
 </div>
 <nav class="site-nav">
@@ -26,7 +26,8 @@
     <a class="brand" href="/"><span class="mark">EI</span>ExpenseIntel</a>
     <div class="navlinks">
       <a class="active" href="/">Overview</a>
-      <a href="/forecast/">Forecast</a>
+      <a href="/tools/">Tools</a>
+      <a href="/matrix/">Matrix</a>
       <a href="/compare/">Compare</a>
       <a href="/data/">Data</a>
       <a href="/pricing/">Pricing</a>
@@ -59,7 +60,7 @@
           <div class="field"><label for="sqft">Square feet</label><input class="input" id="sqft" name="sqft" type="number" min="300" step="100" value="7500" /></div>
         </div>
         <button class="run" type="submit"><span>Build cost preview</span><span>→</span></button>
-        <div class="form-note"><strong>Illustrative product preview.</strong> Current screen values are modeled examples, not live utility quotes. Live public/private data connections are the next product layer.</div>
+        <div class="form-note"><strong>Evidence-backed preview.</strong> ExpenseIntel verifies the address first and uses live public energy signals where available. Modeled layers remain clearly labeled until property-specific connectors replace them.</div>
       </form>
       <div class="result-mini" data-quick-result>
         <div class="result-top"><div><div class="mini-label">Screened location</div><div class="result-address" data-r-address></div></div><div><div class="mini-label">Estimated annual cost</div><div class="big-num" data-r-total></div><div class="delta" data-r-delta></div></div></div>
@@ -142,15 +143,15 @@
 <section class="section">
   <div class="shell">
     <div class="section-intro">
-      <div class="section-no">04 / Explore the system</div>
-      <h2>Only data that changes the <i>expense picture.</i></h2>
-      <p>ExpenseIntel deliberately avoids becoming another generic property-data portal. A layer belongs in the product only if it helps estimate, explain, compare, or forecast a cost.</p>
+      <div class="section-no">04 / Decision systems</div>
+      <h2>One intelligence layer. <i>Different commitments.</i></h2>
+      <p>The location is the common denominator, but the decision is not. ExpenseIntel changes the variables and outputs around the buyer, operator, tenant or developer while keeping the evidence backbone consistent.</p>
     </div>
     <div class="portal-grid">
-      <article class="portal-card"><span class="portal-no">01 / FORECAST</span><h3>Where costs are headed</h3><p>Current estimate, modeled movement, uncertainty, seasonality and the assumptions behind the forward view.</p><a href="/forecast/">Open forecast →</a></article>
-      <article class="portal-card"><span class="portal-no">02 / COMPARE</span><h3>Location vs. location</h3><p>Normalize alternatives to annual cost and cost per square foot so the decision is comparable.</p><a href="/compare/">Open comparison →</a></article>
-      <article class="portal-card"><span class="portal-no">03 / DATA</span><h3>What belongs in the model</h3><p>Utilities, tax, insurance, waste and infrastructure only when the layer has a financial consequence.</p><a href="/data/">Inspect data layers →</a></article>
-      <article class="portal-card"><span class="portal-no">04 / PRICING</span><h3>Useful enough to pay for.</h3><p>Free screening at the top of the funnel, then deeper reports, saved locations and portfolio intelligence.</p><a href="/pricing/">See planned pricing →</a></article>
+      <article class="portal-card"><span class="portal-no">01 / DECISION ENGINES</span><h3>Industrial · home · commercial · development</h3><p>Run a decision-specific model with cost shocks, five-year burden and an Action Stack that shows which variables are worth attacking first.</p><a href="/tools/">Open Decision Engines →</a></article>
+      <article class="portal-card"><span class="portal-no">02 / LOCATION MATRIX</span><h3>Move the same operation across several addresses</h3><p>Hold the operating profile constant, change the geography, rank the five-year burden and expose the price threshold that would change the winner.</p><a href="/matrix/">Open Location Matrix →</a></article>
+      <article class="portal-card"><span class="portal-no">03 / LOCATION SCREEN</span><h3>Build the evidence-backed cost passport</h3><p>Resolve the address, inspect live public signals, separate authoritative evidence from modeled layers and see what needs verification next.</p><a href="/screen/">Screen a location →</a></article>
+      <article class="portal-card"><span class="portal-no">04 / EVIDENCE + FORECAST</span><h3>Know why the number should be trusted</h3><p>Inspect source quality, confidence, current cost signals, forward movement and the data connectors that progressively replace assumptions.</p><a href="/data/">Inspect the evidence →</a></article>
     </div>
   </div>
 </section>
@@ -165,7 +166,7 @@
 <section class="cta-band">
   <div class="shell cta-grid">
     <div><div class="section-no" style="margin-bottom:15px">Start with the question that matters</div><h2>What will this place actually cost?</h2></div>
-    <div class="cta-actions"><a class="outlinebtn" href="/compare/">Compare locations</a><a class="solidbtn" href="#analyze">Screen an address</a></div>
+    <div class="cta-actions"><a class="outlinebtn" href="/tools/">Choose a decision engine</a><a class="solidbtn" href="#analyze">Screen an address</a></div>
   </div>
 </section>
 </main>
@@ -173,11 +174,11 @@
 <footer>
   <div class="shell footer-top">
     <div class="footer-brand"><a class="brand" href="/"><span class="mark">EI</span>ExpenseIntel</a><p>Location-based operating expense intelligence for decisions made before the lease, purchase or occupancy.</p></div>
-    <div class="footer-col"><h4>Product</h4><a href="/forecast/">Forecast</a><a href="/compare/">Compare</a><a href="/data/">Data</a></div>
+    <div class="footer-col"><h4>Decision</h4><a href="/tools/">Decision Engines</a><a href="/matrix/">Location Matrix</a><a href="/compare/">Compare</a></div>
+    <div class="footer-col"><h4>Evidence</h4><a href="/screen/">Location Screen</a><a href="/data/">Data</a><a href="/forecast/">Forecast</a></div>
     <div class="footer-col"><h4>Company</h4><a href="https://queenancapital.com">Queenan Capital ↗</a><a href="/pricing/">Pricing</a></div>
-    <div class="footer-col"><h4>Status</h4><a href="/data/">Preview methodology</a><a href="/pricing/">Early access</a></div>
   </div>
-  <div class="footer-bottom"><div class="shell"><span>© <span data-year></span> ExpenseIntel</span><span>A Queenan Capital company · Illustrative preview model</span></div></div>
+  <div class="footer-bottom"><div class="shell"><span>© <span data-year></span> ExpenseIntel</span><span>A Queenan Capital company · Mixed-source decision model</span></div></div>
 </footer>
 <script src="/app.js" defer></script>
 </body>
