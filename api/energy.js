@@ -25,7 +25,7 @@ function send(res,status,payload,cache=true){
 function clean(v,max=80){return String(v||'').replace(/[^a-z0-9 .,'&()-]/gi,' ').replace(/\s+/g,' ').trim().slice(0,max)}
 function sectorFor(use){if(use==='residential'||use==='multifamily')return'residential';if(use==='industrial')return'industrial';return'commercial'}
 function gasRowLabel(sector){return sector==='residential'?'Residential Price':sector==='industrial'?'Industrial Price':'Commercial Price'}
-function strip(s){return String(s||'').replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/&nbsp;|&#160;/gi,' ').replace(/&amp;/gi,'&').replace(/\s+/g,' ').trim()}
+function strip(s){return String(s||'').replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/&nbsp;|&#160;/gi,' ').replace(/&amp;/gi,'&').replace(/&#39;|&apos;/gi,"'").replace(/&quot;/gi,'"').replace(/\s+/g,' ').trim()}
 function escapeRx(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
 function findRow(html,label){
   const rows=html.match(/<tr\b[\s\S]*?<\/tr>/gi)||[];
@@ -41,12 +41,24 @@ function parseElectric(row,sector){
   if(current==null)return null;
   return{centsKwh:current,priorCentsKwh:prior,yoy:prior?current/prior-1:null};
 }
-function parseGas(row){
-  const monthly=cells(row).slice(1,7).map(numeric);
-  let latest=null,idx=-1;
-  for(let i=monthly.length-1;i>=0;i--){if(monthly[i]!=null){latest=monthly[i];idx=i;break}}
-  if(latest==null)return null;
-  return{dollarsMcf:latest,period:`${['Jan','Feb','Mar','Apr','May','Jun'][idx]||'Latest'} 2026`};
+function parseGasPage(html,label){
+  const text=strip(html);
+  const start=text.toLowerCase().indexOf(label.toLowerCase());
+  if(start<0)return null;
+  const tail=text.slice(start+label.length);
+  const stopTokens=['Percentage of Total','Commercial Price','Residential Price','Industrial Price','Electric Power Price','Citygate Price'];
+  let stop=tail.length;
+  for(const token of stopTokens){
+    const i=tail.toLowerCase().indexOf(token.toLowerCase());
+    if(i>=0&&i<stop)stop=i;
+  }
+  const segment=tail.slice(0,stop);
+  const values=(segment.match(/\b\d{1,4}(?:,\d{3})*(?:\.\d+)?\b/g)||[]).map(numeric).filter(v=>v!=null);
+  if(!values.length)return null;
+  const dates=(text.match(/\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d{2}\b/g)||[]).slice(0,12);
+  const latest=values[values.length-1];
+  const period=dates.length?dates[Math.min(dates.length-1,values.length-1)].replace('-', ' 20'):'Latest reported month';
+  return{dollarsMcf:latest,period};
 }
 async function fetchText(url,signal){
   const r=await fetch(url,{signal,headers:{'User-Agent':'ExpenseIntel/1.0 (+https://expenseintel.com)'}});
@@ -64,7 +76,7 @@ module.exports=async function handler(req,res){
   try{
     const [electricHtml,gasHtml]=await Promise.all([fetchText(ELECTRIC_URL,controller.signal),fetchText(gasUrl,controller.signal).catch(()=>null)]);
     const electricity=parseElectric(findRow(electricHtml,stateName),sector);
-    const gas=gasHtml?parseGas(findRow(gasHtml,gasRowLabel(sector))):null;
+    const gas=gasHtml?parseGasPage(gasHtml,gasRowLabel(sector)):null;
     return send(res,200,{
       ok:true,state,stateName,sector,
       electricity:electricity?{...electricity,source:'U.S. EIA · Electric Power Monthly Table 5.6.B',period:'2026 YTD through June',grade:'A'}:null,
