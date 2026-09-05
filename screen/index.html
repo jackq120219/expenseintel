@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f3f0e8" />
+<title>Screen a Location — ExpenseIntel</title>
+<meta name="description" content="Screen a U.S. location with ExpenseIntel and build an illustrative operating-cost preview before you lease, buy, or occupy it." />
+<link rel="canonical" href="https://expenseintel.com/screen/" />
+<link rel="stylesheet" href="/styles.css" />
+<style>
+.screen-workspace{padding:54px 0 94px}.screen-head{display:grid;grid-template-columns:.75fr 1.25fr;gap:70px;border-top:1px solid var(--ink);padding-top:18px;margin-bottom:34px}.screen-head h1{font:400 clamp(46px,6vw,82px)/.96 var(--serif);letter-spacing:-.05em;margin:0}.screen-head h1 em{font-style:italic;text-decoration:underline;text-decoration-thickness:5px;text-decoration-color:var(--lime);text-underline-offset:7px}.screen-head p{grid-column:2;margin:0;max-width:760px;color:#55594f;font-size:16px;line-height:1.65}.workspace-grid{display:grid;grid-template-columns:minmax(340px,.72fr) minmax(0,1.28fr);gap:28px;align-items:start}.screen-panel{position:sticky;top:106px}.full-result{border:1px solid var(--ink);background:var(--white);display:none}.full-result.show{display:block}.empty-state{border:1px solid var(--ink);min-height:580px;background:var(--paper-2);display:grid;place-items:center;padding:60px;text-align:center}.empty-state.hide{display:none}.empty-state .ring{width:88px;height:88px;border:1px solid var(--ink);border-radius:50%;display:grid;place-items:center;font:700 12px var(--mono);margin:0 auto 22px;background:var(--lime)}.empty-state h2{font:400 38px/1 var(--serif);letter-spacing:-.03em;margin:0 0 13px}.empty-state p{max-width:520px;margin:0;color:var(--muted);line-height:1.6}.result-banner{display:grid;grid-template-columns:1fr auto;border-bottom:1px solid var(--ink)}.result-banner>div{padding:18px 20px}.result-banner>div:last-child{border-left:1px solid var(--ink);background:var(--lime);font:700 10px var(--mono);text-transform:uppercase;display:flex;align-items:center}.result-summary{display:grid;grid-template-columns:1.15fr .85fr;border-bottom:1px solid var(--ink)}.result-total{padding:28px;border-right:1px solid var(--ink)}.result-total strong{display:block;font:700 clamp(48px,6vw,76px)/1 var(--mono);letter-spacing:-.05em;margin:6px 0}.result-total small{font:11px var(--mono);color:var(--muted)}.risk-card{padding:28px;background:var(--paper-2)}.risk-card strong{display:block;font:700 54px/1 var(--mono);margin:8px 0}.risk-card strong small{font-size:18px;color:var(--muted)}.risk-card .risk-label{display:inline-block;border:1px solid var(--ink);padding:6px 8px;font:700 9px var(--mono);text-transform:uppercase;background:#fff0df}.risk-track{height:9px;border:1px solid var(--ink);margin-top:18px;background:linear-gradient(90deg,var(--lime) 0 45%,#ffd56f 45% 72%,#e97b6f 72%)}.risk-pin{height:19px;width:2px;background:var(--ink);transform:translateY(-6px)}.cost-stack{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--ink)}.cost-cell{padding:19px;border-right:1px solid var(--line);min-height:105px}.cost-cell:nth-child(3n){border-right:0}.cost-cell:nth-child(-n+3){border-bottom:1px solid var(--line)}.cost-cell span{font:9px var(--mono);text-transform:uppercase;color:var(--muted)}.cost-cell strong{display:block;font:700 20px var(--mono);margin:7px 0 3px}.cost-cell small{font-size:10px;color:var(--muted)}.forecast-strip{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--ink)}.forecast-strip div{padding:20px;border-right:1px solid var(--line)}.forecast-strip div:last-child{border-right:0}.forecast-strip span{font:9px var(--mono);text-transform:uppercase;color:var(--muted)}.forecast-strip b{display:block;font:700 20px var(--mono);margin-top:6px}.assumption{padding:20px 22px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:150px 1fr;gap:20px}.assumption:last-of-type{border-bottom:0}.assumption b{font:700 10px var(--mono);text-transform:uppercase}.assumption p{margin:0;color:var(--muted);font-size:12px;line-height:1.55}.result-actions{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:18px 20px;border-top:1px solid var(--ink);background:var(--paper-2)}.result-actions div{font:10px/1.5 var(--mono);color:var(--muted)}
+@media(max-width:900px){.screen-head,.workspace-grid,.result-summary{grid-template-columns:1fr}.screen-head p{grid-column:1}.screen-panel{position:static}.result-total{border-right:0;border-bottom:1px solid var(--ink)}.cost-stack{grid-template-columns:1fr 1fr}.cost-cell:nth-child(n){border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.cost-cell:nth-child(2n){border-right:0}.forecast-strip{grid-template-columns:1fr}.forecast-strip div{border-right:0;border-bottom:1px solid var(--line)}.forecast-strip div:last-child{border-bottom:0}.result-actions{align-items:flex-start;flex-direction:column}.assumption{grid-template-columns:1fr;gap:7px}}
+</style>
+</head>
+<body>
+<div class="topline"><div class="shell"><div>Location Cost Intelligence</div><div class="status"><span><i class="dot"></i><b>Preview model</b></span><span>United States</span><span>Updated Sep 2026</span></div></div></div>
+<nav class="site-nav"><div class="shell navinner"><a class="brand" href="/"><span class="mark">EI</span>ExpenseIntel</a><div class="navlinks"><a href="/">Overview</a><a href="/forecast/">Forecast</a><a href="/compare/">Compare</a><a href="/data/">Data</a><a href="/pricing/">Pricing</a></div><div class="navright"><a class="textbtn" href="https://queenancapital.com">Queenan Capital ↗</a><a class="solidbtn" href="#screen-form">Screen a location</a></div><button class="menu-btn" data-menu aria-label="Open menu">≡</button></div></nav>
+<main class="screen-workspace">
+<div class="shell">
+  <div class="screen-head"><div class="section-no">Location screen / live workflow</div><h1>Know what a place will <em>cost.</em></h1><p>Enter a location, property use and size. ExpenseIntel will build an illustrative operating-cost profile, show the expense stack, project the next three years and give you a risk score you can carry directly into a location comparison.</p></div>
+  <div class="workspace-grid">
+    <div class="search-panel screen-panel" id="screen-form">
+      <div class="panel-head"><span>Build cost preview</span><span class="badge">Interactive</span></div>
+      <form class="form" data-screen-form>
+        <div class="field"><label for="address">Property address</label><input class="input" id="address" name="address" autocomplete="street-address" placeholder="1215 W Fulton Market, Chicago, IL" /></div>
+        <div class="field"><label for="use">Property use</label><select class="input" id="use" name="use"><option value="restaurant">Restaurant</option><option value="retail">Retail</option><option value="office">Office</option><option value="warehouse">Warehouse</option><option value="industrial">Industrial</option><option value="multifamily">Multifamily</option><option value="residential">Residential</option><option value="other">Other</option></select></div>
+        <div class="field"><label for="sqft">Square feet</label><input class="input" id="sqft" name="sqft" type="number" min="300" step="100" value="7500" /></div>
+        <button class="run" type="submit"><span>Screen this location</span><span>→</span></button>
+        <div class="form-note"><strong>Illustrative preview.</strong> The current engine demonstrates the product mechanics using modeled assumptions. It is not yet a live tariff, tax, insurance or utility quote.</div>
+      </form>
+    </div>
+
+    <div>
+      <div class="empty-state" data-screen-empty><div><div class="ring">EI / 01</div><h2>Your decision brief appears here.</h2><p>ExpenseIntel will turn the address into one expense picture: current annual cost, cost per square foot, expense mix, forward movement and modeled risk.</p></div></div>
+      <section class="full-result" data-full-result aria-live="polite">
+        <div class="result-banner"><div><div class="mini-label">Screened location</div><strong data-full-address style="display:block;margin-top:6px"></strong></div><div>Illustrative model</div></div>
+        <div class="result-summary"><div class="result-total"><div class="mini-label">Estimated operating expense / year</div><strong data-full-total>$0</strong><small><span data-full-psf>$0.00</span> / ft² · normalized estimate</small></div><div class="risk-card"><div class="mini-label">Expense risk score</div><strong><span data-full-risk>0</span><small>/100</small></strong><span class="risk-label" data-full-risk-label>—</span><div class="risk-track"><div class="risk-pin" data-risk-pin></div></div></div></div>
+        <div class="cost-stack">
+          <div class="cost-cell"><span>Electricity</span><strong data-full-electric>—</strong><small>modeled annual</small></div>
+          <div class="cost-cell"><span>Natural gas</span><strong data-full-gas>—</strong><small>modeled annual</small></div>
+          <div class="cost-cell"><span>Water + sewer</span><strong data-full-water>—</strong><small>modeled annual</small></div>
+          <div class="cost-cell"><span>Property tax</span><strong data-full-tax>—</strong><small>modeled exposure</small></div>
+          <div class="cost-cell"><span>Insurance</span><strong data-full-insurance>—</strong><small>modeled exposure</small></div>
+          <div class="cost-cell"><span>Waste + other</span><strong data-full-other>—</strong><small>remaining operating layer</small></div>
+        </div>
+        <div class="forecast-strip"><div><span>Current estimate</span><b data-full-now>—</b></div><div><span>12-month forecast</span><b data-full-next>—</b></div><div><span>36-month forecast</span><b data-full-year3>—</b></div></div>
+        <div class="assumption"><b>What changed?</b><p data-full-growth>The model will show the implied annual cost movement here.</p></div>
+        <div class="assumption"><b>What this means</b><p>The point is not to replace diligence. It is to expose the recurring cost stack early enough that a seemingly attractive address can be rejected, compared or investigated before commitment.</p></div>
+        <div class="assumption"><b>Next data layer</b><p>Live utility-provider and tariff resolution, public tax records and increasingly property-specific assumptions will replace illustrative inputs as the product matures.</p></div>
+        <div class="result-actions"><div>ADDRESS → COSTS → FORECAST → RISK → COMPARE</div><a class="solidbtn" data-full-compare href="/compare/">Compare this location →</a></div>
+      </section>
+    </div>
+  </div>
+</div>
+</main>
+<footer><div class="footer-bottom"><div class="shell"><span>© <span data-year></span> ExpenseIntel</span><span>A Queenan Capital company · Illustrative preview model</span></div></div></footer>
+<script src="/app.js" defer></script>
+</body>
+</html>
