@@ -31,14 +31,16 @@ const EI = (() => {
   }
 
   function money(n, compact=false){
-    if(compact && n >= 1000) return '$' + (n/1000).toFixed(n >= 100000 ? 1 : 1) + 'k';
-    return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n);
+    const value = Number.isFinite(Number(n)) ? Number(n) : 0;
+    if(compact && value >= 1000) return '$' + (value/1000).toFixed(1) + 'k';
+    return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(value);
   }
 
   function estimate(address, use, sqft){
     use = TYPE_BASE[use] ? use : 'other';
-    sqft = Math.max(300, Number(sqft) || 5000);
-    const h = hash((address || 'sample') + use);
+    sqft = Math.max(300, Math.min(10000000, Number(sqft) || 5000));
+    const cleanAddress = String(address || 'Sample location').trim() || 'Sample location';
+    const h = hash(cleanAddress + use);
     const locationFactor = 0.89 + (h % 2300)/10000;
     const total = Math.round(TYPE_BASE[use] * sqft * locationFactor / 100) * 100;
     const mix = MIX[use];
@@ -54,13 +56,31 @@ const EI = (() => {
     const growth = 0.038 + ((h>>5)%32)/1000;
     const risk = 47 + ((h>>9)%31);
     return {
-      address: address || 'Sample location', use, sqft, total,
+      address: cleanAddress,
+      use,
+      sqft,
+      total,
       perSqft: total/sqft,
       next: Math.round(total*(1+growth)/100)*100,
       year3: Math.round(total*Math.pow(1+growth,3)/100)*100,
-      growth, risk,
+      growth,
+      risk,
       categories
     };
+  }
+
+  function riskLabel(score){
+    if(score >= 72) return 'Elevated';
+    if(score >= 58) return 'Moderate';
+    return 'Lower';
+  }
+
+  function safeSave(key, value){
+    try{ sessionStorage.setItem(key, value); }catch(_e){}
+  }
+
+  function safeRead(key){
+    try{ return sessionStorage.getItem(key); }catch(_e){ return null; }
   }
 
   function toggleNav(){
@@ -71,20 +91,79 @@ const EI = (() => {
   function bindNav(){
     document.querySelectorAll('[data-menu]').forEach(btn => btn.addEventListener('click', toggleNav));
     document.querySelectorAll('.navlinks a').forEach(a => a.addEventListener('click',()=>{
-      const nav=document.querySelector('.site-nav'); if(nav) nav.classList.remove('open');
+      const nav=document.querySelector('.site-nav');
+      if(nav) nav.classList.remove('open');
     }));
+  }
+
+  function bindScreenCTAs(){
+    document.querySelectorAll('a.solidbtn').forEach(link => {
+      const href = link.getAttribute('href') || '';
+      if(href === '#analyze' || href === '/#analyze'){
+        link.setAttribute('href','/screen/');
+      }
+    });
+  }
+
+  function fillFullResult(r){
+    const full = document.querySelector('[data-full-result]');
+    if(!full) return;
+    const set=(sel,val)=>{const el=full.querySelector(sel);if(el)el.textContent=val};
+    set('[data-full-address]',r.address);
+    set('[data-full-total]',money(r.total));
+    set('[data-full-psf]','$'+r.perSqft.toFixed(2));
+    set('[data-full-risk]',String(r.risk));
+    set('[data-full-risk-label]',riskLabel(r.risk));
+    set('[data-full-electric]',money(r.categories.electric));
+    set('[data-full-gas]',money(r.categories.gas));
+    set('[data-full-water]',money(r.categories.water));
+    set('[data-full-tax]',money(r.categories.tax));
+    set('[data-full-insurance]',money(r.categories.insurance));
+    set('[data-full-other]',money(r.categories.other));
+    set('[data-full-now]',money(r.total));
+    set('[data-full-next]',money(r.next));
+    set('[data-full-year3]',money(r.year3));
+    set('[data-full-growth]','The illustrative model implies approximately '+(r.growth*100).toFixed(1)+'% annual movement, taking the modeled total from '+money(r.total)+' today to '+money(r.year3)+' in year three.');
+
+    const pin=full.querySelector('[data-risk-pin]');
+    if(pin) pin.style.marginLeft=Math.max(2,Math.min(98,r.risk))+'%';
+
+    const compare=full.querySelector('[data-full-compare]');
+    if(compare){
+      const q=new URLSearchParams({address:r.address,use:r.use,sqft:String(r.sqft)});
+      compare.href='/compare/?'+q.toString();
+    }
+
+    const empty=document.querySelector('[data-screen-empty]');
+    if(empty) empty.classList.add('hide');
+    full.classList.add('show');
+    requestAnimationFrame(()=>full.scrollIntoView({behavior:'smooth',block:'start'}));
   }
 
   function bindScreen(){
     document.querySelectorAll('[data-screen-form]').forEach(form => {
       form.addEventListener('submit', e => {
         e.preventDefault();
-        const address = form.querySelector('[name="address"]').value.trim();
-        const use = form.querySelector('[name="use"]').value;
-        const sqft = form.querySelector('[name="sqft"]').value;
-        if(!address){ form.querySelector('[name="address"]').focus(); return; }
+        const addressInput=form.querySelector('[name="address"]');
+        const useInput=form.querySelector('[name="use"]');
+        const sqftInput=form.querySelector('[name="sqft"]');
+        if(!addressInput || !useInput || !sqftInput) return;
+
+        const address = addressInput.value.trim();
+        const use = useInput.value;
+        const sqft = Math.max(300, Number(sqftInput.value) || 5000);
+
+        if(!address){
+          addressInput.setAttribute('aria-invalid','true');
+          addressInput.focus();
+          return;
+        }
+        addressInput.removeAttribute('aria-invalid');
+        sqftInput.value=String(sqft);
+
         const r = estimate(address,use,sqft);
-        sessionStorage.setItem('ei_last',JSON.stringify({address,use,sqft}));
+        safeSave('ei_last',JSON.stringify({address,use,sqft:String(sqft)}));
+
         const root = form.closest('.search-panel') || document;
         const result = root.querySelector('[data-quick-result]');
         if(result){
@@ -98,28 +177,54 @@ const EI = (() => {
           set('[data-r-water]',money(r.categories.water,true));
           set('[data-r-other]',money(r.categories.tax+r.categories.insurance+r.categories.other,true));
         }
+
         const detail = root.querySelector('[data-open-compare]');
         if(detail){
-          const q = new URLSearchParams({address,use,sqft:String(sqft||5000)});
+          const q = new URLSearchParams({address,use,sqft:String(sqft)});
           detail.href='/compare/?'+q.toString();
           detail.style.display='inline-flex';
         }
+
+        fillFullResult(r);
       });
     });
+  }
+
+  function populateScreenFromQuery(){
+    const form=document.querySelector('[data-screen-form]');
+    if(!form) return;
+    const q=new URLSearchParams(location.search);
+    const raw=safeRead('ei_last');
+    let saved=null;
+    try{ saved=raw ? JSON.parse(raw) : null; }catch(_e){}
+    const address=q.get('address') || '';
+    const use=q.get('use') || '';
+    const sqft=q.get('sqft') || '';
+    if(address && form.querySelector('[name="address"]')) form.querySelector('[name="address"]').value=address;
+    if(use && TYPE_BASE[use] && form.querySelector('[name="use"]')) form.querySelector('[name="use"]').value=use;
+    if(sqft && form.querySelector('[name="sqft"]')) form.querySelector('[name="sqft"]').value=sqft;
+
+    if(location.pathname.startsWith('/screen/') && !address && saved){
+      if(form.querySelector('[name="address"]')) form.querySelector('[name="address"]').value=saved.address || '';
+      if(TYPE_BASE[saved.use] && form.querySelector('[name="use"]')) form.querySelector('[name="use"]').value=saved.use;
+      if(form.querySelector('[name="sqft"]')) form.querySelector('[name="sqft"]').value=saved.sqft || '7500';
+    }
   }
 
   function populateFromQuery(){
     const formA=document.querySelector('[data-compare-a]');
     if(!formA) return;
     const q=new URLSearchParams(location.search);
-    const saved=(()=>{try{return JSON.parse(sessionStorage.getItem('ei_last')||'null')}catch{return null}})();
+    const raw=safeRead('ei_last');
+    let saved=null;
+    try{ saved=raw ? JSON.parse(raw) : null; }catch(_e){}
     const data={
       address:q.get('address') || saved?.address || '',
       use:q.get('use') || saved?.use || 'restaurant',
       sqft:q.get('sqft') || saved?.sqft || '7500'
     };
     formA.querySelector('[name="addressA"]').value=data.address;
-    formA.querySelector('[name="useA"]').value=data.use;
+    formA.querySelector('[name="useA"]').value=TYPE_BASE[data.use] ? data.use : 'restaurant';
     formA.querySelector('[name="sqftA"]').value=data.sqft;
   }
 
@@ -141,7 +246,13 @@ const EI = (() => {
     set('[data-winner]','Option '+lower+' has the lower illustrative modeled cost');
     out.querySelectorAll('[data-win]').forEach(el=>el.remove());
     const card=out.querySelector(lower==='A'?'[data-card-a]':'[data-card-b]');
-    if(card){const win=document.createElement('div');win.className='winner';win.dataset.win='';win.innerHTML='<span>Lower modeled cost</span><span>✓</span>';card.appendChild(win)}
+    if(card){
+      const win=document.createElement('div');
+      win.className='winner';
+      win.dataset.win='';
+      win.innerHTML='<span>Lower modeled cost</span><span>✓</span>';
+      card.appendChild(win);
+    }
     out.scrollIntoView({behavior:'smooth',block:'start'});
   }
 
@@ -151,10 +262,11 @@ const EI = (() => {
     trigger.addEventListener('click',()=>{
       const fa=document.querySelector('[data-compare-a]');
       const fb=document.querySelector('[data-compare-b]');
+      if(!fa || !fb) return;
       const vals=(f,s)=>({address:f.querySelector(`[name="address${s}"]`).value.trim(),use:f.querySelector(`[name="use${s}"]`).value,sqft:f.querySelector(`[name="sqft${s}"]`).value});
       const A=vals(fa,'A'), B=vals(fb,'B');
-      if(!A.address){fa.querySelector('[name="addressA"]').focus();return}
-      if(!B.address){fb.querySelector('[name="addressB"]').focus();return}
+      if(!A.address){fa.querySelector('[name="addressA"]').focus();return;}
+      if(!B.address){fb.querySelector('[name="addressB"]').focus();return;}
       renderCompare(estimate(A.address,A.use,A.sqft),estimate(B.address,B.use,B.sqft));
     });
   }
@@ -163,7 +275,17 @@ const EI = (() => {
     document.querySelectorAll('[data-year]').forEach(el=>el.textContent=new Date().getFullYear());
   }
 
-  function init(){ bindNav(); bindScreen(); populateFromQuery(); bindCompare(); year(); }
+  function init(){
+    bindNav();
+    bindScreenCTAs();
+    populateScreenFromQuery();
+    bindScreen();
+    populateFromQuery();
+    bindCompare();
+    year();
+  }
+
   return {init,estimate,money};
 })();
+
 document.addEventListener('DOMContentLoaded',EI.init);
