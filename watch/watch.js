@@ -5,55 +5,31 @@
   const read=()=>{try{return JSON.parse(localStorage.getItem(STORAGE)||'[]')}catch(_e){return[]}};
   const write=v=>{try{localStorage.setItem(STORAGE,JSON.stringify(v))}catch(_e){}};
   const rate=v=>Number.isFinite(Number(v))?Number(v):null;
+  function parseMoney(s){const t=String(s||'').replace(/[$,~\s]/g,'');const m=t.match(/-?[\d.]+/);if(!m)return 0;let n=Number(m[0]);if(/[kK]/.test(t))n*=1000;if(/[mM]/.test(t))n*=1000000;return Number.isFinite(n)?n:0}
+  function injectStyles(){if($('#ei-realized-style'))return;const s=document.createElement('style');s.id='ei-realized-style';s.textContent=`.watch-meta{grid-template-columns:repeat(4,1fr)}.actual-band{display:grid;grid-template-columns:.8fr 1.2fr 1fr 1fr;border-bottom:1px solid var(--ink);background:#f7f4eb}.actual-cell{padding:15px 16px;border-right:1px solid var(--line)}.actual-cell:last-child{border-right:0}.actual-cell span{display:block;font:800 8px var(--mono);text-transform:uppercase;color:var(--muted)}.actual-cell strong{display:block;font:800 14px var(--mono);margin-top:10px}.actual-cell input{width:100%;box-sizing:border-box;margin-top:8px;border:1px solid var(--ink);padding:9px;background:var(--white);font:700 10px var(--mono)}.accuracy-good{color:var(--green)}.accuracy-warn{color:#9e382c}@media(max-width:900px){.watch-meta,.actual-band{grid-template-columns:1fr 1fr}.actual-cell:nth-child(2n){border-right:0}.actual-cell{border-bottom:1px solid var(--line)}}@media(max-width:560px){.watch-meta,.actual-band{grid-template-columns:1fr}.actual-cell{border-right:0}}`;document.head.appendChild(s)}
   async function json(url){const r=await fetch(url,{headers:{Accept:'application/json'}});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Signal unavailable');return d}
   function signalClass(delta){if(delta>0.001)return'signal-up';if(delta<-0.001)return'signal-down';return'signal-flat'}
   function signed(delta,suffix=''){if(!Number.isFinite(delta))return'—';return `${delta>0?'+':''}${delta.toFixed(2)}${suffix}`}
   async function refresh(item){
-    const state=item.location?.components?.state||'';const tract=item.location?.components?.tract||'';
-    const [energy,risk]=await Promise.all([
-      state?json(`/api/energy?state=${encodeURIComponent(state)}&use=${encodeURIComponent(item.use||'other')}`).catch(()=>null):null,
-      tract?json(`/api/risk?tract=${encodeURIComponent(tract)}`).catch(()=>null):null
-    ]);
+    const state=item.location?.components?.state||'',tract=item.location?.components?.tract||'';
+    const [energy,risk]=await Promise.all([state?json(`/api/energy?state=${encodeURIComponent(state)}&use=${encodeURIComponent(item.use||'other')}`).catch(()=>null):null,tract?json(`/api/risk?tract=${encodeURIComponent(tract)}`).catch(()=>null):null]);
     const oldE=rate(item.electricRate),newE=rate(energy?.electricity?.centsKwh),oldG=rate(item.gasRate),newG=rate(energy?.gas?.dollarsMcf);
     return {...item,current:{energy,risk,electricDelta:oldE!=null&&newE!=null?newE-oldE:null,gasDelta:oldG!=null&&newG!=null?newG-oldG:null}};
   }
   function riskRank(v){const t=String(v||'').toLowerCase();if(t.includes('very high'))return5;if(t.includes('relatively high')||t==='high')return4;if(t.includes('moderate'))return3;if(t.includes('low'))return2;if(t.includes('very low'))return1;return0}
+  function saveActual(id,value){const arr=read();const item=arr.find(x=>x.id===id);if(!item)return;if(value>0){item.actualAnnual=value;item.actualUpdatedAt=new Date().toISOString()}else{delete item.actualAnnual;delete item.actualUpdatedAt}write(arr);init()}
+  function actualMarkup(item){const predicted=parseMoney(item.total||item.range),actual=Number(item.actualAnnual)||0,variance=predicted&&actual?actual-predicted:null,pct=predicted&&actual?variance/predicted:null,abs=pct==null?null:Math.abs(pct);const cls=abs!=null&&abs<=.08?'accuracy-good':abs!=null?'accuracy-warn':'';return{predicted,actual,variance,pct,cls}}
   function card(item,index){
-    const c=item.current||{},en=c.energy,rk=c.risk;
-    const newE=rate(en?.electricity?.centsKwh),newG=rate(en?.gas?.dollarsMcf);
-    const eDelta=c.electricDelta,gDelta=c.gasDelta;
+    const c=item.current||{},en=c.energy,rk=c.risk,newE=rate(en?.electricity?.centsKwh),newG=rate(en?.gas?.dollarsMcf),eDelta=c.electricDelta,gDelta=c.gasDelta;
     const changed=(Number.isFinite(eDelta)&&Math.abs(eDelta)>=.01)||(Number.isFinite(gDelta)&&Math.abs(gDelta)>=.01)||(rk?.available&&rk.composite?.rating&&rk.composite.rating!==item.hazardRisk);
-    const el=document.createElement('article');el.className='watch-card';
-    el.innerHTML=`<div class="watch-head"><div><span>Cost Passport · ${item.id||'Saved location'}</span><strong></strong></div><div><span>Saved</span><b></b></div></div><div class="watch-grid"><div class="watch-cell"><span>Saved cost range</span><strong></strong></div><div class="watch-cell"><span>Electricity now</span><strong class="${signalClass(eDelta)}"></strong></div><div class="watch-cell"><span>Natural gas now</span><strong class="${signalClass(gDelta)}"></strong></div><div class="watch-cell"><span>FEMA risk now</span><strong></strong></div><div class="watch-cell"><span>Top hazard</span><strong></strong></div></div><div class="watch-change"><span>${changed?'Signal movement detected':'No material public-signal change'}</span><p></p></div><div class="watch-actions"><small></small><div class="watch-buttons"><a>Rescreen →</a><a href="/matrix/">Open Matrix</a><button type="button">Remove</button></div></div>`;
-    el.querySelector('.watch-head strong').textContent=item.address||'Saved location';
-    el.querySelector('.watch-head b').textContent=item.savedAt?new Date(item.savedAt).toLocaleDateString():'—';
-    const cells=el.querySelectorAll('.watch-cell strong');
-    cells[0].textContent=item.range||item.total||'—';
-    cells[1].textContent=newE!=null?`${newE.toFixed(2)}¢/kWh ${Number.isFinite(eDelta)?`(${signed(eDelta,'¢')})`:''}`:'Unavailable';
-    cells[2].textContent=newG!=null?`$${newG.toFixed(2)}/Mcf ${Number.isFinite(gDelta)?`(${signed(gDelta)})`:''}`:'Unavailable';
-    cells[3].textContent=rk?.available?(rk.composite?.rating||'Available'):(item.hazardRisk||'Unavailable');
-    cells[4].textContent=rk?.topHazards?.[0]?.name||item.hazard||'—';
-    const bits=[];
-    if(Number.isFinite(eDelta)&&Math.abs(eDelta)>=.01)bits.push(`electricity ${eDelta>0?'rose':'fell'} ${Math.abs(eDelta).toFixed(2)}¢/kWh`);
-    if(Number.isFinite(gDelta)&&Math.abs(gDelta)>=.01)bits.push(`gas ${gDelta>0?'rose':'fell'} $${Math.abs(gDelta).toFixed(2)}/Mcf`);
-    if(rk?.available&&rk.composite?.rating&&rk.composite.rating!==item.hazardRisk)bits.push(`FEMA composite risk is now ${rk.composite.rating}`);
-    el.querySelector('.watch-change p').textContent=bits.length?`Since this passport was saved, ${bits.join('; ')}. Rescreen the property before making a material decision.`:'The connected public energy and hazard signals do not show a material change from this saved snapshot. Other modeled layers may still have changed.';
-    el.querySelector('.watch-actions small').textContent=`${item.use||'property'} · ${Number(item.sqft||0).toLocaleString()} ft² · browser-local snapshot`;
-    const rescreen=el.querySelector('.watch-buttons a');rescreen.href='/screen/?'+new URLSearchParams({address:item.address||'',use:item.use||'other',sqft:String(item.sqft||'')});
-    el.querySelector('button').addEventListener('click',()=>{const arr=read().filter((_,i)=>i!==index);write(arr);init()});
-    el.dataset.changed=changed?'1':'0';el.dataset.risk=rk?.available?(rk.composite?.rating||''):item.hazardRisk||'';
-    return el;
+    const a=actualMarkup(item),el=document.createElement('article');el.className='watch-card';
+    el.innerHTML=`<div class="watch-head"><div><span>Cost Passport · ${item.id||'Saved location'}</span><strong></strong></div><div><span>Saved</span><b></b></div></div><div class="watch-grid"><div class="watch-cell"><span>Saved cost range</span><strong></strong></div><div class="watch-cell"><span>Electricity now</span><strong class="${signalClass(eDelta)}"></strong></div><div class="watch-cell"><span>Natural gas now</span><strong class="${signalClass(gDelta)}"></strong></div><div class="watch-cell"><span>FEMA risk now</span><strong></strong></div><div class="watch-cell"><span>Top hazard</span><strong></strong></div></div><div class="actual-band"><div class="actual-cell"><span>Predicted annual run rate</span><strong>${a.predicted?money(a.predicted):'—'}</strong></div><div class="actual-cell"><span>Actual annualized cost</span><input type="number" min="0" step="100" placeholder="Enter realized / annualized cost" value="${a.actual||''}"></div><div class="actual-cell"><span>Prediction variance</span><strong class="${a.cls}">${a.variance==null?'—':`${a.variance>=0?'+':''}${money(a.variance)}`}</strong></div><div class="actual-cell"><span>Model error</span><strong class="${a.cls}">${a.pct==null?'—':`${a.pct>=0?'+':''}${(a.pct*100).toFixed(1)}%`}</strong></div></div><div class="watch-change"><span>${changed?'Signal movement detected':'No material public-signal change'}</span><p></p></div><div class="watch-actions"><small></small><div class="watch-buttons"><a>Rescreen →</a><a href="/matrix/">Open Matrix</a><button type="button">Remove</button></div></div>`;
+    el.querySelector('.watch-head strong').textContent=item.address||'Saved location';el.querySelector('.watch-head b').textContent=item.savedAt?new Date(item.savedAt).toLocaleDateString():'—';const cells=el.querySelectorAll('.watch-cell strong');cells[0].textContent=item.range||item.total||'—';cells[1].textContent=newE!=null?`${newE.toFixed(2)}¢/kWh ${Number.isFinite(eDelta)?`(${signed(eDelta,'¢')})`:''}`:'Unavailable';cells[2].textContent=newG!=null?`$${newG.toFixed(2)}/Mcf ${Number.isFinite(gDelta)?`(${signed(gDelta)})`:''}`:'Unavailable';cells[3].textContent=rk?.available?(rk.composite?.rating||'Available'):(item.hazardRisk||'Unavailable');cells[4].textContent=rk?.topHazards?.[0]?.name||item.hazard||'—';
+    const bits=[];if(Number.isFinite(eDelta)&&Math.abs(eDelta)>=.01)bits.push(`electricity ${eDelta>0?'rose':'fell'} ${Math.abs(eDelta).toFixed(2)}¢/kWh`);if(Number.isFinite(gDelta)&&Math.abs(gDelta)>=.01)bits.push(`gas ${gDelta>0?'rose':'fell'} $${Math.abs(gDelta).toFixed(2)}/Mcf`);if(rk?.available&&rk.composite?.rating&&rk.composite.rating!==item.hazardRisk)bits.push(`FEMA composite risk is now ${rk.composite.rating}`);el.querySelector('.watch-change p').textContent=bits.length?`Since this passport was saved, ${bits.join('; ')}. Rescreen the property before making a material decision.`:'The connected public energy and hazard signals do not show a material change from this saved snapshot. Other modeled layers may still have changed.';
+    el.querySelector('.watch-actions small').textContent=`${item.use||'property'} · ${Number(item.sqft||0).toLocaleString()} ft² · ${a.actual?'actual-vs-predicted active':'awaiting realized cost'}`;
+    const rescreen=el.querySelector('.watch-buttons a');rescreen.href='/screen/?'+new URLSearchParams({address:item.address||'',use:item.use||'other',sqft:String(item.sqft||'')});el.querySelector('.actual-cell input').addEventListener('change',e=>saveActual(item.id,Number(e.target.value)||0));el.querySelector('button').addEventListener('click',()=>{const arr=read().filter(x=>x.id!==item.id);write(arr);init()});el.dataset.changed=changed?'1':'0';el.dataset.risk=rk?.available?(rk.composite?.rating||''):item.hazardRisk||'';return el;
   }
-  async function init(){
-    const list=$('[data-watch-list]');if(!list)return;const items=read();list.innerHTML='';$('[data-watch-count]').textContent=String(items.length);$('[data-watch-empty]').style.display=items.length?'none':'grid';
-    if(!items.length){$('[data-watch-changed]').textContent='0';$('[data-watch-risk]').textContent='—';return}
-    const refreshed=await Promise.all(items.map(x=>refresh(x).catch(()=>({...x,current:null}))));
-    refreshed.forEach((item,i)=>list.appendChild(card(item,i)));
-    const cards=[...list.children];$('[data-watch-changed]').textContent=String(cards.filter(c=>c.dataset.changed==='1').length);
-    const risks=cards.map(c=>c.dataset.risk).filter(Boolean).sort((a,b)=>riskRank(b)-riskRank(a));$('[data-watch-risk]').textContent=risks[0]||'—';
-  }
-  document.addEventListener('DOMContentLoaded',()=>{
-    $('[data-watch-clear]')?.addEventListener('click',()=>{if(confirm('Clear every saved ExpenseIntel Cost Passport from this browser?')){write([]);init()}});
-    init();
-  });
+  function ensureRealizedStat(){let el=$('[data-watch-realized]');if(el)return el;const meta=$('.watch-meta');if(!meta)return null;const d=document.createElement('div');d.className='watch-stat';d.innerHTML='<span>Actual vs predicted</span><strong data-watch-realized>0</strong>';meta.appendChild(d);return d.querySelector('strong')}
+  async function init(){const list=$('[data-watch-list]');if(!list)return;injectStyles();const items=read();list.innerHTML='';$('[data-watch-count]').textContent=String(items.length);$('[data-watch-empty]').style.display=items.length?'none':'grid';const realized=ensureRealizedStat();if(realized)realized.textContent=String(items.filter(x=>Number(x.actualAnnual)>0).length);if(!items.length){$('[data-watch-changed]').textContent='0';$('[data-watch-risk]').textContent='—';return}const refreshed=await Promise.all(items.map(x=>refresh(x).catch(()=>({...x,current:null}))));refreshed.forEach((item,i)=>list.appendChild(card(item,i)));const cards=[...list.children];$('[data-watch-changed]').textContent=String(cards.filter(c=>c.dataset.changed==='1').length);const risks=cards.map(c=>c.dataset.risk).filter(Boolean).sort((a,b)=>riskRank(b)-riskRank(a));$('[data-watch-risk]').textContent=risks[0]||'—'}
+  document.addEventListener('DOMContentLoaded',()=>{$('[data-watch-clear]')?.addEventListener('click',()=>{if(confirm('Clear every saved ExpenseIntel Cost Passport from this browser?')){write([]);init()}});init()});
 })();
