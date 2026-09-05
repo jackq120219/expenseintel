@@ -23,12 +23,14 @@ function geographyByName(geographies, key) {
 
 function normalizeCensusMatch(match) {
   const c = match.addressComponents || {};
+  const label = clean(match.matchedAddress, 220);
+  const matchedStreet = clean(label.split(',')[0], 140);
   const county = geographyByName(match.geographies, 'Counties');
   const stateGeo = geographyByName(match.geographies, 'States');
   const tract = geographyByName(match.geographies, 'Census Tracts');
   return {
     id: `census:${match.tigerLine?.tigerLineId || `${match.coordinates?.x || ''},${match.coordinates?.y || ''}`}`,
-    label: clean(match.matchedAddress, 220),
+    label,
     provider: 'U.S. Census Bureau',
     verified: true,
     coordinates: {
@@ -36,7 +38,7 @@ function normalizeCensusMatch(match) {
       lon: Number(match.coordinates?.x) || null
     },
     components: {
-      street: clean([c.fromAddress, c.preDirection, c.preType, c.streetName, c.suffixType, c.suffixDirection].filter(Boolean).join(' '), 140),
+      street: matchedStreet,
       city: clean(c.city, 90),
       state: clean(c.state, 2).toUpperCase(),
       zip: clean(c.zip, 10),
