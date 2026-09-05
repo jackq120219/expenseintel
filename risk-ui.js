@@ -19,6 +19,7 @@
       const note=document.querySelector('[data-nri-disclaimer]');if(note){note.textContent=risk.disclaimer||'';note.hidden=false}
     }catch(e){set('[data-nri-status]','Risk feed temporarily unavailable')}
   }
-  function init(){const form=document.querySelector('[data-screen-form]');if(!form)return;form.addEventListener('submit',()=>{setTimeout(()=>run(form),250)})}
+  function loadPassport(){if(document.querySelector('script[data-ei-passport]'))return;const s=document.createElement('script');s.src='/passport.js';s.defer=true;s.dataset.eiPassport='';document.head.appendChild(s)}
+  function init(){const form=document.querySelector('[data-screen-form]');if(!form)return;loadPassport();form.addEventListener('submit',()=>{setTimeout(()=>run(form),250)})}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
