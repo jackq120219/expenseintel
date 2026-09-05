@@ -53,11 +53,14 @@ function parseGasPage(html,label){
     if(i>=0&&i<stop)stop=i;
   }
   const segment=tail.slice(0,stop);
-  const values=(segment.match(/\b\d{1,4}(?:,\d{3})*(?:\.\d+)?\b/g)||[]).map(numeric).filter(v=>v!=null);
+  // EIA appends a history range such as 1989-2026 after the monthly values.
+  // Prices always carry a decimal, so only accept decimal-valued tokens here.
+  const values=(segment.match(/\b\d{1,3}\.\d+\b/g)||[]).map(numeric).filter(v=>v!=null);
   if(!values.length)return null;
   const dates=(text.match(/\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d{2}\b/g)||[]).slice(0,12);
   const latest=values[values.length-1];
-  const period=dates.length?dates[Math.min(dates.length-1,values.length-1)].replace('-', ' 20'):'Latest reported month';
+  const dateIndex=Math.min(values.length-1,dates.length-1);
+  const period=dateIndex>=0?dates[dateIndex].replace('-', ' 20'):'Latest reported month';
   return{dollarsMcf:latest,period};
 }
 async function fetchText(url,signal){
