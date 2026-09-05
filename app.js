@@ -74,7 +74,15 @@ const EI = (() => {
     if(document.querySelector('link[data-ei-trust]')) return;
     const link=document.createElement('link'); link.rel='stylesheet'; link.href='/trust.css'; link.dataset.eiTrust=''; document.head.appendChild(link);
   }
+  function normalizeNav(){
+    const nav=document.querySelector('.navlinks');if(!nav)return;
+    const path=location.pathname;
+    const links=[['/','Overview'],['/tools/','Tools'],['/matrix/','Matrix'],['/compare/','Compare'],['/watch/','Watch'],['/data/','Data'],['/pricing/','Pricing']];
+    nav.innerHTML='';
+    links.forEach(([href,label])=>{const a=document.createElement('a');a.href=href;a.textContent=label;const active=href==='/'?path==='/':path.startsWith(href);if(active)a.classList.add('active');nav.appendChild(a)});
+  }
   function bindNav(){
+    normalizeNav();
     document.querySelectorAll('[data-menu]').forEach(btn=>btn.addEventListener('click',()=>document.querySelector('.site-nav')?.classList.toggle('open')));
     document.querySelectorAll('.navlinks a').forEach(a=>a.addEventListener('click',()=>document.querySelector('.site-nav')?.classList.remove('open')));
     document.querySelectorAll('a.solidbtn,a.outlinebtn').forEach(link=>{
