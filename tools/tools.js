@@ -133,11 +133,11 @@
     return {title:'Monthly economic commitment',primary:money(total/12),secondaryLabel:deal==='lease'?'Occupancy core':'Financing core',secondary,fiveLabel:`${deal==='lease'?(val('#com-term')||5):5}-year modeled burden`,five:compact(five),stressLabel:'Commitment shock case',stress:compact(stress/12)+' / mo',rows,thresholds:[['Energy +15%',(u.electricity+u.gas)*.15],['Insurance / other +20%',other*.20],['Location costs +10%',total*.10]],actions,note:`Commercial Commitment is evaluating this as a ${deal.toUpperCase()} case.`};
   }
 
-  function development(ctx){
+  function development(ctx,location){
     const sqft=val('#dev-sqft'),land=val('#dev-land'),hard=val('#dev-hard')*sqft,soft=hard*(val('#dev-soft')/100),cont=(hard+soft)*(val('#dev-cont')/100),site=val('#dev-site'),months=val('#dev-months')||18,rate=val('#dev-finance')/100;
     const preFinance=land+hard+soft+cont+site,finance=(preFinance*.5)*rate*(months/12),project=preFinance+finance;
     const use=$('#dev-use')?.value||'office';
-    const base=EI.estimate($('#decision-address').value,use,sqft,null,ctx.energy); // operating mix only; address/location is separately verified in evidence
+    const base=EI.estimate(location.label,use,sqft,location,ctx.energy);
     const stabilized=base.total;
     const five=project+sumYears(stabilized,growth(ctx,.006),5);
     const hardShock=hard*.10,siteShock=site*.50,delay=(preFinance*.5)*rate*(6/12),stress=project+hardShock+siteShock+delay;
@@ -155,7 +155,7 @@
     $('[data-primary-label]').textContent=out.title; $('[data-primary]').textContent=out.primary; $('[data-secondary-label]').textContent=out.secondaryLabel; $('[data-secondary]').textContent=out.secondary; $('[data-five-label]').textContent=out.fiveLabel; $('[data-five]').textContent=out.five; $('[data-stress-label]').textContent=out.stressLabel; $('[data-stress]').textContent=out.stress;
     const rows=$('[data-cost-rows]'); rows.innerHTML=''; const max=Math.max(...out.rows.map(r=>Math.abs(r[1])),1);
     out.rows.filter(r=>Math.abs(r[1])>0.01).forEach(([label,value])=>{const el=document.createElement('div');el.className='cost-line';el.innerHTML='<div><span></span><b></b></div><i></i>';el.querySelector('span').textContent=label;el.querySelector('b').textContent=compact(value);el.querySelector('i').style.width=Math.max(2,Math.abs(value)/max*100)+'%';rows.appendChild(el)});
-    const thresh=$('[data-thresholds]');thresh.innerHTML='';out.thresholds.forEach(([label,value])=>{const d=document.createElement('div');d.innerHTML='<span></span><b></b>';d.querySelector('span').textContent=label;d.querySelector('b').textContent=(value<0?'-':' +')+compact(Math.abs(value));thresh.appendChild(d)});
+    const thresh=$('[data-thresholds]');thresh.innerHTML='';out.thresholds.forEach(([label,value])=>{const d=document.createElement('div');d.innerHTML='<span></span><b></b>';d.querySelector('span').textContent=label;d.querySelector('b').textContent=(value<0?'-':'+')+compact(Math.abs(value));thresh.appendChild(d)});
     const acts=$('[data-actions]');acts.innerHTML='';out.actions.slice(0,4).forEach((a,i)=>{const el=document.createElement('article');el.className='action-card';el.innerHTML='<div class="action-top"><span></span><b></b></div><h3></h3><strong></strong><p></p>';el.querySelector('.action-top span').textContent=`0${i+1}`;el.querySelector('.action-top b').textContent=a.type;el.querySelector('h3').textContent=a.title;el.querySelector('strong').textContent=a.impact;el.querySelector('p').textContent=a.basis;acts.appendChild(el)});
     $('[data-note]').textContent=out.note;
     $('[data-evidence]').textContent=evidenceScore(ctx)+'%';
@@ -170,19 +170,21 @@
     mode=next; $$('[data-mode-btn]').forEach(b=>b.classList.toggle('active',b.dataset.modeBtn===mode)); $$('[data-mode-fields]').forEach(s=>s.hidden=s.dataset.modeFields!==mode);
     $('[data-engine-title]').textContent=MODES[mode].name; $('[data-engine-dek]').textContent=MODES[mode].dek; $('[data-run-label]').textContent=`Run ${MODES[mode].name}`;
     $('[data-engine-result]').classList.remove('show'); $('[data-empty]').classList.remove('hide');
+    const err=$('[data-tool-error]'); if(err) err.classList.remove('show');
   }
   function toggleCommercial(){const buy=$('#com-deal')?.value==='buy';$$('[data-com-lease]').forEach(e=>e.hidden=buy);$$('[data-com-buy]').forEach(e=>e.hidden=!buy)}
 
   async function run(e){
     e.preventDefault(); const form=e.currentTarget,btn=$('button[type="submit"]',form),address=$('#decision-address');
+    const err=$('[data-tool-error]'); if(err) err.classList.remove('show');
     btn.disabled=true;btn.classList.add('loading-btn');
     try{
       const location=await EI.requireResolvedAddress(address); if(!location)return;
       const ctx=await context(location,useForMode());
-      let out;if(mode==='industrial')out=industrial(ctx);else if(mode==='home')out=home(ctx);else if(mode==='commercial')out=commercial(ctx);else out=development(ctx);
+      let out;if(mode==='industrial')out=industrial(ctx);else if(mode==='home')out=home(ctx);else if(mode==='commercial')out=commercial(ctx);else out=development(ctx,location);
       render(out,ctx,location);
-    }catch(err){
-      const box=$('[data-tool-error]');box.textContent=err.message||'Unable to build this decision case.';box.classList.add('show');
+    }catch(error){
+      const box=$('[data-tool-error]');box.textContent=error.message||'Unable to build this decision case.';box.classList.add('show');
     }finally{btn.disabled=false;btn.classList.remove('loading-btn')}
   }
 
