@@ -1,0 +1,57 @@
+(()=>{
+  const $=s=>document.querySelector(s);
+  const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(Number(n)||0);
+  const compact=n=>Math.abs(Number(n)||0)>=1000000?'$'+((Number(n)||0)/1000000).toFixed(2)+'M':Math.abs(Number(n)||0)>=1000?'$'+((Number(n)||0)/1000).toFixed(1)+'k':money(n);
+  function parseMoney(s){const t=String(s||'').replace(/[$,~\s]/g,'');const m=t.match(/-?[\d.]+/);if(!m)return 0;let n=Number(m[0]);if(/[kK]/.test(t))n*=1000;if(/[mM]/.test(t))n*=1000000;return Number.isFinite(n)?n:0}
+  const controls=[
+    {key:'electric',label:'Electricity',sel:'[data-full-electric]',min:-20,max:60,step:5,def:15},
+    {key:'gas',label:'Natural gas',sel:'[data-full-gas]',min:-20,max:80,step:5,def:20},
+    {key:'tax',label:'Property tax',sel:'[data-full-tax]',min:-10,max:40,step:5,def:10},
+    {key:'insurance',label:'Insurance',sel:'[data-full-insurance]',min:-10,max:80,step:5,def:20},
+    {key:'other',label:'Water + other',sel:null,min:-10,max:40,step:5,def:10}
+  ];
+  function bases(){
+    return {
+      electric:parseMoney($('[data-full-electric]')?.textContent),
+      gas:parseMoney($('[data-full-gas]')?.textContent),
+      tax:parseMoney($('[data-full-tax]')?.textContent),
+      insurance:parseMoney($('[data-full-insurance]')?.textContent),
+      other:parseMoney($('[data-full-water]')?.textContent)+parseMoney($('[data-full-other]')?.textContent)
+    };
+  }
+  function totalNow(){return parseMoney($('[data-full-total]')?.textContent)}
+  function injectStyle(){if($('#ei-shock-style'))return;const s=document.createElement('style');s.id='ei-shock-style';s.textContent=`
+  .ei-shock{border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);background:#fff}.ei-shock-head{display:grid;grid-template-columns:.72fr 1.28fr;gap:28px;padding:22px;background:#171914;color:var(--paper)}.ei-shock-head span{font:800 9px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--lime)}.ei-shock-head h2{font:400 34px/1 var(--serif);margin:8px 0 0}.ei-shock-head p{margin:0;color:#b1b4ac;font-size:11px;line-height:1.55;align-self:end}.ei-shock-grid{display:grid;grid-template-columns:1.2fr .8fr}.ei-shock-controls{padding:20px;border-right:1px solid var(--ink)}.ei-shock-row{display:grid;grid-template-columns:130px 1fr 70px;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.ei-shock-row:last-child{border-bottom:0}.ei-shock-row label{font:800 9px var(--mono);text-transform:uppercase}.ei-shock-row input{width:100%;accent-color:#b7e800}.ei-shock-row output{font:800 11px var(--mono);text-align:right}.ei-shock-results{display:grid;grid-template-columns:1fr 1fr;background:var(--paper-2)}.ei-shock-metric{padding:20px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);min-height:118px}.ei-shock-metric:nth-child(2n){border-right:0}.ei-shock-metric span{font:800 8px var(--mono);text-transform:uppercase;color:var(--muted)}.ei-shock-metric strong{display:block;font:800 22px/1 var(--mono);margin-top:17px}.ei-shock-metric.primary{background:#fff1df}.ei-shock-break{grid-column:1/-1;padding:18px 20px;background:var(--ink);color:var(--paper)}.ei-shock-break span{font:800 8px var(--mono);text-transform:uppercase;color:#9fa39a}.ei-shock-break strong{display:block;font:400 24px/1.08 var(--serif);margin:8px 0}.ei-shock-break p{font:10px/1.5 var(--mono);color:#b5b8b0;margin:0}.ei-shock-actions{display:flex;gap:8px;flex-wrap:wrap;padding:12px 20px;border-top:1px solid var(--ink)}.ei-shock-actions button{border:1px solid var(--ink);background:var(--white);padding:9px 11px;font:800 8px var(--mono);text-transform:uppercase;cursor:pointer}.ei-shock-actions button:hover{background:var(--lime)}
+  @media(max-width:900px){.ei-shock-head,.ei-shock-grid{grid-template-columns:1fr}.ei-shock-controls{border-right:0;border-bottom:1px solid var(--ink)}}@media(max-width:560px){.ei-shock-row{grid-template-columns:1fr 70px}.ei-shock-row input{grid-column:1/-1;grid-row:2}.ei-shock-results{grid-template-columns:1fr}.ei-shock-metric{border-right:0}.ei-shock-break{grid-column:1}}
+  `;document.head.appendChild(s)}
+  function build(){
+    const full=$('[data-full-result]');if(!full||full.querySelector('.ei-shock'))return full?.querySelector('.ei-shock')||null;
+    const sec=document.createElement('section');sec.className='ei-shock';
+    sec.innerHTML=`<div class="ei-shock-head"><div><span>ExpenseIntel / Cost Shock</span><h2>What if the location gets expensive?</h2></div><p>Stress-test the current cost stack without confusing the scenario with the base forecast. These controls change only the selected cost categories and are not predictions.</p></div><div class="ei-shock-grid"><div class="ei-shock-controls" data-shock-controls></div><div class="ei-shock-results"><div class="ei-shock-metric primary"><span>Stressed annual cost</span><strong data-shock-total>—</strong></div><div class="ei-shock-metric"><span>Annual downside</span><strong data-shock-delta>—</strong></div><div class="ei-shock-metric"><span>5-year incremental burden</span><strong data-shock-five>—</strong></div><div class="ei-shock-metric"><span>Downside vs base</span><strong data-shock-pct>—</strong></div><div class="ei-shock-break"><span>Largest shock driver</span><strong data-shock-driver>—</strong><p data-shock-explain>Move a scenario control to see which variable matters most.</p></div></div></div><div class="ei-shock-actions"><button type="button" data-shock-reset>Reset scenario</button><button type="button" data-shock-copy>Copy stress case</button></div>`;
+    const zone=sec.querySelector('[data-shock-controls]');
+    controls.forEach(c=>{const row=document.createElement('div');row.className='ei-shock-row';row.innerHTML='<label></label><input type="range"><output></output>';const input=row.querySelector('input');input.min=c.min;input.max=c.max;input.step=c.step;input.value=c.def;input.dataset.shock=c.key;row.querySelector('label').textContent=c.label;zone.appendChild(row)});
+    const target=full.querySelector('.evidence-ledger')||full.querySelector('.trust-grid');target?.insertAdjacentElement('beforebegin',sec);
+    sec.addEventListener('input',update);
+    sec.querySelector('[data-shock-reset]').addEventListener('click',()=>{controls.forEach(c=>{const i=sec.querySelector(`[data-shock="${c.key}"]`);if(i)i.value=c.def});update()});
+    sec.querySelector('[data-shock-copy]').addEventListener('click',copy);
+    return sec;
+  }
+  function state(){
+    const sec=$('.ei-shock');if(!sec)return null;const b=bases(),base=totalNow();let delta=0;const effects=[];
+    controls.forEach(c=>{const input=sec.querySelector(`[data-shock="${c.key}"]`),p=Number(input?.value)||0,e=(b[c.key]||0)*(p/100);delta+=e;effects.push({label:c.label,p,e});const out=input?.closest('.ei-shock-row')?.querySelector('output');if(out)out.textContent=(p>0?'+':'')+p+'%'});
+    effects.sort((a,b)=>Math.abs(b.e)-Math.abs(a.e));return{base,b,delta,total:base+delta,effects};
+  }
+  function update(){
+    const sec=$('.ei-shock');if(!sec)return;const s=state();if(!s||!s.base)return;
+    sec.querySelector('[data-shock-total]').textContent=money(s.total);
+    sec.querySelector('[data-shock-delta]').textContent=(s.delta>=0?'+':'')+money(s.delta);
+    sec.querySelector('[data-shock-five]').textContent=(s.delta>=0?'+':'')+compact(s.delta*5);
+    sec.querySelector('[data-shock-pct]').textContent=(s.delta>=0?'+':'')+((s.delta/s.base)*100).toFixed(1)+'%';
+    const d=s.effects[0];sec.querySelector('[data-shock-driver]').textContent=d?`${d.label} ${d.p>=0?'+':''}${d.p}% → ${d.e>=0?'+':''}${money(d.e)} / yr`:'—';
+    sec.querySelector('[data-shock-explain]').textContent=d?`In this scenario, ${d.label.toLowerCase()} contributes the largest single change to the annual burden. Adjust the sliders to see when another variable becomes the dominant threat.`:'Move a scenario control to see which variable matters most.';
+  }
+  async function copy(){const s=state();if(!s)return;const lines=s.effects.map(x=>`${x.label}: ${x.p>=0?'+':''}${x.p}% (${x.e>=0?'+':''}${money(x.e)}/yr)`);const text=`ExpenseIntel Cost Shock\n${txt('[data-full-address]')}\nBase: ${money(s.base)} / year\nStress: ${money(s.total)} / year\nAnnual downside: ${s.delta>=0?'+':''}${money(s.delta)}\n5-year incremental burden: ${s.delta>=0?'+':''}${money(s.delta*5)}\n\n${lines.join('\n')}\n\nScenario only — not a forecast or quote.`;try{await navigator.clipboard.writeText(text);const b=$('[data-shock-copy]');const old=b.textContent;b.textContent='Copied ✓';setTimeout(()=>b.textContent=old,1400)}catch(_e){}}
+  function txt(sel){return($(sel)?.textContent||'').trim()}
+  function init(){injectStyle();const full=$('[data-full-result]');if(!full)return;const observer=new MutationObserver(()=>{if(full.classList.contains('show')){build();update()}});observer.observe(full,{subtree:true,attributes:true,childList:true,characterData:true});if(full.classList.contains('show')){build();update()}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
