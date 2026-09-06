@@ -1,10 +1,11 @@
-const {decodeVin,fetchVehicleFuel,fetchFuelPrices,fetchBls}=require('../lib/public-intel');
+const {decodeVin,fetchFuelPrices,fetchBls}=require('../lib/public-intel');
+const {resolveFuelVehicle}=require('../lib/vehicle-intel');
 function send(res,status,payload,cache=true){res.statusCode=status;res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Cache-Control',cache?'public, s-maxage=21600, stale-while-revalidate=86400':'no-store');res.end(JSON.stringify(payload))}
 module.exports=async function handler(req,res){
   if(req.method!=='GET')return send(res,405,{ok:false,error:'Method not allowed'},false);
-  let year=String(req.query?.year||'').trim(),make=String(req.query?.make||'').trim(),model=String(req.query?.model||'').trim(),vin=String(req.query?.vin||'').trim(),optionId=String(req.query?.optionId||'').trim();
+  let year=String(req.query?.year||'').trim(),make=String(req.query?.make||'').trim(),model=String(req.query?.model||'').trim(),vin=String(req.query?.vin||'').trim();
   let decoded=null;if(vin){decoded=await decodeVin(vin,year);if(decoded&&!decoded.error){year=year||decoded.year;make=make||decoded.make;model=model||decoded.model}}
-  const [fuel,fuelPrices,bls]=await Promise.all([fetchVehicleFuel({year,make,model,optionId}),fetchFuelPrices(),fetchBls(['new_vehicles','used_vehicles','gasoline','vehicle_repair'])]);
-  const ok=!!(fuel.ok||decoded&&!decoded.error||bls.ok);
-  return send(res,ok?200:502,{ok,query:{year,make,model,vin:vin?`${vin.slice(0,5)}…${vin.slice(-4)}`:'',optionId},decoded,vehicleFuel:fuel.ok?fuel:null,fuelPrices:fuelPrices.ok?fuelPrices:null,marketSignals:bls.signals||[],coverage:{nhtsa:!!(decoded&&!decoded.error),fuelEconomy:!!fuel.ok,fuelPrices:!!fuelPrices.ok,bls:!!bls.ok},errors:[decoded?.error,fuel.error,fuelPrices.error,bls.error].filter(Boolean),methodology:{warning:'Vehicle identity and fuel-economy data come from official federal sources. ExpenseIntel does not claim a vehicle purchase price, depreciation rate, insurance premium, or repair forecast unless a corresponding verified data source is available.'}});
+  const [fuel,fuelPrices,bls]=await Promise.all([resolveFuelVehicle({year,make,model,limit:18}),fetchFuelPrices(),fetchBls(['new_vehicles','used_vehicles','gasoline','vehicle_repair'])]);
+  const ok=!!(fuel.ok||decoded&&!decoded.error||bls.ok||fuelPrices.ok);
+  return send(res,ok?200:502,{ok,query:{year,make,model,vin:vin?`${vin.slice(0,5)}…${vin.slice(-4)}`:''},decoded,vehicleFuel:fuel.ok?fuel:{ok:false,error:fuel.error,resolvedMake:fuel.resolvedMake||'',resolvedModels:fuel.resolvedModels||[],availableModels:fuel.availableModels||[]},fuelPrices:fuelPrices.ok?fuelPrices:null,marketSignals:bls.signals||[],coverage:{vinIdentity:!!(decoded&&!decoded.error),fuelEconomy:!!fuel.ok,fuelPrices:!!fuelPrices.ok,bls:!!bls.ok},errors:[decoded?.error,fuel.error,fuelPrices.error,bls.error].filter(Boolean),methodology:{warning:'Vehicle identity, fuel economy, fuel prices and broad vehicle-market trends come from official federal sources. ExpenseIntel does not invent purchase price, depreciation, insurance, repair probability, or a financing offer where no corresponding verified source is connected.'}});
 };
