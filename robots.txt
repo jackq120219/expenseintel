@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://expenseintel.com/sitemap.xml
+Sitemap: https://www.expenseintel.com/sitemap.xml
