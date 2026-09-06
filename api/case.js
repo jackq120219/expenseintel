@@ -1,5 +1,6 @@
 'use strict';
 const {validateCaseInput,estimateCase,MODEL_VERSION}=require('../lib/model-core');
+const {originFromReq}=require('../lib/http');
 
 function send(res,status,payload,cache=false){
   res.statusCode=status;
@@ -7,11 +8,6 @@ function send(res,status,payload,cache=false){
   res.setHeader('X-Content-Type-Options','nosniff');
   res.setHeader('Cache-Control',cache?'public, s-maxage=1800, stale-while-revalidate=7200':'no-store');
   res.end(JSON.stringify(payload));
-}
-function baseUrl(req){
-  const host=req.headers['x-forwarded-host']||req.headers.host;
-  const proto=req.headers['x-forwarded-proto']||'https';
-  return `${proto}://${host}`;
 }
 async function json(url,signal){
   const r=await fetch(url,{signal,headers:{Accept:'application/json','User-Agent':'ExpenseIntel/1.0 (https://expenseintel.com)'}});
@@ -37,7 +33,7 @@ module.exports=async function handler(req,res){
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),12000);
   try{
-    const base=baseUrl(req);
+    const base=originFromReq(req);
     const addressData=await json(`${base}/api/address?q=${encodeURIComponent(input.address)}`,controller.signal);
     let {match,suggestions}=chooseAddress(input.address,addressData);
     if(!match){
