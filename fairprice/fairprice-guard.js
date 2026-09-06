@@ -1,0 +1,6 @@
+(()=>{
+  const $=s=>document.querySelector(s);
+  function hasBenchmark(){return ['fp-low','fp-high','fp-comp1','fp-comp2','fp-comp3'].some(id=>Number(document.getElementById(id)?.value)>0)}
+  function reset(){if(hasBenchmark())return;const verdict=$('#fp-verdict'),copy=$('#fp-copy'),center=$('#fp-center'),position=$('#fp-position'),confidence=$('#fp-confidence'),table=$('[data-fp-table]');if(verdict)verdict.textContent='ADD A BENCHMARK';if(copy)copy.textContent='ExpenseIntel needs a supplied market range or at least one comparable quote before it can judge the quoted price. No benchmark means no fair-price claim.';if(center)center.textContent='—';if(position)position.textContent='—';if(confidence)confidence.textContent='0 / 100';if(table)table.innerHTML='<tr><td>Benchmark status</td><td class="num">Required</td></tr>'}
+  document.addEventListener('DOMContentLoaded',()=>{const form=$('[data-fairprice-form]');if(!form)return;reset();form.addEventListener('submit',e=>{if(hasBenchmark())return;e.preventDefault();e.stopImmediatePropagation();reset()},true)});
+})();
