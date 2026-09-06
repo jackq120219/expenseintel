@@ -23,7 +23,7 @@ module.exports=function handler(_req,res){
     const css=fs.readFileSync(cssPath,'utf8');
     const v4Css=fs.readFileSync(v4CssPath,'utf8');
     if(!css.includes('.precision-module')||!css.includes('@media(prefers-reduced-motion:reduce)'))throw new Error('Precision CSS integrity check failed');
-    if(!v4Css.includes('.evidence-inbox')||!v4Css.includes('.gatekeeper-module')||!v4Css.includes('@media(prefers-reduced-motion:reduce)'))throw new Error('Gatekeeper CSS integrity check failed');
+    if(!v4Css.includes('.evidence-inbox')||!v4Css.includes('.gate-posture')||!v4Css.includes('@media(prefers-reduced-motion:reduce)'))throw new Error('Gatekeeper CSS integrity check failed');
     if(!v4.includes('Contradiction Engine')||!v4.includes('Dependency Graph')||!v4.includes('Project Gatekeeper'))throw new Error('Project v4 feature integrity check failed');
     const failure=JSON.parse(fs.readFileSync(failurePath,'utf8'));
     if(!Array.isArray(failure.records)||failure.records.length<1)throw new Error('Failure Library is empty');
