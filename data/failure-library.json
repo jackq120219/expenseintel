@@ -1,0 +1,91 @@
+{
+  "version": "EI-FAILURE-EVIDENCE-2026.09.1",
+  "updated": "2026-09-05",
+  "methodology": "Each record points to a public primary-source government record. Records are examples of denial, lapse, delay, extension, or approval-path friction; they are not statistical failure probabilities and do not imply that every referenced project ultimately failed.",
+  "records": [
+    {
+      "id": "nyc-bsa-2020-25-bz",
+      "jurisdiction": "New York City, NY",
+      "agency": "NYC Board of Standards and Appeals",
+      "case": "2020-25-BZ",
+      "premises": "142-30 13th Avenue, Queens",
+      "status": "Application denied",
+      "year": 2021,
+      "patterns": ["irreversible_before_entitlement", "approval_dependency", "code_noncompliance"],
+      "observed": "The Board denied a variance application seeking to legalize an existing single-family residence that did not comply with front- and side-yard requirements. The decision discussed self-created hardship and builder error in declining relief.",
+      "lesson": "Do not assume completed or hard-to-reverse work can later be regularized through discretionary relief. Verify the governing constraint before irreversible construction.",
+      "sourceLabel": "NYC BSA final decision",
+      "sourceUrl": "https://www.nyc.gov/assets/bsa/downloads/pdf/decisions/2020-25-BZ.pdf"
+    },
+    {
+      "id": "nyc-bsa-197-05-bz",
+      "jurisdiction": "New York City, NY",
+      "agency": "NYC Board of Standards and Appeals",
+      "case": "197-05-BZ",
+      "premises": "BSA variance project",
+      "status": "Construction extension granted after delay",
+      "year": 2022,
+      "patterns": ["approval_critical_path", "schedule_dependency", "financing_delay"],
+      "observed": "The time to complete construction under the variance expired. The applicant sought another extension and represented that pandemic effects and resulting financial issues delayed the project; the Board also asked for detail on permitting status and the construction timeline.",
+      "lesson": "Entitlement clocks, permitting, financing, and construction sequencing interact. A project can retain conceptual feasibility while timing failure creates another approval dependency.",
+      "sourceLabel": "NYC BSA decision 197-05-BZ",
+      "sourceUrl": "https://www.nyc.gov/assets/bsa/downloads/pdf/decisions/197-05-BZVI.pdf"
+    },
+    {
+      "id": "nyc-bsa-99-14-bz-2026",
+      "jurisdiction": "Manhattan, New York City, NY",
+      "agency": "NYC Board of Standards and Appeals",
+      "case": "99-14-BZIV",
+      "premises": "432-434 West 31st Street, Manhattan",
+      "status": "Extension requested after construction deadline expired",
+      "year": 2026,
+      "patterns": ["approval_critical_path", "schedule_dependency", "entitlement_expiry"],
+      "observed": "A 2026 public-hearing notice states that the applicant sought an extension of time to complete construction of a previously approved variance after the construction period expired on January 10, 2026.",
+      "lesson": "Approval is not the end of entitlement risk. Track completion deadlines and conditions as project controls, not legal fine print.",
+      "sourceLabel": "NYC City Record / BSA hearing notice",
+      "sourceUrl": "https://a856-cityrecord.nyc.gov/RequestDetail/20260302026"
+    },
+    {
+      "id": "nyc-bsa-2021-15-bz-2026",
+      "jurisdiction": "New York City, NY",
+      "agency": "NYC Board of Standards and Appeals",
+      "case": "2021-15-BZII",
+      "premises": "81 Beaver Development LLC variance project",
+      "status": "Extension requested for residential conversion",
+      "year": 2026,
+      "patterns": ["change_of_use_cascade", "approval_critical_path", "entitlement_expiry"],
+      "observed": "A 2026 BSA hearing notice describes an application for more time to complete a previously approved variance permitting residential conversion of an existing manufacturing building after the prior construction period expired.",
+      "lesson": "Change-of-use projects can remain exposed to entitlement timing long after the use concept is approved. Conversion sequencing should track approval expiration and certificate milestones.",
+      "sourceLabel": "NYC City Record / BSA hearing notice",
+      "sourceUrl": "https://a856-cityrecord.nyc.gov/RequestDetail/20260817015"
+    },
+    {
+      "id": "nyc-bsa-55-06-bz-2020",
+      "jurisdiction": "New York City, NY",
+      "agency": "NYC Board of Standards and Appeals",
+      "case": "55-06-BZ",
+      "premises": "Office-building variance project",
+      "status": "Extension requested years after construction period expired",
+      "year": 2020,
+      "patterns": ["approval_critical_path", "schedule_dependency", "entitlement_expiry"],
+      "observed": "The City Record described a request to extend time to complete a three-story office-building project under a previously granted variance whose construction period had expired in 2017, together with a waiver request.",
+      "lesson": "A dormant or delayed project can accumulate procedural recovery work. Track entitlement dates alongside financing and construction schedules.",
+      "sourceLabel": "NYC City Record / BSA hearing notice",
+      "sourceUrl": "https://a856-cityrecord.nyc.gov/RequestDetail/20200624010"
+    },
+    {
+      "id": "nyc-bsa-1129-64-bz-2025",
+      "jurisdiction": "Queens, New York City, NY",
+      "agency": "NYC Board of Standards and Appeals",
+      "case": "1129-64-BZIII",
+      "premises": "Rosedale Auto Parts variance project",
+      "status": "Extension requested after long-expired construction period",
+      "year": 2025,
+      "patterns": ["approval_critical_path", "schedule_dependency", "entitlement_expiry"],
+      "observed": "A 2025 BSA hearing notice described an application to extend time to complete a previously approved two-story development whose construction period had expired in 2018, together with a waiver request.",
+      "lesson": "Long delays can turn old approvals into a fresh procedural problem. Treat entitlement maintenance as an active project responsibility.",
+      "sourceLabel": "NYC City Record / BSA hearing notice",
+      "sourceUrl": "https://a856-cityrecord.nyc.gov/RequestDetail/20250715032"
+    }
+  ]
+}
