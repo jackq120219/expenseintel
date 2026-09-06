@@ -2,27 +2,29 @@
   const $=(s,r=document)=>r.querySelector(s);
   const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(Number(n)||0);
   const compact=n=>Math.abs(Number(n)||0)>=1000000?'$'+((Number(n)||0)/1000000).toFixed(2)+'M':Math.abs(Number(n)||0)>=1000?'$'+((Number(n)||0)/1000).toFixed(1)+'k':money(n);
+  const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
   let rows=[];
   function err(msg=''){const e=$('[data-find-error]');if(!e)return;e.textContent=msg;e.classList.toggle('show',!!msg)}
   function median(vals){const a=[...vals].sort((x,y)=>x-y);if(!a.length)return 0;const m=Math.floor(a.length/2);return a.length%2?a[m]:(a[m-1]+a[m])/2}
   async function json(url){const r=await fetch(url,{headers:{Accept:'application/json'}});const d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error(d.error||'Market scan unavailable.');return d}
+  function fiveYearElectric(base,yoy){const trend=Number.isFinite(yoy)?clamp(yoy,-.06,.10):.035;let total=0;for(let y=0;y<5;y++)total+=base*Math.pow(1+trend,y);return{total,trend}}
   function render(){
     const result=$('[data-find-result]');result.classList.add('show');
     const winner=rows[0],last=rows[rows.length-1],cap=Number($('#find-cap').value)||0;
     $('[data-find-winner]').textContent=winner?`${winner.city}, ${winner.state}`:'—';
-    $('[data-find-spread]').textContent=winner&&last?compact(last.annual-winner.annual)+'/yr':'—';
+    $('[data-find-spread]').textContent=winner&&last?compact(last.fiveTotal-winner.fiveTotal):'—';
     $('[data-find-under]').textContent=cap?`${rows.filter(r=>r.annual<=cap).length} / ${rows.length}`:'Set a ceiling';
     const zone=$('[data-find-rows]');zone.innerHTML='';
     rows.forEach((r,i)=>{
       const line=document.createElement('div');line.className='rank-line'+(i===0?' winner':'');
-      line.innerHTML='<div class="no"></div><div><strong></strong><small></small></div><div><strong></strong><small>electricity price</small></div><div><strong></strong><small>EI energy index</small></div><div><strong></strong><small>modeled annual burden</small></div><div><strong></strong><small>price movement</small></div>';
+      line.innerHTML='<div class="no"></div><div><strong></strong><small></small></div><div><strong></strong><small>current electricity price</small></div><div><strong></strong><small>EI opportunity score</small></div><div><strong></strong><small>5-year modeled burden</small></div><div><strong></strong><small>capped annual trend</small></div>';
       line.children[0].textContent=String(i+1);
       line.children[1].querySelector('strong').textContent=`${r.city}, ${r.state}`;
       line.children[1].querySelector('small').textContent=`${r.region} · representative market`;
       line.children[2].querySelector('strong').textContent=`${r.rate.toFixed(2)}¢/kWh`;
-      line.children[3].querySelector('strong').textContent=Math.round(r.index);
-      line.children[4].querySelector('strong').textContent=compact(r.annual);
-      line.children[5].querySelector('strong').textContent=Number.isFinite(r.yoy)?`${r.yoy>=0?'+':''}${(r.yoy*100).toFixed(1)}%`:'—';
+      line.children[3].querySelector('strong').textContent=Math.round(r.opportunity);
+      line.children[4].querySelector('strong').textContent=compact(r.fiveTotal);
+      line.children[5].querySelector('strong').textContent=`${r.trend>=0?'+':''}${(r.trend*100).toFixed(1)}%`;
       zone.appendChild(line);
     });
     const sel=$('#arb-market');sel.innerHTML='';rows.forEach((r,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=`${i+1}. ${r.city}, ${r.state}`;sel.appendChild(o)});updateArb();
@@ -37,9 +39,10 @@
       const d=await json('/api/market?use='+encodeURIComponent(use));
       const kwh=kwhInput||((d.intensity?.kwhSqft||0)*sqft);
       if(!kwh){throw new Error('Unable to determine electricity usage for this profile.')}
-      const costs=d.markets.map(m=>({city:m.city,state:m.state,region:m.region,rate:m.electricity.centsKwh,yoy:m.electricity.yoy,electric:kwh*(m.electricity.centsKwh/100)}));
+      const costs=d.markets.map(m=>{const electric=kwh*(m.electricity.centsKwh/100),projection=fiveYearElectric(electric,m.electricity.yoy);return{city:m.city,state:m.state,region:m.region,rate:m.electricity.centsKwh,yoy:m.electricity.yoy,electric,trend:projection.trend,fiveElectric:projection.total,annual:electric+fixed,fiveTotal:projection.total+fixed*5,kwh}});
+      const minFive=Math.min(...costs.map(x=>x.fiveTotal)),maxFive=Math.max(...costs.map(x=>x.fiveTotal)),span=Math.max(1,maxFive-minFive);
       const med=median(costs.map(x=>x.electric))||1;
-      rows=costs.map(x=>({...x,index:(x.electric/med)*100,annual:x.electric+fixed,kwh})).sort((a,b)=>a.annual-b.annual);
+      rows=costs.map(x=>{const costAdvantage=(maxFive-x.fiveTotal)/span;const trendAdvantage=(.10-x.trend)/.16;const opportunity=clamp((costAdvantage*.78+trendAdvantage*.22)*100,0,100);return{...x,index:(x.electric/med)*100,opportunity}}).sort((a,b)=>a.fiveTotal-b.fiveTotal);
       render();
     }catch(ex){err(ex.message||'Unable to scan markets.')}finally{btn.disabled=false}
   }
@@ -47,13 +50,13 @@
     if(!rows.length)return;
     const row=rows[Number($('#arb-market').value)||0]||rows[0];
     const value=Number($('#arb-value').value)||0,years=Math.max(1,Number($('#arb-years').value)||5),oneoff=Number($('#arb-oneoff').value)||0;
-    const annualized=value/years,netFive=value-oneoff,adjusted=row.annual*5-netFive;
-    const leaderFive=rows[0].annual*5;
+    const annualized=value/years,netFive=value-oneoff,adjusted=row.fiveTotal-netFive;
+    const leaderFive=rows[0].fiveTotal;
     $('[data-arb-annual]').textContent=money(annualized)+'/yr';
     $('[data-arb-five]').textContent=(netFive>=0?'+':'')+money(netFive);
     $('[data-arb-total]').textContent=money(adjusted);
     const diff=adjusted-leaderFive;
-    $('[data-arb-rank]').textContent=row===rows[0]?'Already current leader':diff<=0?`Overtakes leader by ${money(Math.abs(diff))}`:`Still ${money(diff)} above leader`;
+    $('[data-arb-rank]').textContent=row===rows[0]?'Already current 5-year leader':diff<=0?`Overtakes leader by ${money(Math.abs(diff))}`:`Still ${money(diff)} above leader`;
   }
   document.addEventListener('DOMContentLoaded',()=>{
     $('[data-find-form]')?.addEventListener('submit',run);
