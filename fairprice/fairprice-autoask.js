@@ -1,0 +1,1 @@
+(()=>{document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{const prompt=document.querySelector('#fp-label')?.value?.trim(),label=document.querySelector('[data-fp-run-label]')?.textContent||'',form=document.querySelector('[data-fairprice-form]');if(prompt&&form&&/^Continue/i.test(label))form.requestSubmit()},260)})})();
