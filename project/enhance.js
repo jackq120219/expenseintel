@@ -5,7 +5,8 @@
     addCss('/project/precision.css?v=20260905c');
     addCss('/project/gates-v4.css?v=20260905a');
     addCss('/project/intel-v5.css?v=20260905a');
-    addScript('/project/lab-v3.js?v=20260905c',()=>addScript('/project/gates-v4.js?v=20260905a',()=>addScript('/project/intel-v5.js?v=20260905a')));
+    addCss('/project/cloud-v6.css?v=20260906a');
+    addScript('/project/lab-v3.js?v=20260905c',()=>addScript('/project/gates-v4.js?v=20260905a',()=>addScript('/project/intel-v5.js?v=20260905a',()=>addScript('/project/cloud-v6.js?v=20260906a'))));
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
