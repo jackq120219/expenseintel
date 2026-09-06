@@ -124,8 +124,8 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return sendJson(res, 405, { ok: false, error: 'Method not allowed' });
   try {
     const body = await readJson(req, 131072);
-    const text = cleanText(body.text, 80000);
-    if (text.length < 20) return sendJson(res, 400, { ok: false, error: 'Paste at least a few lines from a bill, quote, lease cost schedule, or operating budget.' });
+    const text = String(body.text || '').replace(/\u0000/g, '').slice(0, 80000);
+    if (text.trim().length < 20) return sendJson(res, 400, { ok: false, error: 'Paste at least a few lines from a bill, quote, lease cost schedule, or operating budget.' });
     const caseModel = body.case && typeof body.case === 'object' ? body.case : null;
     const items = parseLines(text, caseModel);
     const recurring = items.reduce((sum, x) => sum + x.annualized, 0);
