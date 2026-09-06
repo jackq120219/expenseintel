@@ -1,0 +1,29 @@
+(()=>{
+  if(!location.pathname.startsWith('/about/'))return;
+  const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+  const sections=$$('.about-section');
+  const findSection=word=>sections.find(s=>(s.querySelector('.about-kicker')?.textContent||'').toLowerCase().includes(word));
+  const how=findSection('how it works'),tools=findSection('the tools'),transparent=findSection('transparency'),expect=findSection('what to expect');
+  if(how)how.id='how-it-works';if(tools)tools.id='tools';if(transparent)transparent.id='transparency';if(expect)expect.id='what-to-expect';
+
+  function addJump(){const hero=$('.about-hero');if(!hero||$('.about-jump'))return;const nav=document.createElement('nav');nav.className='about-jump';nav.setAttribute('aria-label','About page sections');nav.innerHTML='<span>Jump to</span><a href="#how-it-works">How it works</a><a href="#tools">Tools</a><a href="#transparency">Transparency</a><a href="#what-to-expect">What to expect</a>';hero.insertAdjacentElement('afterend',nav);const links=$$('a',nav),targets=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);if('IntersectionObserver'in window){const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(!e.isIntersecting)return;links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}),{rootMargin:'-22% 0px -68%'});targets.forEach(t=>io.observe(t))}}
+
+  const choices={
+    general:{label:'ExpenseIntel Check',match:'ExpenseIntel Check',href:'/check/',copy:'Best when you are not sure which tool you need. Start with the decision and ExpenseIntel will identify the most important evidence and missing facts.'},
+    price:{label:'Fair Price',match:'Fair Price',href:'/fairprice/',copy:'Best when the main question is whether an asking price, quote or contractor number is supported by real comparable evidence.'},
+    total:{label:'TrueCost',match:'TrueCost',href:'/truecost/',copy:'Best when sticker price is only part of the burden and financing, recurring costs, fees or resale value matter.'},
+    timing:{label:'Wait or Buy',match:'Wait or Buy',href:'/timing/',copy:'Best when the decision changes depending on rates, timing, incentives or an explicit future-price assumption.'},
+    property:{label:'Location Intelligence',match:'Location Intelligence',href:'/screen/',copy:'Best for a home, facility or lease where property facts, utilities, operating costs, hazard context and savings potential matter.'},
+    project:{label:'Project Intel + X-Ray',match:'Project Intel + X-Ray',href:'/project/',copy:'Best for renovations, equipment or physical projects with dependencies, documents, scope, utilities or expensive failure points.'}
+  };
+  function addChooser(){if(!tools||$('.about-chooser'))return;const grid=$('.tools-grid',tools);if(!grid)return;const box=document.createElement('div');box.className='about-chooser';box.innerHTML='<div class="about-chooser-copy"><span>Not sure where to start?</span><h3>What are you trying to figure out?</h3></div><div class="about-choice-buttons" role="group" aria-label="Choose a decision question"><button type="button" data-choice="general">I am not sure</button><button type="button" data-choice="price">Is the price fair?</button><button type="button" data-choice="total">What will it really cost?</button><button type="button" data-choice="timing">Should I wait?</button><button type="button" data-choice="property">What will this property cost?</button><button type="button" data-choice="project">It is a complex project</button></div><div class="about-choice-result" aria-live="polite"><div><span>Recommended starting point</span><strong>ExpenseIntel Check</strong><p>Start broad when you are not sure. ExpenseIntel can route the decision deeper only when the evidence calls for it.</p></div><a class="solidbtn" href="/check/">Open Check →</a></div>';grid.insertAdjacentElement('beforebegin',box);
+    const result=$('.about-choice-result',box),title=$('strong',result),copy=$('p',result),cta=$('a',result),buttons=$$('button[data-choice]',box);
+    const activate=key=>{const c=choices[key]||choices.general;buttons.forEach(b=>{const on=b.dataset.choice===key;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false')});title.textContent=c.label;copy.textContent=c.copy;cta.href=c.href;cta.textContent=`Open ${c.label.replace('ExpenseIntel ','')} →`;$$('.tool-card',tools).forEach(card=>{const match=(card.querySelector('h3')?.textContent||'').trim()===c.match;card.classList.toggle('recommended',match)});result.classList.remove('pulse');void result.offsetWidth;result.classList.add('pulse')};
+    buttons.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.choice)));activate('general')}
+
+  function makeCardsWorkBetter(){$$('.tool-card').forEach(card=>{const a=$('a',card);if(!a)return;a.setAttribute('aria-label',`${card.querySelector('h3')?.textContent||'ExpenseIntel tool'} — open tool`)});const company=$$('.footer-col').find(c=>(c.querySelector('h4')?.textContent||'').trim()==='Company');if(company&&!company.querySelector('a[href="/about/"]')){const a=document.createElement('a');a.href='/about/';a.textContent='About ExpenseIntel';company.insertBefore(a,company.firstElementChild?.nextSibling||null)}}
+
+  function smoothAnchors(){document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const target=document.querySelector(a.getAttribute('href'));if(!target)return;e.preventDefault();target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});history.replaceState(null,'',a.getAttribute('href'))})}
+
+  addJump();addChooser();makeCardsWorkBetter();smoothAnchors();
+})();
