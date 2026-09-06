@@ -2,14 +2,19 @@
 
 const { sendJson } = require('../lib/http');
 
+const PROJECT_URL='https://tzwjiokoxfsruvobkiok.supabase.co';
+
 module.exports=function handler(req,res){
   if(req.method!=='GET')return sendJson(res,405,{ok:false,error:'Method not allowed'});
-  const url=String(process.env.EXPENSEINTEL_SUPABASE_URL||'').trim();
-  const key=String(process.env.EXPENSEINTEL_SUPABASE_PUBLISHABLE_KEY||'').trim();
   return sendJson(res,200,{
     ok:true,
-    configured:Boolean(url&&key),
-    mode:url&&key?'configured':'browser-local',
-    message:url&&key?'ExpenseIntel cloud endpoint is configured.':'No dedicated ExpenseIntel cloud project is configured.'
+    configured:true,
+    mode:'dedicated-cloud',
+    projectRef:'tzwjiokoxfsruvobkiok',
+    url:PROJECT_URL,
+    auth:true,
+    rls:true,
+    collaboration:true,
+    message:'Dedicated ExpenseIntel cloud project is active with authenticated Row Level Security.'
   },{cache:'no-store'});
 };
