@@ -1,7 +1,7 @@
 {
-  "version": "EI-FAILURE-EVIDENCE-2026.09.1",
+  "version": "EI-FAILURE-EVIDENCE-2026.09.2",
   "updated": "2026-09-05",
-  "methodology": "Each record points to a public primary-source government record. Records are examples of denial, lapse, delay, extension, or approval-path friction; they are not statistical failure probabilities and do not imply that every referenced project ultimately failed.",
+  "methodology": "Each record points to a public primary-source government record. Records are examples of denial, lapse, delay, extension, or approval-path friction; they are not statistical failure probabilities and do not imply that every referenced project ultimately failed. Observed fields are intentionally limited to what the cited public record establishes.",
   "records": [
     {
       "id": "nyc-bsa-2020-25-bz",
@@ -86,6 +86,48 @@
       "lesson": "Long delays can turn old approvals into a fresh procedural problem. Treat entitlement maintenance as an active project responsibility.",
       "sourceLabel": "NYC City Record / BSA hearing notice",
       "sourceUrl": "https://a856-cityrecord.nyc.gov/RequestDetail/20250715032"
+    },
+    {
+      "id": "boston-boa-1733081",
+      "jurisdiction": "Boston, MA",
+      "agency": "Boston Zoning Board of Appeal",
+      "case": "BOA-1733081",
+      "premises": "20 Shawmut Avenue, Ward 05",
+      "status": "Appeal denied",
+      "year": 2025,
+      "patterns": ["approval_dependency", "code_noncompliance", "entitlement_failure"],
+      "observed": "Boston's official Zoning Board of Appeal decisions page lists BOA-1733081 at 20 Shawmut Avenue among the denied decisions filed September 12, 2025.",
+      "lesson": "A project that depends on discretionary zoning relief should treat denial as a real branch of the decision tree, not as a remote technicality. Establish a compliant or walk-away path before hard commitments.",
+      "sourceLabel": "Boston ZBA decisions",
+      "sourceUrl": "https://www.boston.gov/departments/inspectional-services/zoning-board-appeal-decisions"
+    },
+    {
+      "id": "boston-boa-1731956",
+      "jurisdiction": "Boston, MA",
+      "agency": "Boston Zoning Board of Appeal",
+      "case": "BOA-1731956",
+      "premises": "85 Chandler Street, Ward 05",
+      "status": "Appeal denied",
+      "year": 2025,
+      "patterns": ["approval_dependency", "code_noncompliance", "entitlement_failure"],
+      "observed": "Boston's official Zoning Board of Appeal decisions page lists BOA-1731956 at 85 Chandler Street among the denied decisions filed September 12, 2025.",
+      "lesson": "Do not price a nonconforming project as though zoning relief is already secured. A denied appeal can invalidate downstream design, schedule and acquisition assumptions.",
+      "sourceLabel": "Boston ZBA decisions",
+      "sourceUrl": "https://www.boston.gov/departments/inspectional-services/zoning-board-appeal-decisions"
+    },
+    {
+      "id": "boston-boa-1723832",
+      "jurisdiction": "Boston, MA",
+      "agency": "Boston Zoning Board of Appeal",
+      "case": "BOA1723832",
+      "premises": "1260 Boylston Street, Ward 05",
+      "status": "Appeal denied",
+      "year": 2025,
+      "patterns": ["approval_dependency", "code_noncompliance", "entitlement_failure"],
+      "observed": "Boston's official Zoning Board of Appeal decisions page lists BOA1723832 at 1260 Boylston Street among 2025 denied decisions.",
+      "lesson": "Where a use or design depends on discretionary relief, the approval branch needs its own contingency, schedule allowance and acquisition protection before capital is committed.",
+      "sourceLabel": "Boston ZBA decisions",
+      "sourceUrl": "https://www.boston.gov/departments/inspectional-services/zoning-board-appeal-decisions"
     }
   ]
 }
