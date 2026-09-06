@@ -1,9 +1,18 @@
 const {gather}=require('../lib/check-intel');
+const {fetchPpi}=require('../lib/ppi-intel');
 function send(res,status,payload,cache=false){res.statusCode=status;res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Cache-Control',cache?'public, s-maxage=1800, stale-while-revalidate=7200':'no-store');res.end(JSON.stringify(payload))}
+function refreshLabel(check){if(!check)return;check.score=Math.min(92,Math.max(0,Number(check.score)||0));check.label=check.score>=78?'STRONG CONTEXT':check.score>=62?'USEFUL, NOT COMPLETE':'NEEDS MORE EVIDENCE';check.tone=check.score>=78?'good':check.score>=62?'mid':'neutral'}
 module.exports=async function handler(req,res){
   if(!['GET','POST'].includes(req.method))return send(res,405,{ok:false,error:'Method not allowed'});
   let body=req.method==='GET'?(req.query||{}):req.body;if(typeof body==='string'){try{body=JSON.parse(body)}catch(_e){body={}}}body=body||{};
   const text=String(body.text||'').slice(0,5000),url=String(body.url||'').slice(0,1600),category=String(body.category||'auto').slice(0,40),location=String(body.location||'').slice(0,180),price=body.price;
   if(!text.trim()&&!url.trim())return send(res,400,{ok:false,error:'Paste a link, quote/listing text, or describe what you are considering.'});
-  try{const out=await gather({text,url,category,price,location});return send(res,200,out,req.method==='GET'&&!url)}catch(e){return send(res,502,{ok:false,error:String(e?.message||e||'ExpenseIntel Check could not complete.')})}
+  try{
+    const out=await gather({text,url,category,price,location});
+    if(['home','property','equipment','business-project','vehicle'].includes(out.detectedCategory)){
+      const ppi=await fetchPpi(out.detectedCategory);
+      if(ppi.ok&&ppi.signals?.length){const seen=new Set((out.evidence.signals||[]).map(x=>x.label));const add=ppi.signals.filter(x=>!seen.has(x.label)).slice(0,5).map(x=>({label:x.label,value:x.yoy,unit:'% YoY',period:x.period,source:x.source,grade:'A',latestMonth:x.latestMonth}));out.evidence.signals.push(...add);out.evidence.sourceCount=new Set(out.evidence.signals.map(x=>x.source).filter(Boolean)).size;out.evidence.producerPriceContext={period:ppi.period,note:ppi.note,signalCount:add.length};if(add.length){out.check.score+=4;out.check.signals.push('BLS producer-cost pressure connected.');refreshLabel(out.check)}}
+    }
+    return send(res,200,out,req.method==='GET'&&!url)
+  }catch(e){return send(res,502,{ok:false,error:String(e?.message||e||'ExpenseIntel Check could not complete.')})}
 };
