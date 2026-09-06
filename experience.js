@@ -1,0 +1,80 @@
+(()=>{
+  const HISTORY='ei_check_history_v2',ACTIVE='ei_active_decision';
+  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+  const clean=s=>String(s||'').replace(/\s+/g,' ').trim();
+  const money=n=>Number.isFinite(Number(n))&&Number(n)>0?new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(Number(n)):'—';
+  const read=(k,f=null)=>{try{return JSON.parse(localStorage.getItem(k)||'null')??f}catch(_e){return f}};
+  const write=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch(_e){return false}};
+  let lastCapture=null,renderQueued=false;
+
+  function normalizeKey(d){
+    const cat=d?.detectedCategory||d?.input?.category||'other',v=d?.vehicle?.identity||{};
+    if(cat==='vehicle'&&v.year&&v.make&&v.model)return `vehicle|${v.year}|${clean(v.make).toLowerCase()}|${clean(v.model).toLowerCase()}|${clean(v.trim||'').toLowerCase()}`;
+    if(cat==='property')return `property|${clean(d?.input?.location||d?.page?.title||d?.input?.text||'').toLowerCase().slice(0,150)}`;
+    let text=clean(d?.page?.title||d?.input?.text||'').toLowerCase().replace(/\$\s?[\d,.]+/g,'').replace(/\b\d{4,}\b/g,'').replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim();
+    return `${cat}|${text.slice(0,150)}`;
+  }
+  function snapshot(d){
+    const v=d?.vehicle?.identity||{},fuel=d?.vehicle?.fuel?.summary?.annualFuelCost,c=d?.comparables||{},safety=d?.vehicle?.safety||{};
+    return {id:`CHK-${Date.now().toString(36).toUpperCase()}`,key:normalizeKey(d),checkedAt:new Date().toISOString(),title:clean(d?.page?.title||d?.input?.text||[v.year,v.make,v.model,v.trim].filter(Boolean).join(' ')||'ExpenseIntel check').slice(0,160),text:clean(d?.input?.text||'').slice(0,900),url:d?.input?.url||'',category:d?.detectedCategory||'other',price:Number(d?.price)||0,location:d?.input?.location||'',score:Number(d?.check?.score)||0,status:d?.check?.label||'',unknownCount:(d?.check?.unknown||[]).length,sourceCount:Number(d?.evidence?.sourceCount)||0,marketMedian:c?.ok&&Number(c.median)?Number(c.median):null,marketConfidence:c?.confidenceLabel||'',marketConfidenceScore:Number.isFinite(Number(c?.confidenceScore))?Number(c.confidenceScore):null,marketCount:c?.numFound||c?.count||null,fuelAnnual:fuel&&Number.isFinite(Number(fuel.median))?Number(fuel.median):null,recalls:Number.isFinite(Number(safety?.recalls?.count))?Number(safety.recalls.count):null,vehicle:v&&Object.keys(v).length?v:null};
+  }
+  function storeCheck(d){
+    const current=snapshot(d),items=read(HISTORY,[])||[],previous=items.find(x=>x.key===current.key)||null;
+    const deDup=items.filter(x=>!(x.key===current.key&&Math.abs(new Date(x.checkedAt)-new Date(current.checkedAt))<15000));
+    deDup.unshift(current);write(HISTORY,deDup.slice(0,16));lastCapture={current,previous};
+    document.dispatchEvent(new CustomEvent('ei:history-updated',{detail:lastCapture}));scheduleResultEnhance();
+  }
+  function installFetchCapture(){
+    if(window.__eiExperienceFetchWrapped)return;window.__eiExperienceFetchWrapped=true;
+    const original=window.fetch.bind(window);
+    window.fetch=async(...args)=>{const response=await original(...args);try{const url=typeof args[0]==='string'?args[0]:args[0]?.url||'';if(/\/api\/check(?:\?|$)/.test(url))response.clone().json().then(d=>{if(d?.ok)storeCheck(d)}).catch(()=>{})}catch(_e){}return response};
+  }
+  function activeFromSnapshot(x){return {title:x.title,text:x.text||x.title,url:x.url||'',category:x.category||'auto',price:x.price||0,location:x.location||'',vehicle:x.vehicle||null,updatedAt:new Date().toISOString()}}
+  function setActive(x){if(x)write(ACTIVE,activeFromSnapshot(x))}
+  function formatWhen(iso){const d=new Date(iso),diff=Date.now()-d.getTime(),mins=Math.round(diff/60000);if(mins<2)return'just now';if(mins<60)return`${mins} min ago`;const hrs=Math.round(mins/60);if(hrs<24)return`${hrs} hr${hrs===1?'':'s'} ago`;const days=Math.round(hrs/24);if(days<7)return`${days} day${days===1?'':'s'} ago`;return d.toLocaleDateString()}
+  function statusFriendly(s){s=clean(s).toUpperCase();if(s.includes('STRONG'))return'Strong context';if(s.includes('USEFUL'))return'Useful, some gaps';if(s.includes('NEEDS'))return'Early check';return clean(s)||'Checked'}
+
+  function makeIntakeHuman(){
+    if(!(location.pathname==='/'||location.pathname.startsWith('/check/')))return;
+    const tabs=$('.check-tabs');if(tabs){const describe=$('[data-mode="describe"]',tabs),link=$('[data-mode="link"]',tabs),quote=$('[data-mode="quote"]',tabs);[describe,link,quote].filter(Boolean).forEach(x=>tabs.appendChild(x));if(describe)describe.textContent='Describe it';if(link)link.textContent='Paste a link';if(quote)quote.textContent='Paste a quote'}
+    const box=$('.check-box-head span');if(box)box.textContent='Tell ExpenseIntel what you are considering';
+    const note=$('.check-note');if(note)note.innerHTML='<strong>Just tell it once:</strong> put the price, location, size, trim or scope in your sentence if you know them. ExpenseIntel extracts those details and only asks again when something important is genuinely missing.';
+    const text=$('#check-text');if(text)text.placeholder='Example: I got a $15,000 quote to paint the exterior of my 4,500 sq ft house in Chicago. Is that fair?';
+    const active=read(ACTIVE,null),url=$('#check-url')?.value||active?.url||'';if(!url){setTimeout(()=>{const d=$('[data-mode="describe"]');if(d&&!d.classList.contains('active'))d.click()},30)}
+  }
+
+  function continueStrip(){
+    if(!(location.pathname==='/'||location.pathname.startsWith('/check/'))||$('.ei-continue-strip'))return;
+    const items=read(HISTORY,[])||[],a=read(ACTIVE,null),last=items[0];if(!a&&!last)return;const src=a?{title:a.title||a.text,price:a.price,location:a.location,category:a.category,checkedAt:a.updatedAt}:last;
+    const hero=$('.check-hero');if(!hero)return;const el=document.createElement('section');el.className='ei-continue-strip';el.innerHTML='<div class="shell"><div class="ei-continue-copy"><span>Continue where you left off</span><strong></strong><small></small></div><div class="ei-continue-actions"><button type="button" data-ei-continue>Continue →</button><button type="button" class="quiet" data-ei-fresh>Start fresh</button></div></div>';$('.ei-continue-copy strong',el).textContent=clean(src.title||'Your last decision').slice(0,120);$('.ei-continue-copy small',el).textContent=[src.price?money(src.price):'',src.location||'',src.checkedAt?formatWhen(src.checkedAt):''].filter(Boolean).join(' · ');$('[data-ei-continue]',el).onclick=()=>{if(last&&!a)setActive(last);if(location.pathname!=='/check/'&&location.pathname!=='/')location.href='/check/';else{$('#check-form')?.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>$('#check-text,#check-url')?.focus(),350)}};$('[data-ei-fresh]',el).onclick=()=>{try{localStorage.removeItem(ACTIVE)}catch(_e){}['check-url','check-text','check-price','check-location'].forEach(id=>{const n=$(`#${id}`);if(n){n.value='';delete n.dataset.userEdited;delete n.dataset.autoFilled}});const cat=$('#check-category');if(cat)cat.value='auto';$('[data-mode="describe"]')?.click();el.remove();$('#check-text')?.focus()};hero.insertAdjacentElement('beforebegin',el)
+  }
+
+  function recentRail(){
+    if(!(location.pathname==='/'||location.pathname.startsWith('/check/'))||$('.ei-recent-rail'))return;const items=(read(HISTORY,[])||[]).slice(0,3);if(!items.length)return;const hero=$('.check-hero');if(!hero)return;const rail=document.createElement('section');rail.className='ei-recent-rail';rail.innerHTML='<div class="shell"><div class="ei-recent-head"><span>Recent checks in this browser</span><a href="/watch/">View history →</a></div><div class="ei-recent-grid"></div></div>';const grid=$('.ei-recent-grid',rail);items.forEach(x=>{const b=document.createElement('button');b.type='button';b.className='ei-recent-card';b.innerHTML='<span></span><strong></strong><small></small>';b.querySelector('span').textContent=statusFriendly(x.status);b.querySelector('strong').textContent=clean(x.title||'Decision').slice(0,85);b.querySelector('small').textContent=[x.price?money(x.price):'',formatWhen(x.checkedAt)].filter(Boolean).join(' · ');b.onclick=()=>{setActive(x);location.href='/check/'};grid.appendChild(b)});hero.insertAdjacentElement('afterend',rail)
+  }
+
+  function changeRows(cur,prev){
+    const rows=[];const add=(label,a,b,fmt=x=>String(x),positiveNeutral=false)=>{if(a==null||b==null||Number(a)===Number(b))return;const delta=Number(a)-Number(b),direction=delta>0?'up':'down';rows.push({label,now:fmt(a),before:fmt(b),delta,direction,positiveNeutral})};
+    add('Price',cur.price||null,prev.price||null,money);add('Evidence coverage',cur.score,prev.score,x=>`${Math.round(x)}/100`,true);add('Market median',cur.marketMedian,prev.marketMedian,money);add('Known annual fuel',cur.fuelAnnual,prev.fuelAnnual,money);add('Recall campaigns',cur.recalls,prev.recalls,x=>String(x));add('Unresolved layers',cur.unknownCount,prev.unknownCount,x=>String(x),true);return rows
+  }
+  function changePanel(){
+    const shell=$('[data-check-output] .shell');if(!shell||!lastCapture?.previous||shell.querySelector('.ei-since-last'))return;const rows=changeRows(lastCapture.current,lastCapture.previous);if(!rows.length)return;const anchor=$('.ei-everyday-summary',shell)||$('.check-output-top',shell);if(!anchor)return;const p=document.createElement('section');p.className='ei-since-last';p.innerHTML='<div class="ei-since-head"><div><span>Since your last check</span><strong></strong></div><small></small></div><div class="ei-since-grid"></div>';p.querySelector('.ei-since-head strong').textContent=clean(lastCapture.current.title).slice(0,110);p.querySelector('.ei-since-head small').textContent=`Previous check ${formatWhen(lastCapture.previous.checkedAt)} · browser-local comparison`;const grid=$('.ei-since-grid',p);rows.slice(0,4).forEach(r=>{const d=document.createElement('div');d.innerHTML='<span></span><strong></strong><small></small>';d.querySelector('span').textContent=r.label;d.querySelector('strong').textContent=r.now;d.querySelector('small').textContent=`was ${r.before}`;grid.appendChild(d)});anchor.insertAdjacentElement('afterend',p)
+  }
+  function resultSummaryText(){
+    const title=clean($('[data-result-title]')?.textContent),call=clean($('[data-decision-call]')?.textContent||$('.ei-summary-head strong')?.textContent),reason=clean($('[data-decision-reason]')?.textContent||$('.ei-summary-head p')?.textContent),next=clean($('.ei-next-step strong')?.textContent||$('[data-result-next] strong')?.textContent),complete=clean($('.ei-summary-head aside b')?.textContent||$('[data-result-score]')?.textContent);const metrics=$$('.decision-command-grid>div').slice(0,4).map(x=>`${clean($('span',x)?.textContent)}: ${clean($('strong',x)?.textContent)}`).filter(Boolean);return [`ExpenseIntel — ${title||'Decision check'}`,call?`Call: ${call}`:'',reason,metrics.length?metrics.join(' · '):'',complete?`Evidence: ${complete}`:'',next?`Next: ${next}`:'','Checked at expenseintel.com'].filter(Boolean).join('\n')
+  }
+  async function copyText(text,btn){try{await navigator.clipboard.writeText(text);if(btn){const old=btn.textContent;btn.textContent='Copied ✓';setTimeout(()=>btn.textContent=old,1600)}}catch(_e){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}}
+  function resultActions(){
+    const shell=$('[data-check-output] .shell');if(!shell||shell.querySelector('.ei-result-utilities')||!$('.ei-everyday-summary',shell))return;const bar=document.createElement('div');bar.className='ei-result-utilities';bar.innerHTML='<span>Keep this decision useful</span><div><button type="button" data-copy>Copy summary</button><button type="button" data-share>Share</button><a href="/watch/">Recent & watched →</a></div>';bar.querySelector('[data-copy]').onclick=e=>copyText(resultSummaryText(),e.currentTarget);bar.querySelector('[data-share]').onclick=async e=>{const text=resultSummaryText();if(navigator.share){try{await navigator.share({title:'ExpenseIntel decision check',text,url:location.href});return}catch(_e){}}copyText(text,e.currentTarget)};const summary=$('.ei-everyday-summary',shell);summary.insertAdjacentElement('beforebegin',bar)
+  }
+  function scheduleResultEnhance(){if(renderQueued)return;renderQueued=true;setTimeout(()=>{renderQueued=false;changePanel();resultActions()},80)}
+  function watchResult(){const out=$('[data-check-output]');if(!out)return;const o=new MutationObserver(scheduleResultEnhance);o.observe(out,{subtree:true,childList:true});scheduleResultEnhance()}
+
+  function watchHistory(){
+    if(!location.pathname.startsWith('/watch/')||$('.ei-check-history'))return;const host=$('.watch-work .shell');if(!host)return;const firstTitle=$('.watch-section-title',host);const section=document.createElement('section');section.className='ei-check-history';section.innerHTML='<div class="watch-section-title"><div><div class="section-no">Recent checks</div><h2>Your decision history</h2></div><p>Automatic browser-local history makes returning useful without pretending ExpenseIntel is monitoring prices in the background.</p></div><div class="ei-history-toolbar"><span data-history-count></span><button type="button" data-clear-history>Clear recent checks</button></div><div class="ei-history-list"></div>';if(firstTitle)host.insertBefore(section,firstTitle);else host.appendChild(section);
+    const render=()=>{const items=read(HISTORY,[])||[],list=$('.ei-history-list',section);$('[data-history-count]',section).textContent=`${items.length} recent check${items.length===1?'':'s'} stored in this browser`;list.innerHTML='';if(!items.length){list.innerHTML='<div class="ei-history-empty"><strong>No recent checks yet.</strong><span>Run ExpenseIntel Check and the result will appear here automatically.</span><a href="/check/">Run a check →</a></div>';return}items.slice(0,10).forEach(x=>{const card=document.createElement('article');card.className='ei-history-card';card.innerHTML='<div class="ei-history-main"><span></span><strong></strong><small></small></div><div class="ei-history-metrics"></div><div class="ei-history-actions"><button type="button" data-run>Re-run</button><button type="button" data-copy>Copy</button><button type="button" data-remove>Remove</button></div>';card.querySelector('.ei-history-main span').textContent=`${statusFriendly(x.status)} · ${formatWhen(x.checkedAt)}`;card.querySelector('.ei-history-main strong').textContent=x.title;card.querySelector('.ei-history-main small').textContent=[x.category?.replace(/-/g,' '),x.location].filter(Boolean).join(' · ');const m=card.querySelector('.ei-history-metrics'),vals=[['PRICE',x.price?money(x.price):'—'],['COVERAGE',x.score?`${Math.round(x.score)}/100`:'—'],['MARKET',x.marketMedian?money(x.marketMedian):'Not verified']];m.innerHTML=vals.map(([a,b])=>`<div><span>${a}</span><strong>${b}</strong></div>`).join('');card.querySelector('[data-run]').onclick=()=>{setActive(x);location.href='/check/'};card.querySelector('[data-copy]').onclick=e=>copyText(`${x.title}\nPrice: ${x.price?money(x.price):'not verified'}\nEvidence coverage: ${x.score||0}/100\nMarket: ${x.marketMedian?money(x.marketMedian):'not verified'}\nChecked ${new Date(x.checkedAt).toLocaleString()} · ExpenseIntel`,e.currentTarget);card.querySelector('[data-remove]').onclick=()=>{write(HISTORY,(read(HISTORY,[])||[]).filter(y=>y.id!==x.id));render()};list.appendChild(card)})};$('[data-clear-history]',section).onclick=()=>{if(confirm('Clear recent ExpenseIntel check history from this browser?')){write(HISTORY,[]);render()}};render();document.addEventListener('ei:history-updated',render)
+  }
+
+  function init(){if(document.documentElement.dataset.eiExperienceReady==='1')return;document.documentElement.dataset.eiExperienceReady='1';installFetchCapture();makeIntakeHuman();continueStrip();recentRail();watchResult();watchHistory()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
