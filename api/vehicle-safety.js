@@ -1,0 +1,12 @@
+const {fetchRecalls,fetchComplaints,fetchSafetyRatings}=require('../lib/vehicle-intel');
+function send(res,status,payload,cache=true){res.statusCode=status;res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Cache-Control',cache?'public, s-maxage=21600, stale-while-revalidate=86400':'no-store');res.end(JSON.stringify(payload))}
+module.exports=async function handler(req,res){
+  if(req.method!=='GET')return send(res,405,{ok:false,error:'Method not allowed'},false);
+  const year=String(req.query?.year||'').trim(),make=String(req.query?.make||'').trim(),model=String(req.query?.model||'').trim();
+  if(!year||!make||!model)return send(res,400,{ok:false,error:'Year, make and model are required'},false);
+  const [recalls,complaints,ratings]=await Promise.all([fetchRecalls({year,make,model}),fetchComplaints({year,make,model,limit:35}),fetchSafetyRatings({year,make,model})]);
+  const ok=!!(recalls.ok||complaints.ok||ratings.ok);
+  const recallComponents=(recalls.recalls||[]).reduce((m,r)=>{const k=r.component||'Other';m[k]=(m[k]||0)+1;return m},{});
+  const crashReports=(complaints.complaints||[]).filter(x=>x.crash).length,fireReports=(complaints.complaints||[]).filter(x=>x.fire).length,injuries=(complaints.complaints||[]).reduce((n,x)=>n+(Number(x.injuries)||0),0);
+  return send(res,ok?200:502,{ok,query:{year,make,model},recalls:recalls.ok?recalls:null,complaints:complaints.ok?complaints:null,ratings:ratings.ok?ratings:null,summary:{recallCampaigns:recalls.ok?recalls.count:null,recallComponents,complaintReports:complaints.ok?complaints.count:null,crashReports:complaints.ok?crashReports:null,fireReports:complaints.ok?fireReports:null,reportedInjuries:complaints.ok?injuries:null,ratedVariants:ratings.ok?ratings.count:null,overallRatings:ratings.ok?[...new Set((ratings.variants||[]).map(x=>x.overall).filter(Boolean))]:[]},coverage:{recalls:!!recalls.ok,complaints:!!complaints.ok,ratings:!!ratings.ok},errors:[recalls.error,complaints.error,ratings.error].filter(Boolean),methodology:{warning:'Recall and complaint counts are model-level federal records, not a reliability probability. Complaint volume is not normalized for vehicles sold or miles driven. A model-level recall does not show whether a particular VIN has already been repaired. NHTSA crash ratings are shown only when a rated variant is returned.'}});
+};
