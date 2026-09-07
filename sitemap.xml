@@ -2,6 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://www.expenseintel.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://www.expenseintel.com/check/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://www.expenseintel.com/costlab/</loc><changefreq>weekly</changefreq><priority>0.98</priority></url>
   <url><loc>https://www.expenseintel.com/twin/</loc><changefreq>weekly</changefreq><priority>0.98</priority></url>
   <url><loc>https://www.expenseintel.com/total-cost-of-ownership-calculator/</loc><changefreq>monthly</changefreq><priority>0.94</priority></url>
   <url><loc>https://www.expenseintel.com/property-cost-estimator/</loc><changefreq>monthly</changefreq><priority>0.92</priority></url>
