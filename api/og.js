@@ -48,71 +48,74 @@ function line(raw, width, x0, y0, x1, y1, color, thickness = 3) {
 function makePng() {
   const width = 1200, height = 630;
   const raw = Buffer.alloc(height * (width * 4 + 1));
-  const paper = [247, 244, 238, 255];
-  const ink = [21, 21, 21, 255];
-  const burgundy = [111, 41, 52, 255];
-  const gray = [105, 98, 92, 255];
+  const paper = [243, 240, 232, 255];
+  const ink = [17, 20, 17, 255];
+  const lime = [168, 255, 47, 255];
+  const gray = [107, 112, 103, 255];
+  const pale = [225, 222, 212, 255];
 
   for (let y = 0; y < height; y++) {
     raw[y * (width * 4 + 1)] = 0;
     rect(raw, width, 0, y, width, 1, paper);
   }
 
-  rect(raw, width, 0, 0, 88, height, ink);
-  rect(raw, width, 0, 0, 8, height, burgundy);
+  // Identity rail.
+  rect(raw, width, 0, 0, 94, height, ink);
+  rect(raw, width, 0, 0, 8, height, lime);
+  rect(raw, width, 24, 228, 44, 10, paper);
+  rect(raw, width, 24, 228, 10, 76, paper);
+  rect(raw, width, 24, 260, 35, 9, paper);
+  rect(raw, width, 24, 294, 44, 10, paper);
+  rect(raw, width, 72, 228, 9, 76, lime);
 
-  // EI monogram in the dark rail.
-  rect(raw, width, 23, 226, 42, 10, paper);
-  rect(raw, width, 23, 226, 10, 74, paper);
-  rect(raw, width, 23, 258, 34, 9, paper);
-  rect(raw, width, 23, 290, 42, 10, paper);
-  rect(raw, width, 68, 226, 9, 74, burgundy);
+  // Editorial EI mark.
+  rect(raw, width, 152, 154, 26, 196, ink);
+  rect(raw, width, 152, 154, 230, 26, ink);
+  rect(raw, width, 152, 238, 196, 22, ink);
+  rect(raw, width, 152, 324, 230, 26, ink);
+  rect(raw, width, 420, 154, 26, 196, lime);
+  rect(raw, width, 152, 392, 294, 7, lime);
 
-  // Large editorial mark: E and I built from geometric strokes.
-  rect(raw, width, 160, 170, 28, 210, ink);
-  rect(raw, width, 160, 170, 260, 28, ink);
-  rect(raw, width, 160, 260, 220, 24, ink);
-  rect(raw, width, 160, 352, 260, 28, ink);
-  rect(raw, width, 458, 170, 28, 210, burgundy);
+  // Decision Passport: eight lenses connected to one decision spine.
+  rect(raw, width, 565, 106, 510, 418, ink);
+  rect(raw, width, 566, 107, 508, 416, [22, 25, 20, 255]);
+  rect(raw, width, 600, 140, 3, 345, gray);
+  const ys = [154, 196, 238, 280, 322, 364, 406, 448];
+  for (let i = 0; i < ys.length; i++) {
+    const y = ys[i];
+    rect(raw, width, 596, y, 11, 11, i === 0 ? lime : pale);
+    line(raw, width, 607, y + 5, 650, y + 5, i === 0 ? lime : gray, 2);
+    rect(raw, width, 660, y - 4, 138 + (i % 3) * 18, 18, i === 0 ? lime : [49, 54, 46, 255]);
+    rect(raw, width, 824, y, 205 - (i % 2) * 34, 9, [82, 88, 78, 255]);
+  }
+  rect(raw, width, 660, 476, 365, 2, gray);
+  rect(raw, width, 660, 494, 124, 12, lime);
+  rect(raw, width, 796, 494, 229, 12, [66, 72, 63, 255]);
 
-  // Cost / forecast graphic.
-  line(raw, width, 620, 370, 720, 330, gray, 5);
-  line(raw, width, 720, 330, 810, 350, gray, 5);
-  line(raw, width, 810, 350, 900, 260, burgundy, 7);
-  line(raw, width, 900, 260, 1010, 285, burgundy, 7);
-  line(raw, width, 1010, 285, 1110, 205, burgundy, 7);
-  rect(raw, width, 618, 368, 9, 9, gray);
-  rect(raw, width, 716, 326, 9, 9, gray);
-  rect(raw, width, 806, 346, 9, 9, gray);
-  rect(raw, width, 896, 256, 11, 11, burgundy);
-  rect(raw, width, 1006, 281, 11, 11, burgundy);
-  rect(raw, width, 1106, 201, 11, 11, burgundy);
-
-  // Bottom rule and small visual bars.
-  rect(raw, width, 160, 462, 950, 2, ink);
-  rect(raw, width, 160, 500, 170, 22, burgundy);
-  rect(raw, width, 350, 500, 120, 22, ink);
-  rect(raw, width, 490, 500, 220, 22, gray);
+  // Small framing rules.
+  rect(raw, width, 152, 472, 294, 2, ink);
+  rect(raw, width, 152, 494, 112, 15, ink);
+  rect(raw, width, 276, 494, 76, 15, gray);
+  rect(raw, width, 364, 494, 82, 15, lime);
 
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(width, 0);
   ihdr.writeUInt32BE(height, 4);
-  ihdr[8] = 8;  // bit depth
-  ihdr[9] = 6;  // RGBA
+  ihdr[8] = 8;
+  ihdr[9] = 6;
   ihdr[10] = 0; ihdr[11] = 0; ihdr[12] = 0;
 
-  const png = Buffer.concat([
+  return Buffer.concat([
     Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
     chunk('IHDR', ihdr),
     chunk('IDAT', zlib.deflateSync(raw, { level: 9 })),
     chunk('IEND', Buffer.alloc(0)),
   ]);
-  return png;
 }
 
 module.exports = function handler(req, res) {
   const png = makePng();
   res.setHeader('Content-Type', 'image/png');
-  res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800, immutable');
+  res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800');
   res.status(200).send(png);
 };
