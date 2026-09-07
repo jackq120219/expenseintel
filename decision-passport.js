@@ -1,6 +1,7 @@
 (()=>{
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
   const ACTIVE='ei_active_decision', PASSPORT='ei_decision_passport_v1';
+  let liveSignature='';
   const clean=s=>String(s||'').replace(/\s+/g,' ').trim();
   const money=n=>Number(n)>0?new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(Number(n)):'—';
   const readActive=()=>{try{return JSON.parse(localStorage.getItem(ACTIVE)||'null')}catch(_e){return null}};
@@ -18,12 +19,14 @@
     {key:'evidence',num:'08',label:'Evidence',question:'How much of the answer is actually known?',copy:'Connected evidence, user facts, modeled scenarios and unknowns stay separate. The evidence layer is the foundation beneath every other lens.',action:'/data/',actionLabel:'Inspect evidence'}
   ];
 
+  function resetDefaultRunLabel(){const run=$('.check-run span');if(run&&/^Run ExpenseIntel Check$/i.test(clean(run.textContent)))run.textContent='Build my Decision Passport'}
   function reshape(){
     if(!(location.pathname==='/'||location.pathname.startsWith('/check/')))return;
     const hero=$('.check-hero'); if(!hero)return;
     const kicker=$('.kicker',hero); if(kicker)kicker.textContent='One decision. One passport.';
     const p=$('h1+p',hero); if(p)p.textContent='Give ExpenseIntel a meaningful spending decision before you commit. It builds a Decision Passport around the price, true cost, exposure, timing, changeability, alternatives, exit and evidence—then tells you what still deserves attention.';
     const promises=$('.check-promises',hero); if(promises)promises.innerHTML='<span>PRICE</span><span>TRUE COST</span><span>EXPOSURE</span><span>TIMING</span><span>EXIT</span><span>EVIDENCE</span>';
+    resetDefaultRunLabel();$$('[data-mode]',hero).forEach(b=>b.addEventListener('click',()=>setTimeout(resetDefaultRunLabel,0)));
     const how=$('.check-how'); if(how){const cards=$$('article',how);const copy=[['01 / DESCRIBE','Name the commitment.','A link, quote, address or plain-English description is enough. ExpenseIntel identifies what it can before asking for anything else.'],['02 / BUILD','Create the passport.','The decision is organized across price, cost, exposure, timing, alternatives, exit and evidence so important consequences do not live in separate tabs.'],['03 / DECIDE','See the next move.','ExpenseIntel shows what is strong, what is fragile and which deeper engine is worth opening only when it can change the decision.']];cards.forEach((c,i)=>{if(!copy[i])return;const s=$('span',c),h=$('h3',c),p=$('p',c);if(s)s.textContent=copy[i][0];if(h)h.textContent=copy[i][1];if(p)p.textContent=copy[i][2]})}
     const deep=$('.check-deep'); if(deep){const no=$('.section-no',deep),h=$('h2',deep),p=$('.check-deep-head>p',deep);if(no)no.textContent='Engines behind the passport';if(h)h.innerHTML='One case. Deeper engines only when they <em>change the answer.</em>';if(p)p.textContent='Fair Price, TrueCost, X-Ray, Timing, Project Intel and Watch are specialist engines inside the same decision—not six separate products you have to understand first.';deep.classList.add('ei-passport-engines')}
   }
@@ -62,9 +65,11 @@
 
   function buildLive(){
     const root=$('[data-check-output] .shell');if(!root||!$('[data-decision-call]',root))return;
-    const existing=$('.ei-live-passport',root);if(existing)existing.remove();
-    const d=liveData(root),states=lensState(d),title=clean(d.a.title||d.a.text||$('[data-result-title]',root)?.textContent||'Active decision'),id='EI-'+hash([title,d.a.price,d.a.location].join('|'));
-    const box=document.createElement('section');box.className='ei-live-passport';
+    const d=liveData(root),title=clean(d.a.title||d.a.text||$('[data-result-title]',root)?.textContent||'Active decision'),signature=[title,d.a.price,d.a.location,d.call,d.score,d.scoreLabel,d.market,d.outlay,d.unknowns.join('|'),d.evidence.length].join('~'),existing=$('.ei-live-passport',root);
+    if(existing&&signature===liveSignature)return;
+    liveSignature=signature;if(existing)existing.remove();
+    const states=lensState(d),id='EI-'+hash([title,d.a.price,d.a.location].join('|'));
+    const box=document.createElement('section');box.className='ei-live-passport';box.dataset.signature=signature;
     box.innerHTML=`<div class="ei-live-passport-head"><div class="ei-live-passport-title"><span>Decision Passport / Live case</span><strong>${escapeHtml(title)}</strong></div><div class="ei-live-passport-id"><span>Local decision ID</span><b>${id}</b></div></div><div class="ei-live-passport-core"><nav class="ei-live-passport-nav" aria-label="Decision Passport lenses">${model.map((x,i)=>`<button type="button" class="${i===0?'active':''}" data-live-lens="${x.key}"><b>${x.num}</b><strong>${x.label}</strong></button>`).join('')}</nav><div class="ei-live-passport-panel"><div class="ei-live-passport-meta"><span>What this lens says now</span><b data-live-status></b></div><div class="ei-live-passport-body"><div><h3 data-live-title></h3><p data-live-copy></p></div><div class="ei-live-passport-value"><span>Current readout</span><strong data-live-value></strong><small data-live-small></small></div></div><div class="ei-live-passport-foot"><span data-live-foot></span><a data-live-action href="/fairprice/"></a></div></div></div>`;
     const anchor=$('.ei-inline-question',root)||$('.ei-everyday-summary',root)||$('.check-output-top',root);anchor?.insertAdjacentElement('afterend',box);
     const set=key=>{const x=model.find(v=>v.key===key)||model[0],s=states[x.key];$$('[data-live-lens]',box).forEach(b=>b.classList.toggle('active',b.dataset.liveLens===x.key));$('[data-live-status]',box).textContent=s.status;$('[data-live-title]',box).textContent=x.question;$('[data-live-copy]',box).textContent=x.copy;$('[data-live-value]',box).textContent=s.value;$('[data-live-small]',box).textContent=s.note;$('[data-live-foot]',box).textContent=x.key==='evidence'?'Evidence is the foundation beneath every other lens.':`Passport lens ${x.num} / ${x.label}`;const a=$('[data-live-action]',box);a.href=s.action;a.textContent=s.actionLabel+' →'};
@@ -73,7 +78,7 @@
   }
 
   function escapeHtml(s){return String(s||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
-  function watch(){const out=$('[data-check-output]');if(!out)return;let timer;const run=()=>{clearTimeout(timer);timer=setTimeout(buildLive,60)};new MutationObserver(run).observe(out,{subtree:true,childList:true,characterData:true});run()}
+  function watch(){const out=$('[data-check-output]');if(!out)return;let timer;const run=()=>{clearTimeout(timer);timer=setTimeout(buildLive,60)};const obs=new MutationObserver(ms=>{const external=ms.some(m=>{const el=m.target.nodeType===3?m.target.parentElement:m.target;return !el?.closest?.('.ei-live-passport')});if(external)run()});obs.observe(out,{subtree:true,childList:true,characterData:true});run()}
   function init(){reshape();overview();watch()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
