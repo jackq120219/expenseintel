@@ -1,0 +1,79 @@
+/* ExpenseIntel clarity pass — hierarchy, brightness, stable motion, useful navigation */
+:root{--ei-result:#20241d;--ei-result-card:#292e25;--ei-result-card-2:#242920;--ei-result-line:#747b6f;--ei-result-muted:#c3c8bd;--ei-lime:#b8ff3f}
+
+/* Keep the product readable before adding spectacle. */
+.check-output-wrap{background:var(--ei-result)!important;color:#f6f2e9!important;padding-top:56px!important;padding-bottom:64px!important}
+.check-output-wrap .check-output-top{border-color:#8b9187!important}
+.check-output-wrap .check-output-top p,.check-output-wrap .check-source-note{color:#c2c7bd!important}
+.check-output-wrap .check-card{background:var(--ei-result-card)!important;border-color:var(--ei-result-line)!important}
+.check-output-wrap .check-card-head,.check-output-wrap .check-facts,.check-output-wrap .check-evidence article,.check-output-wrap .vehicle-flags,.check-output-wrap .vehicle-facts>div{border-color:#596055!important}
+.check-output-wrap .check-facts span,.check-output-wrap .vehicle-facts span,.check-output-wrap .check-evidence span{color:#aeb5a9!important}
+.check-output-wrap .check-facts small,.check-output-wrap .vehicle-facts small,.check-output-wrap .check-evidence small,.check-output-wrap .vehicle-flags p,.check-output-wrap .check-unknown,.check-output-wrap .check-next p{color:#c5cabf!important}
+.check-output-wrap .check-next{background:#1b1f18!important;border-color:#798075!important}
+.check-output-wrap .decision-command{background:#1b1f18!important;border-color:#7c8377!important}
+.check-output-wrap .decision-meaning{background:#2c3128!important}
+.check-output-wrap .check-actions a{border-color:#939a8d!important}
+
+/* The metrics block used to fade to 55% while repeatedly rerendering. Keep it stable and lower in the hierarchy. */
+.ei-metrics-lab{margin:18px 0;border:1px solid #697066;background:#151813;color:var(--paper);overflow:hidden;box-shadow:none}
+.ei-metrics-lab .ei-viz-stage{background:#fbf8ef!important;color:#171914!important}
+.ei-metrics-lab .ei-viz-stage.is-changing{animation:eiMetricSwitch .18s ease both!important}
+@keyframes eiMetricSwitch{from{opacity:.9;transform:translateY(3px)}to{opacity:1;transform:none}}
+.ei-metrics-lab .ei-ring-value{filter:none!important}
+
+/* Fixed active-decision dock: no text can sit over controls and every action stays clickable. */
+.active-decision-dock{left:50%!important;right:auto!important;bottom:16px!important;top:auto!important;transform:translateX(-50%)!important;width:min(960px,calc(100vw - 36px))!important;max-width:calc(100vw - 36px)!important;grid-template-columns:minmax(0,1fr) max-content!important;gap:14px!important;padding:10px 11px!important;background:#171a15!important;border:1px solid #747b6f!important;box-shadow:0 18px 48px rgba(8,10,7,.3)!important;overflow:hidden!important;isolation:isolate}
+.active-decision-dock .ead-copy{min-width:0!important;overflow:hidden!important;pointer-events:none!important}
+.active-decision-dock .ead-copy>div:last-child{min-width:0!important;overflow:hidden!important}
+.active-decision-dock .ead-copy strong{display:block!important;max-width:100%!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;line-height:1.25!important}
+.active-decision-dock .ead-copy small{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;color:#b8bdb3!important}
+.active-decision-dock .ead-actions{position:relative!important;z-index:3!important;display:flex!important;gap:6px!important;align-items:center!important;background:#171a15!important;min-width:max-content!important;pointer-events:auto!important}
+.active-decision-dock .ead-actions a,.active-decision-dock .ead-actions button{position:relative!important;z-index:4!important;pointer-events:auto!important;min-height:38px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;border-color:#7d8578!important;background:#1d211a!important;color:#f4f0e8!important;white-space:nowrap!important;text-decoration:none!important}
+.active-decision-dock .ead-actions a:hover,.active-decision-dock .ead-actions a:focus-visible,.active-decision-dock .ead-actions button:hover,.active-decision-dock .ead-actions button:focus-visible{background:var(--lime)!important;color:#171914!important;border-color:var(--lime)!important}
+.active-decision-dock .ead-actions a.primary{background:var(--lime)!important;color:#171914!important;border-color:var(--lime)!important}
+
+/* A useful post-check map instead of another decorative animation. */
+.ei-workspace-nav{position:sticky;top:var(--ei-nav-bottom,68px);z-index:65;margin:0 0 18px;border:1px solid #747b6f;background:rgba(27,31,24,.97);color:#f2eee6;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;box-shadow:0 10px 26px rgba(9,11,8,.16)}
+.ei-workspace-nav>span{padding:11px 12px;font:800 7px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#aeb5aa;border-right:1px solid #555c51}
+.ei-workspace-track{display:flex;align-items:center;gap:4px;padding:6px 0;overflow:auto;scrollbar-width:none}.ei-workspace-track::-webkit-scrollbar{display:none}
+.ei-workspace-track button{position:relative;border:0;background:transparent;color:#9fa69a;padding:7px 10px;font:800 7px var(--mono);letter-spacing:.05em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+.ei-workspace-track button:before{content:'';display:inline-block;width:6px;height:6px;border:1px solid #777f72;border-radius:50%;margin-right:7px;vertical-align:0}
+.ei-workspace-track button.active{color:#fff}.ei-workspace-track button.active:before,.ei-workspace-track button.done:before{background:var(--lime);border-color:var(--lime);box-shadow:0 0 0 3px rgba(184,255,63,.12)}
+.ei-workspace-progress{width:88px;height:3px;background:#3d4439;margin-right:12px;overflow:hidden}.ei-workspace-progress i{display:block;width:100%;height:100%;background:var(--lime);transform:scaleX(0);transform-origin:left center;transition:transform .14s linear}
+
+/* One-time scanner: visible, purposeful, and never loops. */
+.check-output-wrap.ei-result-arrived{position:relative;overflow:clip}
+.check-output-wrap.ei-result-arrived:before{content:'';position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,transparent 0%,var(--lime) 42%,#fff 50%,var(--lime) 58%,transparent 100%);transform:translateX(-100%);pointer-events:none;z-index:3;animation:eiResultScan 1.05s cubic-bezier(.2,.75,.2,1) 1 both}
+@keyframes eiResultScan{to{transform:translateX(100%)}}
+
+/* Compact the marketing explanation instead of forcing a long scroll on every visit. */
+.ei-product-map{border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);background:#eeeae1}
+.ei-product-map>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:18px max(24px,calc((100vw - 1240px)/2));font:800 9px var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.ei-product-map>summary::-webkit-details-marker{display:none}.ei-product-map>summary:after{content:'+';font-size:18px}.ei-product-map[open]>summary:after{content:'−'}
+.ei-product-map>summary span{color:#68705f}.ei-product-map>summary b{font:400 22px/1.15 var(--serif);text-transform:none;letter-spacing:-.02em}
+.ei-product-map .check-how{padding:44px 0 24px!important}.ei-product-map .check-deep{padding:32px 0 52px!important;border-top:0!important}
+.ei-product-map .check-how-grid article{min-height:160px!important}.ei-product-map .check-how h3{margin-top:22px!important}
+
+/* A clear bridge to the two action engines. */
+.ei-action-bridge{margin:18px 0;border:1px solid #7b8376;background:#f4f0e8;color:#171914;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:18px;padding:14px 16px}
+.ei-action-bridge span{display:block;font:800 7px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#65705a}.ei-action-bridge strong{display:block;margin-top:4px;font:400 22px/1.05 var(--serif)}
+.ei-action-bridge nav{display:flex;gap:7px;flex-wrap:wrap}.ei-action-bridge a{border:1px solid #171914;padding:9px 11px;text-decoration:none;color:#171914;font:800 8px var(--mono);text-transform:uppercase}.ei-action-bridge a:first-child{background:var(--lime)}.ei-action-bridge a:hover{background:#171914;color:#f4f0e8}
+
+/* Navigation is a product map, not a page inventory. */
+.navlinks{align-items:center}.navlinks a{white-space:nowrap}.navlinks a[href="/twin/"]{position:relative}.navlinks a[href="/twin/"]:before{content:'';width:5px;height:5px;border-radius:50%;background:var(--lime);display:inline-block;margin-right:6px;vertical-align:1px;box-shadow:0 0 0 3px rgba(184,255,63,.12)}
+
+/* Useful motion: movement always maps to state. */
+@media(prefers-reduced-motion:no-preference){
+  .ei-workspace-track button{transition:color .16s ease,transform .16s ease}.ei-workspace-track button:hover{transform:translateY(-1px);color:#fff}
+  .ei-action-bridge a{transition:background .16s ease,color .16s ease,transform .16s ease}.ei-action-bridge a:hover{transform:translateY(-1px)}
+  .ei-live-passport-nav button.active,.ei-passport-lens.active{animation:eiLensLock .28s cubic-bezier(.2,.8,.2,1)}
+  @keyframes eiLensLock{0%{transform:translateX(-3px)}100%{transform:none}}
+}
+
+/* Remove expensive/transient effects that caused shimmer in Chrome. */
+.ei-signal-rail>span{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:#f3f0e8!important}
+.check-output-wrap *{backface-visibility:hidden}
+
+@media(max-width:1050px){.active-decision-dock{grid-template-columns:1fr!important}.active-decision-dock .ead-actions{min-width:0!important;overflow:auto!important}.ei-workspace-nav{grid-template-columns:auto 1fr}.ei-workspace-progress{display:none}}
+@media(max-width:760px){.active-decision-dock{bottom:8px!important;width:calc(100vw - 16px)!important;max-width:calc(100vw - 16px)!important}.active-decision-dock .ead-actions a,.active-decision-dock .ead-actions button{min-height:36px!important}.ei-workspace-nav{top:58px;grid-template-columns:1fr}.ei-workspace-nav>span{display:none}.ei-workspace-track{padding:6px}.ei-action-bridge{grid-template-columns:1fr}.ei-product-map>summary{padding:16px 18px;grid-template-columns:1fr auto}.ei-product-map>summary span{grid-column:1/-1}.ei-product-map>summary b{font-size:19px}}
+@media(prefers-reduced-motion:reduce){.check-output-wrap.ei-result-arrived:before{display:none}.ei-workspace-progress i{transition:none}.ei-metrics-lab .ei-viz-stage.is-changing{animation:none!important}}
