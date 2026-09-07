@@ -1,0 +1,57 @@
+/* ExpenseIntel signature motion: three larger, useful scenes. Motion explains the product; it never loops just to decorate. */
+:root{--ei-lime:#b8ff3f;--ei-ink:#11130f;--ei-paper:#f3f0e8;--ei-ease:cubic-bezier(.16,.8,.2,1)}
+
+/* 01 — Check / commitment relay */
+.ei-commitment-scene{border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);background:#171a15;color:#f3f0e8;overflow:hidden;position:relative}
+.ei-commitment-scene:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(184,255,63,.025) 35%,rgba(184,255,63,.055) 50%,rgba(184,255,63,.025) 65%,transparent);transform:translateX(-45%)}
+.ei-commitment-inner{max-width:1380px;margin:auto;padding:27px 28px 31px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:34px;align-items:stretch}
+.ei-scene-copy{display:flex;flex-direction:column;justify-content:space-between;gap:18px}
+.ei-scene-copy>span{font:800 8px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ei-lime)}
+.ei-scene-copy h2{font:400 34px/.98 var(--serif);letter-spacing:-.035em;margin:0}
+.ei-scene-copy p{font:9px/1.55 var(--mono);color:#aeb4aa;margin:0}
+.ei-scene-readout{border-top:1px solid #4d544a;padding-top:12px;min-height:74px}
+.ei-scene-readout b{display:block;font:800 7px var(--mono);text-transform:uppercase;color:#7f897b}
+.ei-scene-readout strong{display:block;margin-top:6px;font:400 18px/1.12 var(--serif);color:#f5f1e9}
+.ei-relay-stage{position:relative;min-height:220px;border:1px solid #50574d;background:#10130f;overflow:hidden;display:grid;align-items:center}
+.ei-relay-stage:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:42px 42px;pointer-events:none}
+.ei-relay-line{position:absolute;left:6%;right:6%;top:50%;height:1px;background:#4e574b;transform:translateY(-50%)}
+.ei-relay-line:after{content:"";position:absolute;left:0;top:-1px;width:22%;height:3px;background:linear-gradient(90deg,transparent,var(--ei-lime),#fff,var(--ei-lime),transparent);opacity:.9;animation:eiRelayTravel 6.6s var(--ei-ease) infinite}
+.ei-relay-nodes{position:relative;z-index:2;display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding:0 4%}
+.ei-relay-node{appearance:none;border:0;background:transparent;color:#c8cec3;display:grid;gap:9px;justify-items:center;text-align:center;padding:13px 4px;cursor:pointer;font:800 7px var(--mono);text-transform:uppercase;letter-spacing:.06em}
+.ei-relay-node i{width:15px;height:15px;border-radius:50%;border:1px solid #697265;background:#171a15;position:relative;transition:transform .28s var(--ei-ease),background .28s ease,border-color .28s ease,box-shadow .28s ease}
+.ei-relay-node i:after{content:"";position:absolute;inset:4px;border-radius:50%;background:#687166;transition:background .28s ease}
+.ei-relay-node.active{color:#fff}.ei-relay-node.active i{transform:scale(1.28);border-color:var(--ei-lime);box-shadow:0 0 0 8px rgba(184,255,63,.08)}.ei-relay-node.active i:after{background:var(--ei-lime)}
+.ei-relay-node:hover i,.ei-relay-node:focus-visible i{transform:scale(1.18);border-color:var(--ei-lime)}
+@keyframes eiRelayTravel{0%{transform:translateX(-25%);opacity:0}9%{opacity:1}84%{opacity:1}100%{transform:translateX(370%);opacity:0}}
+
+/* 02 — Twin / scenario contours. Large motion lives behind the actual model and reacts to real scenario changes. */
+.twin-stage{isolation:isolate}
+.ei-twin-contours{position:absolute!important;z-index:0!important;inset:0;pointer-events:none;overflow:hidden;opacity:.78}
+.ei-twin-contours svg{width:100%;height:100%;display:block}
+.ei-twin-contours path{fill:none;vector-effect:non-scaling-stroke;transition:d .52s var(--ei-ease),opacity .3s ease,stroke-width .3s ease}
+.ei-twin-contours .c1{stroke:rgba(184,255,63,.17);stroke-width:1.1}.ei-twin-contours .c2{stroke:rgba(255,255,255,.075);stroke-width:1}.ei-twin-contours .c3{stroke:rgba(184,255,63,.09);stroke-width:1;stroke-dasharray:9 12;animation:eiContourDrift 13s linear infinite}
+.twin-stage.ei-contour-live .ei-twin-contours .c1{stroke:rgba(184,255,63,.36);stroke-width:1.6}.twin-stage.ei-contour-live .ei-twin-contours .c2{opacity:.9}
+@keyframes eiContourDrift{to{stroke-dashoffset:-84}}
+
+/* 03 — Project / system board. Existing hero becomes a live dependency picture instead of a static orbit. */
+.hero-board{position:relative;overflow:hidden;isolation:isolate}
+.ei-project-vector{position:absolute;z-index:0;inset:0;pointer-events:none;opacity:.72}
+.ei-project-vector svg{width:100%;height:100%}.ei-project-vector line{stroke:#767d72;stroke-width:1;stroke-dasharray:5 8;vector-effect:non-scaling-stroke}.ei-project-vector circle{fill:var(--ei-lime)}
+.hero-board>*:not(.ei-project-vector){position:relative;z-index:1}
+.board-orbit .orb{transition:transform .52s var(--ei-ease),background-color .32s ease,color .32s ease,border-color .32s ease,box-shadow .32s ease}
+.board-orbit .orb.ei-live{background:var(--ei-lime);color:#11130f;border-color:#11130f;transform:scale(1.12);box-shadow:0 0 0 8px rgba(184,255,63,.11)}
+.board-list>div{transition:opacity .34s ease,transform .42s var(--ei-ease),background-color .34s ease}.board-list>div.ei-live{opacity:1!important;transform:translateX(5px);background:rgba(184,255,63,.08)}
+.board-list>div:not(.ei-live){opacity:.62}
+.ei-project-packet{filter:drop-shadow(0 0 5px rgba(184,255,63,.5));offset-rotate:0deg;animation:eiProjectPacket 4.7s var(--ei-ease) infinite}
+@keyframes eiProjectPacket{0%{opacity:0;transform:scale(.6)}10%{opacity:1}72%{opacity:1}100%{opacity:0;transform:scale(1.2)}}
+
+/* Cross-document motion: smooth the site itself, especially the persistent header. */
+@view-transition{navigation:auto}
+.site-nav{view-transition-name:ei-nav}.topline{view-transition-name:ei-topline}.ei-signal-rail{view-transition-name:ei-rail}
+::view-transition-old(root){animation:eiPageOut .16s ease both}::view-transition-new(root){animation:eiPageInSmooth .26s var(--ei-ease) both}
+::view-transition-old(ei-nav),::view-transition-new(ei-nav),::view-transition-old(ei-topline),::view-transition-new(ei-topline){animation-duration:.18s;mix-blend-mode:normal}
+@keyframes eiPageOut{to{opacity:.86}}@keyframes eiPageInSmooth{from{opacity:.72;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+@media(max-width:900px){.ei-commitment-inner{grid-template-columns:1fr}.ei-relay-stage{min-height:190px}.ei-scene-copy{display:grid;grid-template-columns:1fr 1fr}.ei-scene-readout{grid-column:1/-1}.ei-project-vector{display:none}}
+@media(max-width:640px){.ei-commitment-inner{padding:22px 18px}.ei-scene-copy{display:block}.ei-scene-copy p{margin-top:10px}.ei-scene-readout{margin-top:14px}.ei-relay-stage{overflow:auto}.ei-relay-nodes{min-width:620px}.ei-relay-line{min-width:550px}.ei-twin-contours{opacity:.45}}
+@media(prefers-reduced-motion:reduce){.ei-relay-line:after,.ei-twin-contours .c3,.ei-project-packet{animation:none!important}.ei-relay-node i,.board-orbit .orb,.board-list>div,.ei-twin-contours path{transition:none!important}@view-transition{navigation:auto}}
