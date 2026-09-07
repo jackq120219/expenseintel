@@ -27,7 +27,7 @@
     if(!$('a[href="/twin/"]',actions)){
       const twin=document.createElement('a');twin.href='/twin/';twin.textContent='Twin';const check=$('a[href="/check/"]',actions);check?.insertAdjacentElement('afterend',twin);
     }
-    $$('a',actions).forEach(a=>{a.style.pointerEvents='auto';a.addEventListener('click',()=>{a.setAttribute('aria-busy','true')},{once:true})});
+    $$('a',actions).forEach(a=>{a.style.pointerEvents='auto';if(a.dataset.eiClickReady)return;a.dataset.eiClickReady='1';a.addEventListener('click',()=>a.setAttribute('aria-busy','true'),{once:true})});
   }
 
   function compactExplanations(){
@@ -62,9 +62,9 @@
   function refreshWorkspace(){
     const out=$('[data-check-output]'),root=$('[data-check-output] .shell');if(!out||!root||out.hidden||!$('.decision-command',root))return;
     out.classList.add('ei-result-arrived');actionBridge(root);
-    const targets=getWorkspaceTargets(root),sig=targets.map(([n,e])=>n+':'+e.className).join('|');
-    if(!targets.length||sig===workspaceSig)return;workspaceSig=sig;
-    let nav=$('.ei-workspace-nav',root);if(!nav){nav=document.createElement('div');nav.className='ei-workspace-nav';nav.innerHTML='<span>Decision path</span><div class="ei-workspace-track"></div><div class="ei-workspace-progress"><i></i></div>';root.insertBefore(nav,root.firstChild)}
+    const targets=getWorkspaceTargets(root),sig=targets.map(([n,e])=>n+':'+e.className).join('|'),existingNav=$('.ei-workspace-nav',root);
+    if(!targets.length||(sig===workspaceSig&&existingNav))return;workspaceSig=sig;
+    let nav=existingNav;if(!nav){nav=document.createElement('div');nav.className='ei-workspace-nav';nav.innerHTML='<span>Decision path</span><div class="ei-workspace-track"></div><div class="ei-workspace-progress"><i></i></div>';root.insertBefore(nav,root.firstChild)}
     const track=$('.ei-workspace-track',nav);track.innerHTML='';
     targets.forEach(([name,el],i)=>{el.dataset.eiWorkspace=String(i);if(name==='Twin')el.id='decision-twin';if(name==='Negotiate')el.id='negotiation-intelligence';const b=document.createElement('button');b.type='button';b.textContent=name;b.dataset.ws=String(i);b.addEventListener('click',()=>el.scrollIntoView({behavior:'smooth',block:'start'}));track.appendChild(b)});
     const update=()=>{
@@ -80,7 +80,7 @@
 
   function stableMajorPanels(){
     const panels=['.ei-live-passport','.ei-decision-twin','.ei-negotiation','.ei-metrics-lab','details.ei-decision-lab'];
-    panels.flatMap(s=>$$(s)).forEach(el=>{if(el.dataset.eiStable==='1')return;el.dataset.eiStable='1';el.style.contain='layout paint';});
+    panels.flatMap(s=>$$(s)).forEach(el=>{if(el.dataset.eiStable==='1')return;el.dataset.eiStable='1';el.style.contain='layout paint'});
   }
 
   function watchDynamicResult(){
