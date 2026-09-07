@@ -3,7 +3,7 @@
 
 /* 1. Kinetic navigator: one locator glides between product destinations. */
 .navlinks.ei-nav-kinetic{position:relative;isolation:isolate}
-.navlinks.ei-nav-kinetic>a{z-index:2}
+.navlinks.ei-nav-kinetic>a{z-index:2;padding-left:20px!important;padding-right:12px!important}
 .navlinks.ei-nav-kinetic a[href="/twin/"]:before{display:none!important}
 .ei-nav-locator{position:absolute;z-index:1;left:0;top:50%;height:34px;width:40px;border:1px solid rgba(17,19,15,.16);background:rgba(17,19,15,.055);transform:translate3d(0,-50%,0);pointer-events:none;opacity:0;border-radius:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
 .ei-nav-locator:after{content:'';position:absolute;width:5px;height:5px;border-radius:50%;background:var(--ei-lime);left:9px;top:50%;transform:translateY(-50%);box-shadow:0 0 0 3px rgba(184,255,63,.12)}
@@ -45,5 +45,6 @@
   .ei-nav-locator{transition:transform 300ms var(--ei-ease),width 300ms var(--ei-ease),opacity 160ms ease}
   .ei-focus-item>.ei-focus-edge{transition:transform 420ms var(--ei-ease)}
 }
-@media(max-width:760px){.ei-nav-locator{display:none}.ei-focus-grid.ei-focus-active>.ei-focus-item{opacity:1}.ei-focus-grid.ei-focus-active>.ei-focus-item.ei-focus-current{transform:none}}
+@media(max-width:900px){.navlinks.ei-nav-kinetic>a{padding-left:16px!important;padding-right:8px!important}}
+@media(max-width:760px){.ei-nav-locator{display:none}.ei-focus-grid.ei-focus-active>.ei-focus-item{opacity:1}.ei-focus-grid.ei-focus-active>.ei-focus-item.ei-focus-current{transform:none}.navlinks.ei-nav-kinetic>a{padding-left:8px!important;padding-right:8px!important}}
 @media(prefers-reduced-motion:reduce){.ei-nav-locator,.ei-kinetic-scan>.ei-scan-line,.ei-focus-item,.ei-focus-edge,.ei-action-packet,.ei-number-register:after,.ei-route-flash{animation:none!important;transition:none!important}.ei-kinetic-scan>.ei-scan-line,.ei-action-packet,.ei-route-flash{display:none!important}}
