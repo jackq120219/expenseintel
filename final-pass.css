@@ -1,0 +1,64 @@
+/* Final coherence pass — stable surfaces, smoother navigation, cleaner Project Lab, stronger Decision Twin. */
+html{scroll-padding-top:112px;scrollbar-gutter:stable}
+body{animation:none!important}
+.site-nav{background:rgba(243,240,232,.985)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:0 1px 0 rgba(17,19,15,.12);will-change:auto}
+.site-nav.ei-scrolled{background:rgba(243,240,232,.985)!important;box-shadow:0 9px 24px rgba(17,19,15,.075)!important}
+.navinner{transition:height .24s cubic-bezier(.2,.8,.2,1)}
+.navlinks{gap:24px!important;opacity:1;transition:opacity .18s ease}
+.navlinks a{transition:color .2s ease!important,opacity .2s ease!important}
+.ei-nav-locator{height:32px!important;border-color:rgba(17,19,15,.14)!important;background:rgba(17,19,15,.05)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.55)!important}
+@media(prefers-reduced-motion:no-preference){.ei-nav-locator{transition:transform .42s cubic-bezier(.16,.82,.2,1),width .42s cubic-bezier(.16,.82,.2,1),opacity .16s ease!important}}
+button,a,input,select,textarea{touch-action:manipulation}
+main>section{scroll-margin-top:112px}
+
+/* Long pages should feel sectional rather than like one continuous wall. */
+.module,.lab-module,.v5-panel,.cloud-console,.evidence-inbox{box-shadow:0 1px 0 rgba(17,19,15,.03)}
+.module-head,.lab-head,.v5-head,.ei4-head{position:relative}
+.module-head:after,.lab-head:after{content:"";position:absolute;left:0;bottom:-1px;width:0;height:2px;background:var(--lime);transition:width .42s cubic-bezier(.2,.8,.2,1)}
+.module:hover>.module-head:after,.lab-module:hover>.lab-head:after{width:72px}
+
+/* Project Lab screenshot fix: no diagonal mask through copy, no low-contrast text. */
+.evidence-inbox{background:#f4f0e7!important;overflow:hidden!important}
+.evidence-inbox .ei4-head{background:#171914!important;color:#f3f0e8!important;grid-template-columns:minmax(0,.86fr) minmax(320px,1.14fr)!important;align-items:end!important;padding:24px 26px!important}
+.evidence-inbox .ei4-head h2{max-width:640px!important;color:#f5f1e9!important}
+.evidence-inbox .ei4-head p{color:#c4c9bf!important;max-width:720px!important;justify-self:end!important}
+.evidence-ingest-grid{background:#f5f2ea!important}
+.evidence-drop{background:radial-gradient(circle at 50% 42%,rgba(184,255,63,.09),transparent 32%),#f8f6ef!important}
+.evidence-drop:before{animation:none!important;opacity:0!important}
+.evidence-drop:hover:before,.evidence-drop.drag:before{opacity:1!important;animation:eiEvidenceOneSweep .85s cubic-bezier(.2,.8,.2,1) 1 both!important}
+.drop-orbit:before,.drop-orbit:after{animation-duration:22s!important;opacity:.58}
+.scan-dot{animation:none!important;box-shadow:0 0 0 4px rgba(184,255,63,.13)!important}
+.decision-stamp{animation:none!important}
+@keyframes eiEvidenceOneSweep{from{transform:translateX(-75%)}to{transform:translateX(75%)}}
+.project-input{padding-bottom:54px!important}.project-results{padding-top:26px!important}
+.ei-project-jumps{max-width:1380px;margin:0 auto 20px;padding:0 28px;display:flex;gap:7px;flex-wrap:wrap}
+.ei-project-jumps button{border:1px solid #b9b3a7;background:#f7f4ec;color:#171914;padding:8px 10px;font:800 7px var(--mono);text-transform:uppercase;letter-spacing:.05em;cursor:pointer;transition:background .16s ease,border-color .16s ease,transform .16s ease}
+.ei-project-jumps button:hover{background:#171914;color:#f3f0e8;border-color:#171914;transform:translateY(-1px)}
+
+/* Decision Twin: stronger workstation, still editorial rather than sci-fi. */
+.twin-hero{padding:46px 0 34px!important;background:linear-gradient(180deg,#f7f4ec 0%,#ebe6da 100%)!important}
+.twin-hero-grid{gap:64px!important}.twin-hero p{font-size:17px!important;max-width:790px!important}.twin-hero-note{padding:20px!important;border-color:#343a31!important;background:#171a15!important;box-shadow:8px 8px 0 rgba(17,19,15,.07)!important}
+.twin-work{padding:36px 0 74px!important;background:#171a15!important}
+.twin-toolbar{position:relative!important;padding:14px 15px!important;margin-bottom:14px!important;background:#20241d!important;border-color:#626b5e!important;box-shadow:0 12px 28px rgba(6,8,5,.12)!important}
+.twin-toolbar:before{content:"";position:absolute;left:-1px;top:-1px;bottom:-1px;width:3px;background:var(--lime)}
+.twin-identity{grid-template-columns:minmax(180px,.72fr) minmax(180px,.82fr) minmax(220px,1fr)!important;gap:12px!important}
+.identity-field{display:grid;gap:6px}.identity-field>span,.identity-output>span{font:800 7px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#9da69a}.identity-field select,.identity-field input{height:43px;border:1px solid #70796d;background:#11140f;color:#f5f1e9;padding:0 11px;font:700 10px var(--mono);outline:none}.identity-field select:focus,.identity-field input:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(184,255,63,.10)}.identity-output{min-width:0;padding-left:12px;border-left:1px solid #4f574c}.identity-output strong{display:block;margin-top:5px;font:400 20px/1.05 var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.identity-output small{display:block;margin-top:4px;font:7px/1.4 var(--mono);color:#90998d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.twin-toolbar-actions{align-self:end!important}.twin-toolbar-actions button{min-height:40px!important;padding:9px 12px!important}
+.twin-workspace{grid-template-columns:350px minmax(0,1fr)!important;min-height:760px!important;border-color:#687165!important;background:#22271f!important;box-shadow:0 22px 60px rgba(5,7,4,.16)!important}
+.twin-deck{background:#f0ece2!important}.twin-active{padding:14px 15px!important;background:#fffdf8!important}.twin-steps{background:#ded9ce!important}.twin-steps button{position:relative!important;padding:12px 6px!important;transition:background-color .22s ease,color .22s ease,transform .22s cubic-bezier(.2,.8,.2,1)!important}.twin-steps button:after{content:"";position:absolute;left:18%;right:18%;bottom:0;height:3px;background:var(--lime);transform:scaleX(0);transition:transform .28s cubic-bezier(.2,.8,.2,1)}.twin-steps button.active:after{transform:scaleX(1)}.twin-steps button:hover{transform:translateY(-1px)}
+.twin-context-strip{padding:11px 14px!important;background:#e8f5d2!important;border-bottom:1px solid #aab2a1!important}.twin-context-strip span{display:block;font:800 6px var(--mono);text-transform:uppercase;color:#61704d}.twin-context-strip strong{display:block;margin-top:4px;font:700 8px/1.45 var(--mono);color:#30372d}
+.twin-panel{padding:21px 19px 18px!important}.twin-panel h2{font-size:31px!important;margin:8px 0 21px!important}.twin-field{padding:14px 0!important}.twin-field input[type=number],.twin-field input[type=text],.twin-field select{min-height:45px!important;background:#fffdf8!important}.panel-note{padding:11px 12px!important;background:#e8e3d8!important;border-left-color:#7d8b70!important}
+.twin-stage{padding:24px!important;background:radial-gradient(circle at 78% 5%,rgba(184,255,63,.065),transparent 22%),#22271f!important}.stage-top{margin-bottom:15px!important}.stage-top h2{font-size:36px!important}.stage-state{padding:8px 10px;border:1px solid #51594f;background:rgba(16,19,15,.45)}
+.twin-kpis{border-color:#687165!important;background:#131611!important}.twin-kpi{padding:16px!important;min-height:94px!important}.twin-kpi strong{font-size:30px!important}.twin-kpi.primary{background:linear-gradient(110deg,rgba(184,255,63,.07),transparent 58%)}
+.twin-pulse-track{margin:12px 0 4px!important}.twin-chart{height:340px!important;border-color:#626b5f!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.018)}
+.twin-chart .trace{stroke-width:3.4!important}.twin-chart .point.end{filter:drop-shadow(0 0 5px rgba(184,255,63,.45))}
+.twin-equation{border-color:#626b5f!important}.twin-equation button{transition:background-color .16s ease,color .16s ease}.twin-equation button:hover{background:#2b3127!important;color:var(--lime)!important}
+.twin-analysis-grid{gap:12px!important;margin-top:12px!important}.driver-card,.sensitivity-card,.target-card{border-color:#626b5f!important;background:#282e25!important}.card-head{padding:11px 13px!important}.driver-bars{padding:13px!important}.sensitivity-grid>div{padding:15px 12px!important}.sensitivity-grid strong{font-size:20px!important}.target-card{margin-top:12px!important;padding:16px!important}.target-card h3{font-size:26px!important}.snapshot-drawer{margin-top:12px!important;border-color:#626b5f!important}.twin-brief{margin-top:12px!important}
+@media(prefers-reduced-motion:no-preference){.twin-panel.active{animation:eiTwinPanelIn .28s cubic-bezier(.2,.8,.2,1) both}@keyframes eiTwinPanelIn{from{opacity:.76;transform:translateX(-7px)}to{opacity:1;transform:none}}.twin-workspace,.twin-toolbar{transition:border-color .22s ease,box-shadow .22s ease}}
+
+/* Keep interfaces readable and calm when not being used. */
+.dot{animation:none!important}.check-card,.si-panel,.module,.answer-card,.price-card{will-change:auto!important}.check-card:hover,.si-panel:hover,.module:hover,.answer-card:hover,.price-card:hover{transform:translateY(-2px)!important}
+
+@media(max-width:1050px){.twin-identity{grid-template-columns:1fr 1fr!important}.identity-output{grid-column:1/-1;border-left:0;padding-left:0;border-top:1px solid #4f574c;padding-top:9px}.twin-workspace{grid-template-columns:320px minmax(0,1fr)!important}.evidence-inbox .ei4-head{grid-template-columns:1fr!important}.evidence-inbox .ei4-head p{justify-self:start!important}}
+@media(max-width:820px){.twin-toolbar{grid-template-columns:1fr!important}.twin-toolbar-actions{align-self:auto!important;overflow:auto}.twin-workspace{grid-template-columns:1fr!important}.twin-deck{border-right:0!important;border-bottom:1px solid #62695f}.twin-stage{padding:16px!important}.twin-chart{height:300px!important}.ei-project-jumps{padding:0 18px}}
+@media(max-width:600px){.twin-identity{grid-template-columns:1fr!important}.identity-output{grid-column:auto}.twin-toolbar-actions button{white-space:nowrap}.twin-kpis{grid-template-columns:1fr!important}.twin-kpi{border-right:0!important;border-bottom:1px solid #5b6358}.twin-analysis-grid{grid-template-columns:1fr!important}.target-card{grid-template-columns:1fr!important}.target-answer{border-left:0!important;padding-left:0!important;border-top:1px solid #4c5349;padding-top:12px!important}}
