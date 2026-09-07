@@ -1,0 +1,18 @@
+/* Stable ExpenseIntel header: current location is always visible; hover motion is secondary. */
+@view-transition{navigation:none}
+.site-nav{contain:layout paint;transform:none!important}
+.navinner{min-height:70px}
+.navlinks{position:relative;display:flex;align-items:center;gap:8px!important}
+.navlinks>a{position:relative;z-index:2;padding:10px 13px!important;border:1px solid transparent!important;border-radius:4px;color:#3c4238!important;opacity:.78;transition:color .16s ease,opacity .16s ease,background-color .16s ease,border-color .16s ease!important}
+.navlinks>a:hover,.navlinks>a:focus-visible{opacity:1;color:#11130f!important;background:rgba(17,19,15,.035)!important}
+.navlinks>a.active,.navlinks>a[aria-current="page"]{opacity:1!important;color:#11130f!important;background:#e8e4da!important;border-color:#c9c4b9!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)!important}
+.navlinks>a.active:after,.navlinks>a[aria-current="page"]:after{content:"";position:absolute;left:12px;right:12px;bottom:5px;height:2px;background:var(--lime);border-radius:2px}
+.ei-nav-locator{height:2px!important;top:auto!important;bottom:2px!important;border:0!important;border-radius:2px!important;background:var(--lime)!important;box-shadow:none!important;transform:translate3d(0,0,0);opacity:.72!important}
+.ei-nav-locator:after{display:none!important}
+.navlinks.ei-nav-kinetic>a.active,.navlinks.ei-nav-kinetic>a[aria-current="page"]{background:#e8e4da!important;border-color:#c9c4b9!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)!important}
+.navlinks.ei-nav-kinetic>a.active:after,.navlinks.ei-nav-kinetic>a[aria-current="page"]:after{display:block!important}
+.ei-route-flash{display:none!important}
+.site-nav,.navinner,.navlinks,.navright{animation:none!important}
+@media(prefers-reduced-motion:no-preference){.ei-nav-locator{transition:transform .22s cubic-bezier(.2,.75,.2,1),width .22s cubic-bezier(.2,.75,.2,1),opacity .12s ease!important}}
+@media(max-width:930px){.navlinks>a{padding:9px 9px!important}.navlinks{gap:3px!important}}
+@media(max-width:760px){.navlinks>a{border-radius:0}.navlinks>a.active:after,.navlinks>a[aria-current="page"]:after{left:8px;right:8px}}
