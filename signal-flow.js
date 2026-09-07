@@ -1,14 +1,14 @@
 (()=>{
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
   let currentLabel='',labelTimer=null,stageTimer=null;
-  function loadAsset(tag,attrs){if(document.querySelector(attrs.guard))return;const el=document.createElement(tag);Object.entries(attrs.props).forEach(([k,v])=>el[k]=v);if(attrs.data)Object.entries(attrs.data).forEach(([k,v])=>el.dataset[k]=v);document.head.appendChild(el)}
+  function loadAsset(tag,attrs){if(document.querySelector(attrs.guard))return;const el=document.createElement(tag);if(tag==='script')el.async=false;Object.entries(attrs.props).forEach(([k,v])=>el[k]=v);if(attrs.data)Object.entries(attrs.data).forEach(([k,v])=>el.dataset[k]=v);document.head.appendChild(el)}
   function loadSystems(){
     loadAsset('link',{guard:'link[data-ei-kinetic-css]',props:{rel:'stylesheet',href:'/kinetic-system.css'},data:{eiKineticCss:'1'}});
-    loadAsset('script',{guard:'script[data-ei-kinetic-js]',props:{src:'/kinetic-system.js',defer:true},data:{eiKineticJs:'1'}});
+    loadAsset('script',{guard:'script[data-ei-kinetic-js]',props:{src:'/kinetic-system.js'},data:{eiKineticJs:'1'}});
     loadAsset('link',{guard:'link[data-ei-signature-css]',props:{rel:'stylesheet',href:'/signature-scenes.css'},data:{eiSignatureCss:'1'}});
-    loadAsset('script',{guard:'script[data-ei-signature-js]',props:{src:'/signature-scenes.js',defer:true},data:{eiSignatureJs:'1'}});
+    loadAsset('script',{guard:'script[data-ei-signature-js]',props:{src:'/signature-scenes.js'},data:{eiSignatureJs:'1'}});
     loadAsset('link',{guard:'link[data-ei-final-css]',props:{rel:'stylesheet',href:'/final-pass.css'},data:{eiFinalCss:'1'}});
-    loadAsset('script',{guard:'script[data-ei-final-js]',props:{src:'/final-pass.js',defer:true},data:{eiFinalJs:'1'}})
+    loadAsset('script',{guard:'script[data-ei-final-js]',props:{src:'/final-pass.js'},data:{eiFinalJs:'1'}})
   }
   function makeRail(){if($('.ei-signal-rail'))return $('.ei-signal-rail');const rail=document.createElement('div');rail.className='ei-signal-rail';rail.setAttribute('aria-hidden','true');rail.innerHTML='<i></i><span>ExpenseIntel</span>';document.body.appendChild(rail);return rail}
   function sectionLabel(s){return String($('.section-no',s)?.textContent||$('.kicker',s)?.textContent||$('h2,h1,h3',s)?.textContent||'ExpenseIntel').replace(/\s+/g,' ').trim().slice(0,72)}
