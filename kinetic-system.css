@@ -1,50 +1,33 @@
 /* ExpenseIntel kinetic system — movement maps to orientation, evidence, focus, or action. */
-:root{--ei-motion-fast:150ms;--ei-motion-mid:280ms;--ei-motion-slow:520ms;--ei-ease:cubic-bezier(.2,.78,.2,1);--ei-lime:#b8ff3f}
-
-/* 1. Kinetic navigator: one locator glides between product destinations. */
+:root{--ei-motion-fast:150ms;--ei-motion-mid:260ms;--ei-motion-slow:500ms;--ei-ease:cubic-bezier(.16,.82,.2,1);--ei-lime:#b8ff3f}
 .navlinks.ei-nav-kinetic{position:relative;isolation:isolate}
-.navlinks.ei-nav-kinetic>a{z-index:2;padding-left:20px!important;padding-right:12px!important}
+.navlinks.ei-nav-kinetic>a{z-index:2;padding-left:18px!important;padding-right:11px!important}
 .navlinks.ei-nav-kinetic a[href="/twin/"]:before{display:none!important}
-.ei-nav-locator{position:absolute;z-index:1;left:0;top:50%;height:34px;width:40px;border:1px solid rgba(17,19,15,.16);background:rgba(17,19,15,.055);transform:translate3d(0,-50%,0);pointer-events:none;opacity:0;border-radius:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
-.ei-nav-locator:after{content:'';position:absolute;width:5px;height:5px;border-radius:50%;background:var(--ei-lime);left:9px;top:50%;transform:translateY(-50%);box-shadow:0 0 0 3px rgba(184,255,63,.12)}
+.ei-nav-locator{position:absolute;z-index:1;left:0;top:50%;height:32px;width:40px;border:1px solid rgba(17,19,15,.15);background:rgba(17,19,15,.05);transform:translate3d(0,-50%,0);pointer-events:none;opacity:0;border-radius:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,.48)}
+.ei-nav-locator:after{content:'';position:absolute;width:5px;height:5px;border-radius:50%;background:var(--ei-lime);left:8px;top:50%;transform:translateY(-50%);box-shadow:0 0 0 3px rgba(184,255,63,.11)}
 .navlinks.ei-nav-kinetic.ei-ready .ei-nav-locator{opacity:1}
 .navlinks.ei-nav-kinetic>a.active{background:transparent!important;border-color:transparent!important;box-shadow:none!important}
-
-/* 2. Evidence sweep: a panel is scanned once when it becomes relevant. */
 .ei-kinetic-scan{position:relative;isolation:isolate}
 .ei-kinetic-scan>.ei-scan-line{position:absolute;z-index:8;left:0;right:0;top:0;height:2px;pointer-events:none;opacity:0;transform:translateX(-104%);background:linear-gradient(90deg,transparent 0%,var(--ei-lime) 34%,#fff 50%,var(--ei-lime) 66%,transparent 100%)}
-.ei-kinetic-scan.ei-scan-live>.ei-scan-line{animation:eiPanelScan 720ms var(--ei-ease) both}
-.ei-kinetic-scan.ei-scan-live{--ei-scan-opacity:1}
-@keyframes eiPanelScan{0%{opacity:0;transform:translateX(-104%)}12%{opacity:.95}82%{opacity:.7}100%{opacity:0;transform:translateX(104%)}}
-
-/* 3. Focus choreography: information-dense grids quiet the noise around the active card. */
+.ei-kinetic-scan.ei-scan-live>.ei-scan-line{animation:eiPanelScan 640ms var(--ei-ease) both}
+@keyframes eiPanelScan{0%{opacity:0;transform:translateX(-104%)}12%{opacity:.9}82%{opacity:.62}100%{opacity:0;transform:translateX(104%)}}
 .ei-focus-grid>.ei-focus-item{position:relative;transition:opacity var(--ei-motion-mid) ease,transform var(--ei-motion-mid) var(--ei-ease),background-color var(--ei-motion-mid) ease,border-color var(--ei-motion-mid) ease}
-.ei-focus-grid.ei-focus-active>.ei-focus-item{opacity:.58}
-.ei-focus-grid.ei-focus-active>.ei-focus-item.ei-focus-current{opacity:1;transform:translateY(-3px)}
-.ei-focus-item>.ei-focus-edge{position:absolute;z-index:5;pointer-events:none;left:0;top:0;height:2px;width:100%;transform:scaleX(0);transform-origin:left;background:linear-gradient(90deg,var(--ei-lime),rgba(184,255,63,.15))}
+.ei-focus-grid.ei-focus-active>.ei-focus-item{opacity:.74}
+.ei-focus-grid.ei-focus-active>.ei-focus-item.ei-focus-current{opacity:1;transform:translateY(-2px)}
+.ei-focus-item>.ei-focus-edge{position:absolute;z-index:5;pointer-events:none;left:0;top:0;height:2px;width:100%;transform:scaleX(0);transform-origin:left;background:linear-gradient(90deg,var(--ei-lime),rgba(184,255,63,.12))}
 .ei-focus-current>.ei-focus-edge{transform:scaleX(1)}
-
-/* 4. Action tracer: primary actions visibly enter the system instead of just changing color. */
 .ei-action-signal{position:relative!important;overflow:hidden!important;isolation:isolate}
 .ei-action-signal>.ei-action-packet{position:absolute;z-index:20;left:-18%;bottom:0;width:18%;height:2px;background:linear-gradient(90deg,transparent,var(--ei-lime),#fff);pointer-events:none;opacity:0}
-.ei-action-signal.ei-action-fired>.ei-action-packet{animation:eiActionPacket 460ms var(--ei-ease) both}
+.ei-action-signal.ei-action-fired>.ei-action-packet{animation:eiActionPacket 420ms var(--ei-ease) both}
 @keyframes eiActionPacket{0%{left:-18%;opacity:0}14%{opacity:1}82%{opacity:1}100%{left:100%;opacity:0}}
-
-/* 5. Metric registration: data changes get one clean instrument response, never a looping pulse. */
 .ei-number-register{position:relative;display:inline-block;transform-origin:left center}
-.ei-number-register:after{content:'';position:absolute;left:0;right:0;bottom:-4px;height:2px;background:var(--ei-lime);transform:scaleX(0);transform-origin:left;opacity:.75}
-.ei-number-register.ei-number-fired:after{animation:eiNumberLine 360ms var(--ei-ease) both}
-@keyframes eiNumberLine{0%{transform:scaleX(0);opacity:.75}70%{transform:scaleX(1);opacity:.65}100%{transform:scaleX(1);opacity:0}}
-
-/* A tiny route flash under the sticky nav gives page changes continuity without a transition screen. */
+.ei-number-register:after{content:'';position:absolute;left:0;right:0;bottom:-4px;height:2px;background:var(--ei-lime);transform:scaleX(0);transform-origin:left;opacity:.72}
+.ei-number-register.ei-number-fired:after{animation:eiNumberLine 330ms var(--ei-ease) both}
+@keyframes eiNumberLine{0%{transform:scaleX(0);opacity:.72}70%{transform:scaleX(1);opacity:.6}100%{transform:scaleX(1);opacity:0}}
 .ei-route-flash{position:fixed;z-index:9999;left:0;top:var(--ei-route-y,0px);height:2px;width:100vw;pointer-events:none;transform:scaleX(0);transform-origin:left;background:linear-gradient(90deg,transparent 0%,var(--ei-lime) 22%,#fff 50%,var(--ei-lime) 78%,transparent 100%)}
-.ei-route-flash.run{animation:eiRouteFlash 320ms var(--ei-ease) both}
-@keyframes eiRouteFlash{0%{transform:scaleX(0);opacity:0}15%{opacity:1}100%{transform:scaleX(1);opacity:0}}
-
-@media(prefers-reduced-motion:no-preference){
-  .ei-nav-locator{transition:transform 300ms var(--ei-ease),width 300ms var(--ei-ease),opacity 160ms ease}
-  .ei-focus-item>.ei-focus-edge{transition:transform 420ms var(--ei-ease)}
-}
-@media(max-width:900px){.navlinks.ei-nav-kinetic>a{padding-left:16px!important;padding-right:8px!important}}
+.ei-route-flash.run{animation:eiRouteFlash 220ms var(--ei-ease) both}
+@keyframes eiRouteFlash{0%{transform:scaleX(0);opacity:0}18%{opacity:1}100%{transform:scaleX(1);opacity:0}}
+@media(prefers-reduced-motion:no-preference){.ei-nav-locator{transition:transform .42s var(--ei-ease),width .42s var(--ei-ease),opacity .16s ease}.ei-focus-item>.ei-focus-edge{transition:transform .36s var(--ei-ease)}}
+@media(max-width:900px){.navlinks.ei-nav-kinetic>a{padding-left:15px!important;padding-right:8px!important}}
 @media(max-width:760px){.ei-nav-locator{display:none}.ei-focus-grid.ei-focus-active>.ei-focus-item{opacity:1}.ei-focus-grid.ei-focus-active>.ei-focus-item.ei-focus-current{transform:none}.navlinks.ei-nav-kinetic>a{padding-left:8px!important;padding-right:8px!important}}
 @media(prefers-reduced-motion:reduce){.ei-nav-locator,.ei-kinetic-scan>.ei-scan-line,.ei-focus-item,.ei-focus-edge,.ei-action-packet,.ei-number-register:after,.ei-route-flash{animation:none!important;transition:none!important}.ei-kinetic-scan>.ei-scan-line,.ei-action-packet,.ei-route-flash{display:none!important}}
