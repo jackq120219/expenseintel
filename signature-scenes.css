@@ -42,8 +42,7 @@
 .board-orbit .orb.ei-live{background:var(--ei-lime);color:#11130f;border-color:#11130f;transform:scale(1.12);box-shadow:0 0 0 8px rgba(184,255,63,.11)}
 .board-list>div{transition:opacity .34s ease,transform .42s var(--ei-ease),background-color .34s ease}.board-list>div.ei-live{opacity:1!important;transform:translateX(5px);background:rgba(184,255,63,.08)}
 .board-list>div:not(.ei-live){opacity:.62}
-.ei-project-packet{filter:drop-shadow(0 0 5px rgba(184,255,63,.5));offset-rotate:0deg;animation:eiProjectPacket 4.7s var(--ei-ease) infinite}
-@keyframes eiProjectPacket{0%{opacity:0;transform:scale(.6)}10%{opacity:1}72%{opacity:1}100%{opacity:0;transform:scale(1.2)}}
+.ei-project-packet{filter:drop-shadow(0 0 5px rgba(184,255,63,.55));opacity:0;transform-origin:center;transition:opacity .12s ease}
 
 /* Cross-document motion: smooth the site itself, especially the persistent header. */
 @view-transition{navigation:auto}
@@ -54,4 +53,4 @@
 
 @media(max-width:900px){.ei-commitment-inner{grid-template-columns:1fr}.ei-relay-stage{min-height:190px}.ei-scene-copy{display:grid;grid-template-columns:1fr 1fr}.ei-scene-readout{grid-column:1/-1}.ei-project-vector{display:none}}
 @media(max-width:640px){.ei-commitment-inner{padding:22px 18px}.ei-scene-copy{display:block}.ei-scene-copy p{margin-top:10px}.ei-scene-readout{margin-top:14px}.ei-relay-stage{overflow:auto}.ei-relay-nodes{min-width:620px}.ei-relay-line{min-width:550px}.ei-twin-contours{opacity:.45}}
-@media(prefers-reduced-motion:reduce){.ei-relay-line:after,.ei-twin-contours .c3,.ei-project-packet{animation:none!important}.ei-relay-node i,.board-orbit .orb,.board-list>div,.ei-twin-contours path{transition:none!important}@view-transition{navigation:auto}}
+@media(prefers-reduced-motion:reduce){.ei-relay-line:after,.ei-twin-contours .c3{animation:none!important}.ei-relay-node i,.board-orbit .orb,.board-list>div,.ei-twin-contours path{transition:none!important}@view-transition{navigation:auto}}
