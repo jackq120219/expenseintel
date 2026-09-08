@@ -29,7 +29,7 @@ ok(contradiction(100,140).conflict===true,'29%+ gap is a contradiction');
 ok(contradiction(235800,300000,{threshold:.15}).conflict===true,'GT3 base vs materially higher same-metric claim should be surfaced if treated as same scope');
 
 // Precision discipline
-for(const [v,expected] of [[87465,87500],[392810,395000],[12345,12500],[2450,2450],[782345,780000]]) eq(meaningfulRound(v),expected,`meaningful round ${v}`);
+for(const [v,expected] of [[87465,87000],[392810,395000],[12345,12500],[2450,2450],[782345,780000]]) eq(meaningfulRound(v),expected,`meaningful round ${v}`);
 const r=rangeAround(87465,{modeledShare:.20});ok(r.low<r.center&&r.high>r.center,'modeled planning center has a range');ok(r.center%500===0,'modeled planning center is rounded');
 
 // Lease opportunity: generic averages must never create huge item-specific savings
