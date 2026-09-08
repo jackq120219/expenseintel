@@ -13,9 +13,9 @@
     if(!document.querySelector('script[data-ei-refine-js]')){const s=document.createElement('script');s.src='/refinement-v9.js';s.defer=true;s.dataset.eiRefineJs='';document.head.appendChild(s)}
   }
 
-  function loadCleanup(){
-    if(!document.querySelector('link[data-ei-cleanup-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/site-cleanup-v10.css';l.dataset.eiCleanupCss='';document.head.appendChild(l)}
-    if(!document.querySelector('script[data-ei-cleanup-js]')){const s=document.createElement('script');s.src='/site-cleanup-v10.js';s.defer=true;s.dataset.eiCleanupJs='';document.head.appendChild(s)}
+  function loadVehicleSanity(){
+    if(!document.querySelector('link[data-ei-vehicle-sanity-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/vehicle-sanity-v11.css';l.dataset.eiVehicleSanityCss='';document.head.appendChild(l)}
+    if(!document.querySelector('script[data-ei-vehicle-sanity-js]')){const s=document.createElement('script');s.src='/vehicle-sanity-v11.js';s.defer=true;s.dataset.eiVehicleSanityJs='';document.head.appendChild(s)}
   }
 
   function normalizeProductNav(){
@@ -103,6 +103,6 @@
     new MutationObserver(run).observe(out,{subtree:true,childList:true});run();
   }
 
-  function init(){normalizeProductNav();loadKinetic();loadRefinement();loadCleanup();addTwinToFooter();compactExplanations();repairDecisionDock();watchDynamicResult();setTimeout(()=>{normalizeProductNav();repairDecisionDock();refreshWorkspace()},450)}
+  function init(){normalizeProductNav();loadKinetic();loadRefinement();loadVehicleSanity();addTwinToFooter();compactExplanations();repairDecisionDock();watchDynamicResult();setTimeout(()=>{normalizeProductNav();repairDecisionDock();refreshWorkspace()},450)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
