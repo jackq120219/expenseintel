@@ -1,0 +1,13 @@
+/* ExpenseIntel v18 — mobile polish */
+@media(max-width:760px){
+  .ei-v12-dashboard{overflow-x:hidden}
+  .ei-v12-hero{padding:20px 14px 24px!important}
+  .ei-v12-workspace{margin-inline:0!important}
+  .ei-v17-endpoint-grid{grid-template-columns:1fr!important}
+  .ei-v17-endpoint article,.ei-v17-endpoint article:last-child{grid-column:auto!important;border-right:0!important}
+  .ei-v17-neg-head,.ei-v17-neg-body,.ei-v17-outcome-head,.ei-v17-outcome-fields,.ei-v17-bridge-head,.ei-v17-bridge-grid{grid-template-columns:1fr!important}
+  .ei-v17-neg-body>div{border-right:0!important;border-bottom:1px solid #d2cbbf}
+  .ei-v17-neg-save,.ei-v17-outcome-saved{min-width:0!important}
+  .ei-v17-delta-grid{padding-bottom:4px;scroll-snap-type:x proximity}.ei-v17-delta-grid article{scroll-snap-align:start}
+}
+@media(max-width:420px){.ei-v17-endpoint-actions button,.ei-v17-neg-actions button,.ei-v17-outcome-actions button{flex:1 1 100%}}
