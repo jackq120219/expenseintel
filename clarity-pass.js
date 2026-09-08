@@ -23,6 +23,13 @@
     if(!document.querySelector('script[data-ei-estimate-integrity-js]')){const s=document.createElement('script');s.src='/estimate-integrity-v12.js';s.defer=true;s.dataset.eiEstimateIntegrityJs='';document.head.appendChild(s)}
   }
 
+  function loadReliabilityLayers(){
+    if(!document.querySelector('link[data-ei-provenance-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/data-provenance-v13.css';l.dataset.eiProvenanceCss='';document.head.appendChild(l)}
+    if(!document.querySelector('script[data-ei-provenance-js]')){const s=document.createElement('script');s.src='/data-provenance-v13.js';s.defer=true;s.dataset.eiProvenanceJs='';document.head.appendChild(s)}
+    if(!document.querySelector('link[data-ei-sanity-gate-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/sanity-gate-v14.css';l.dataset.eiSanityGateCss='';document.head.appendChild(l)}
+    if(!document.querySelector('script[data-ei-sanity-gate-js]')){const s=document.createElement('script');s.src='/sanity-gate-v14.js';s.defer=true;s.dataset.eiSanityGateJs='';document.head.appendChild(s)}
+  }
+
   function normalizeProductNav(){
     const nav=$('.navlinks');if(!nav)return;
     const links=[['/check/','Check'],['/twin/','Twin'],['/watch/','Watch'],['/project/','Project'],['/data/','Evidence'],['/about/','About']];
@@ -108,6 +115,6 @@
     new MutationObserver(run).observe(out,{subtree:true,childList:true});run();
   }
 
-  function init(){normalizeProductNav();loadKinetic();loadRefinement();loadVehicleSanity();loadEstimateIntegrity();addTwinToFooter();compactExplanations();repairDecisionDock();watchDynamicResult();setTimeout(()=>{normalizeProductNav();repairDecisionDock();refreshWorkspace()},450)}
+  function init(){normalizeProductNav();loadKinetic();loadRefinement();loadVehicleSanity();loadEstimateIntegrity();loadReliabilityLayers();addTwinToFooter();compactExplanations();repairDecisionDock();watchDynamicResult();setTimeout(()=>{normalizeProductNav();repairDecisionDock();refreshWorkspace()},450)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
