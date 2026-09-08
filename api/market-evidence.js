@@ -1,0 +1,13 @@
+const SERIES={
+  property:[
+    {id:'MORTGAGE30US',label:'30-year fixed mortgage rate',unit:'%',source:'Freddie Mac via FRED',url:'https://fred.stlouisfed.org/series/MORTGAGE30US'}
+  ],
+  vehicle:[
+    {id:'CUUR0000SETA02',label:'Used cars & trucks CPI',unit:'index',source:'U.S. Bureau of Labor Statistics via FRED',url:'https://fred.stlouisfed.org/series/CUUR0000SETA02'}
+  ]
+};
+function send(res,status,payload){res.statusCode=status;res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control',status===200?'public, s-maxage=1800, stale-while-revalidate=21600':'no-store');res.setHeader('X-Content-Type-Options','nosniff');res.end(JSON.stringify(payload))}
+function cleanCategory(v){v=String(v||'').toLowerCase();if(v.includes('property')||v.includes('home'))return'property';if(v.includes('vehicle')||v.includes('car')||v.includes('truck'))return'vehicle';return'general'}
+function parseCsv(text){const lines=String(text||'').trim().split(/\r?\n/);if(lines.length<2)return null;for(let i=lines.length-1;i>0;i--){const row=lines[i].split(',');const value=Number(row[row.length-1]);if(Number.isFinite(value)&&row[0]&&row[row.length-1]!=='.')return{date:row[0],value}}return null}
+async function fred(series){const c=new AbortController(),timer=setTimeout(()=>c.abort(),5000);try{const r=await fetch(`https://fred.stlouisfed.org/graph/fredgraph.csv?id=${encodeURIComponent(series.id)}`,{signal:c.signal,headers:{'User-Agent':'ExpenseIntel/1.0 (+https://www.expenseintel.com)'}});if(!r.ok)throw new Error(`FRED ${r.status}`);const point=parseCsv(await r.text());if(!point)throw new Error('No current observation');return{...series,...point,status:'connected',observedAt:point.date,fetchedAt:new Date().toISOString()}}finally{clearTimeout(timer)}}
+module.exports=async function handler(req,res){if(req.method!=='GET')return send(res,405,{ok:false,error:'Method not allowed'});const category=cleanCategory(req.query?.category);const wanted=SERIES[category]||[];if(!wanted.length)return send(res,200,{ok:true,category,evidence:[],note:'No category-specific public benchmark is connected yet. Modeled assumptions must remain labeled modeled.'});const settled=await Promise.allSettled(wanted.map(fred));const evidence=settled.filter(x=>x.status==='fulfilled').map(x=>x.value);const failures=settled.filter(x=>x.status==='rejected').length;return send(res,200,{ok:true,category,evidence,degraded:failures>0,failures,note:evidence.length?'Public context is supporting evidence, not a transaction-level comparable or executable quote.':'Public evidence temporarily unavailable; do not promote modeled values to verified evidence.'})};
