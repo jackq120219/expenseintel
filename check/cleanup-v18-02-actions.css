@@ -1,0 +1,8 @@
+/* ExpenseIntel v18 — action priority */
+.ei-v12-hero-actions,.ei-v17-endpoint-actions,.ei-v17-neg-actions,.ei-v17-outcome-actions{display:flex!important;align-items:center;gap:8px!important;flex-wrap:wrap}
+.ei-v12-hero-actions button,.ei-v12-hero-actions a,.ei-v17-endpoint-actions button{min-height:40px;border-radius:0!important;letter-spacing:.055em}
+.ei-v12-hero-actions>*:not(:first-child){opacity:.9}
+.ei-v12-hero-actions>*:hover,.ei-v12-hero-actions>*:focus-visible,.ei-v17-endpoint-actions button:hover,.ei-v17-endpoint-actions button:focus-visible{opacity:1;transform:translateY(-1px)}
+.ei-v17-neg-btn{background:#171c14!important;color:#b8ff3f!important;border-color:#171c14!important}
+.ei-v17-endpoint-actions button:first-child{font-weight:950!important}
+@media(max-width:640px){.ei-v12-hero-actions>*{flex:1 1 100%;text-align:center;justify-content:center}.ei-v17-endpoint-actions button{flex:1 1 calc(50% - 8px)}}
