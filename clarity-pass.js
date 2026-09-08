@@ -18,6 +18,11 @@
     if(!document.querySelector('script[data-ei-vehicle-sanity-js]')){const s=document.createElement('script');s.src='/vehicle-sanity-v11.js';s.defer=true;s.dataset.eiVehicleSanityJs='';document.head.appendChild(s)}
   }
 
+  function loadEstimateIntegrity(){
+    if(!document.querySelector('link[data-ei-estimate-integrity-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/estimate-integrity-v12.css';l.dataset.eiEstimateIntegrityCss='';document.head.appendChild(l)}
+    if(!document.querySelector('script[data-ei-estimate-integrity-js]')){const s=document.createElement('script');s.src='/estimate-integrity-v12.js';s.defer=true;s.dataset.eiEstimateIntegrityJs='';document.head.appendChild(s)}
+  }
+
   function normalizeProductNav(){
     const nav=$('.navlinks');if(!nav)return;
     const links=[['/check/','Check'],['/twin/','Twin'],['/watch/','Watch'],['/project/','Project'],['/data/','Evidence'],['/about/','About']];
@@ -103,6 +108,6 @@
     new MutationObserver(run).observe(out,{subtree:true,childList:true});run();
   }
 
-  function init(){normalizeProductNav();loadKinetic();loadRefinement();loadVehicleSanity();addTwinToFooter();compactExplanations();repairDecisionDock();watchDynamicResult();setTimeout(()=>{normalizeProductNav();repairDecisionDock();refreshWorkspace()},450)}
+  function init(){normalizeProductNav();loadKinetic();loadRefinement();loadVehicleSanity();loadEstimateIntegrity();addTwinToFooter();compactExplanations();repairDecisionDock();watchDynamicResult();setTimeout(()=>{normalizeProductNav();repairDecisionDock();refreshWorkspace()},450)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
