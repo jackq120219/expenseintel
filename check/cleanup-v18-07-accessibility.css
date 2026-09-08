@@ -1,0 +1,6 @@
+/* ExpenseIntel v18 — accessibility */
+.ei-v12-dashboard button:focus-visible,.ei-v12-dashboard a:focus-visible,.ei-v12-dashboard input:focus-visible,.ei-v12-dashboard select:focus-visible,.ei-v12-dashboard textarea:focus-visible{outline:2px solid #8edc22!important;outline-offset:3px!important}
+.ei-v12-dashboard button,.ei-v12-dashboard a{touch-action:manipulation}
+.ei-v12-dashboard [role="button"],.ei-v12-dashboard button{min-height:36px}
+.ei-v17-toast{max-width:min(360px,calc(100vw - 32px));line-height:1.4}
+@media(prefers-reduced-motion:reduce){.ei-v12-dashboard *,.ei-v12-dashboard *::before,.ei-v12-dashboard *::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}.ei-v12-hero-actions>*:hover,.ei-v12-hero-actions>*:focus-visible{transform:none!important}}
