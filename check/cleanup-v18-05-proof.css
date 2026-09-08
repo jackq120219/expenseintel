@@ -1,0 +1,10 @@
+/* ExpenseIntel v18 — evidence calm */
+.ei-v17-proofbar{gap:12px!important}
+.ei-v17-proofbar>article{background:#1b2018!important;border-color:#4a5346!important;padding:16px 17px!important}
+.ei-v17-proofbar>article>strong{font-size:18px!important;max-width:38ch}
+.ei-v17-proofbar p{font-size:9.5px!important;max-width:72ch}
+.ei-v17-proofbar small{opacity:.8}
+.ei-v17-confidence{padding-top:2px}
+.ei-v17-confidence b{font-size:15px!important}
+.ei-v17-proofbar button{opacity:.9}.ei-v17-proofbar button:hover,.ei-v17-proofbar button:focus-visible{opacity:1;background:#b8ff3f;color:#171c14}
+@media(max-width:760px){.ei-v17-proofbar{grid-template-columns:1fr!important}.ei-v17-proofbar>article{min-height:0!important}}
