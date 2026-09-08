@@ -1,0 +1,11 @@
+/* ExpenseIntel v18 — progressive density */
+.ei-v17-negotiation:not(.open),.ei-v17-outcome:not(.open){display:none!important}
+.ei-v17-neg-targets article,.ei-v17-script,.ei-v17-delta-grid article{box-shadow:none!important}
+.ei-v17-delta{padding:11px 13px!important}
+.ei-v17-delta-grid{gap:6px!important}
+.ei-v17-delta-grid article{min-width:142px!important}
+.ei-v17-intake-summary{border-left:3px solid #8fc63d!important}
+.ei-v17-intake-summary small{max-width:72ch}
+.ei-v12-insight,.ei-v12-missing-card{box-shadow:none!important}
+.ei-v12-insight p,.ei-v12-missing-card p{line-height:1.5!important}
+@media(min-width:900px){.ei-v17-neg-body>div,.ei-v17-neg-body>aside{padding:20px 22px!important}}
