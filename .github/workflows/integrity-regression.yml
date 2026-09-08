@@ -22,3 +22,5 @@ jobs:
           node-version: '22'
       - name: Run estimate integrity regression
         run: node tests/integrity-regression.mjs
+      - name: Run free data regression
+        run: node tests/free-data-regression.mjs
