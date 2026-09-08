@@ -1,0 +1,1 @@
+(()=>{const files=['action-loop-v19.js','evidence-pack-v19.js'];let i=0;function next(){if(i>=files.length)return;const src=`/check/${files[i++]}`;if(document.querySelector(`script[src="${src}"]`))return next();const s=document.createElement('script');s.src=src;s.defer=true;s.onload=next;s.onerror=next;document.body.appendChild(s)}next()})();
