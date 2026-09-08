@@ -1,3 +1,4 @@
+@import url('/site-smooth-v2.css');
 @media (prefers-reduced-motion:no-preference){
   html{scroll-behavior:smooth}
   body{animation:eiPageIn .42s cubic-bezier(.2,.75,.2,1) both}
