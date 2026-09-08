@@ -1,0 +1,22 @@
+.ei-v12-chart-wrap{position:relative;background:linear-gradient(180deg,#f8f5ed 0%,#f4f0e7 100%)}
+.ei-v12-chart-wrap [data-chart]{position:relative}
+.ei-v12-chart{height:282px;margin-top:2px;overflow:visible}
+.ei-v12-chart .grid{stroke:#d9d4ca;stroke-width:.85;opacity:.72}
+.ei-v12-chart .axis{fill:#7b8177;font:700 7.5px var(--mono,monospace);letter-spacing:.01em}
+.ei-v12-chart .deal{stroke:#e8476f;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 2px 1px rgba(232,71,111,.08))}
+.ei-v12-chart .market{stroke:#667067;stroke-width:1.65;stroke-dasharray:4 6;opacity:.72}
+.ei-v12-chart .best{stroke:#689b35;stroke-width:2.35;stroke-linecap:round;stroke-linejoin:round}
+.ei-v12-chart .ei-v13-opportunity-band{fill:rgba(105,155,53,.075);stroke:none;pointer-events:none}
+.ei-v12-chart .ei-v13-endpoint{stroke:#f8f5ed;stroke-width:2.6}
+.ei-v12-chart .ei-v13-leader{fill:none;stroke-width:1;opacity:.58}
+.ei-v12-chart .ei-v13-endcap rect{fill:#f9f6ef;stroke:#cfc9bd;stroke-width:1;rx:3;ry:3;filter:drop-shadow(0 2px 4px rgba(16,20,15,.07))}
+.ei-v12-chart .ei-v13-endcap.current rect{stroke:#e8a0b3}.ei-v12-chart .ei-v13-endcap.improved rect{stroke:#9bb77c}.ei-v12-chart .ei-v13-endcap.reference rect{stroke:#b7bdb6}
+.ei-v12-chart .ei-v13-endcap .name{font:800 6.2px var(--mono,monospace);letter-spacing:.08em;text-transform:uppercase;fill:#747a71}
+.ei-v12-chart .ei-v13-endcap .value{font:800 8.7px var(--mono,monospace);fill:#181c16}
+.ei-v12-chart .ei-v13-endcap.current .name{fill:#b63a59}.ei-v12-chart .ei-v13-endcap.improved .name{fill:#477323}.ei-v12-chart .ei-v13-endcap.reference .name{fill:#5c655d}
+.ei-v12-legend{margin-top:5px;padding-top:9px;border-top:1px solid #ded9cf;gap:22px}
+.ei-v12-legend span{font:700 8px var(--mono,monospace);text-transform:uppercase;letter-spacing:.04em;color:#697067}
+.ei-v12-legend i{width:21px;height:2px}.ei-v12-legend .market i{height:1px;background:repeating-linear-gradient(90deg,#687269 0 5px,transparent 5px 9px)}
+.ei-v12-chart-head h3{letter-spacing:-.015em}.ei-v12-chart-head p{max-width:460px;line-height:1.45}
+.ei-v12-chart-wrap:after{content:'MODEL VIEW';position:absolute;right:23px;bottom:54px;color:#9a9f96;font:800 6px var(--mono,monospace);letter-spacing:.12em;pointer-events:none}
+@media(max-width:800px){.ei-v12-chart{height:250px}.ei-v12-chart-wrap:after{display:none}.ei-v12-chart .ei-v13-endcap rect{filter:none}}
