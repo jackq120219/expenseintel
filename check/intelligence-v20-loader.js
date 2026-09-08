@@ -1,0 +1,1 @@
+(()=>{const src='/check/decision-explain-v20.js';if(document.querySelector(`script[src="${src}"]`))return;const s=document.createElement('script');s.src=src;s.defer=true;document.head.appendChild(s)})();
