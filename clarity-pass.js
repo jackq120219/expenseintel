@@ -8,6 +8,11 @@
     if(!document.querySelector('script[data-ei-kinetic-js]')){const s=document.createElement('script');s.src='/kinetic-system.js';s.defer=true;s.dataset.eiKineticJs='';document.head.appendChild(s)}
   }
 
+  function loadRefinement(){
+    if(!document.querySelector('link[data-ei-refine-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/refinement-v9.css';l.dataset.eiRefineCss='';document.head.appendChild(l)}
+    if(!document.querySelector('script[data-ei-refine-js]')){const s=document.createElement('script');s.src='/refinement-v9.js';s.defer=true;s.dataset.eiRefineJs='';document.head.appendChild(s)}
+  }
+
   function normalizeProductNav(){
     const nav=$('.navlinks');if(!nav)return;
     const links=[['/check/','Check'],['/twin/','Twin'],['/watch/','Watch'],['/project/','Project'],['/data/','Evidence'],['/about/','About']];
@@ -93,6 +98,6 @@
     new MutationObserver(run).observe(out,{subtree:true,childList:true});run();
   }
 
-  function init(){normalizeProductNav();loadKinetic();addTwinToFooter();compactExplanations();repairDecisionDock();watchDynamicResult();setTimeout(()=>{normalizeProductNav();repairDecisionDock();refreshWorkspace()},450)}
+  function init(){normalizeProductNav();loadKinetic();loadRefinement();addTwinToFooter();compactExplanations();repairDecisionDock();watchDynamicResult();setTimeout(()=>{normalizeProductNav();repairDecisionDock();refreshWorkspace()},450)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
