@@ -1,0 +1,30 @@
+{
+  "schema": "expenseintel.decision-evidence.v1",
+  "purpose": "Portable contract for storing, comparing, and later contributing pre-commitment decision evidence without pretending modeled values are verified facts.",
+  "evidence_classes": ["user", "public", "verified", "modeled", "unknown"],
+  "fields": {
+    "decision_id": "stable local or account-scoped identifier",
+    "category": "vehicle | lease | property | home | equipment | business-project | personal",
+    "subject": "normalized item, project, property, quote, or commitment",
+    "location": "optional market/location context",
+    "source_uri": "optional listing, quote, document, or public source",
+    "observed_at": "when the underlying evidence was observed",
+    "retrieved_at": "when ExpenseIntel retrieved or parsed it",
+    "field": "price, rate, recurring cost, term, tax, insurance, residual value, lead time, etc.",
+    "value": "normalized numeric or text value",
+    "unit": "currency, percent, months, annual, monthly, etc.",
+    "evidence_class": "user | public | verified | modeled | unknown",
+    "confidence": "0-100 evidence confidence, separate from recommendation quality",
+    "method": "direct input, parser, public source, comparable set, model, or user correction",
+    "replaced_by": "newer evidence record when an assumption is superseded",
+    "outcome_value": "optional realized value after the decision",
+    "outcome_status": "bought | signed | negotiated | walked-away | waiting"
+  },
+  "rules": [
+    "User-entered numbers always supersede modeled baselines for the same field.",
+    "A modeled value may guide planning but must never be presented as a quote or verified market fact.",
+    "Comparable claims require an identifiable comparable set or public source.",
+    "Observation time and retrieval time are distinct.",
+    "Outcome data is opt-in and must remain distinguishable from modeled recommendations."
+  ]
+}
