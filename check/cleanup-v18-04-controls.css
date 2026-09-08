@@ -1,0 +1,9 @@
+/* ExpenseIntel v18 — control readability */
+.ei-v12-control{padding-block:14px!important;border-bottom-color:rgba(17,19,15,.12)!important}
+.ei-v12-control label{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:11px!important;letter-spacing:.045em!important}
+.ei-v12-control output{font-variant-numeric:tabular-nums;font-weight:850!important;color:#171c14}
+.ei-v12-control input[type="range"]{height:26px;accent-color:#82c91e;cursor:pointer}
+.ei-v12-control small{max-width:42ch;line-height:1.45!important;color:#7a8177!important}
+.ei-v12-control:focus-within{background:rgba(184,255,63,.045)}
+.ei-v12-savings{border-top:1px solid rgba(17,19,15,.15)!important}
+@media(max-width:720px){.ei-v12-control{padding-block:12px!important}.ei-v12-control label{font-size:10px!important}}
