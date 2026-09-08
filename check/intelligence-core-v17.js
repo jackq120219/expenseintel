@@ -15,7 +15,7 @@
   const savings=r=>num($('.ei-v12-savings strong',r)?.textContent)||num($('[data-k4]',r)?.textContent)||Math.max(0,endpoint(r,'current')-endpoint(r,'improved'));
   const current=r=>endpoint(r,'current')||num($('.ei-v12-kpi strong',r)?.textContent);
   const improved=r=>endpoint(r,'improved')||Math.max(0,current(r)-savings(r));
-  const benchmark=r=>endpoint(r,'reference')||num($('.ei-v13-endcap.market .value',r)?.textContent);
+  const benchmark=r=>{const h=r.closest('[data-check-output] .shell')||r.parentElement||r,t=clean($('[data-comps-section]',h)?.textContent);if(t&&!/not available|unavailable|no active|missing/i.test(t)){const m=t.match(/(?:comparable\s+median|median(?:\s+price)?)\D{0,18}\$?\s*([\d,.]+)/i);if(m){const n=+m[1].replace(/,/g,'');if(n>0)return n}}return endpoint(r,'reference')||num($('.ei-v13-endcap.market .value',r)?.textContent)};
   const confidence=r=>{const t=clean($('.ei-v12-analysis-meta',r)?.textContent),m=t.match(/(?:planning\s+confidence\s*)?(\d{1,3})\s*\/\s*100/i);if(m)return Math.max(0,Math.min(100,+m[1]));const c=clean($('[data-v16-chip]',r)?.textContent),n=+c.split('/')[0];return Number.isFinite(n)?Math.max(0,Math.min(100,n)):null};
   const decisionText=r=>clean($('.ei-v12-call h2',r)?.textContent)||'Review before you commit.';
   const decisionCopy=r=>clean($('.ei-v12-call p',r)?.textContent);
@@ -29,7 +29,7 @@
   const hash=s=>{let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h)^s.charCodeAt(i);return (h>>>0).toString(36)};
   const key=r=>hash(clean([active().url,active().title,active().text,category(r)].filter(Boolean).join('|')).toLowerCase()||'expenseintel-decision');
   const setControl=(r,rx,value)=>{const x=row(r,rx);if(!x||!Number.isFinite(+value))return false;const i=x.input,v=+value,step=Math.max(+i.step||1,1);if(v>+i.max)i.max=Math.ceil(v*1.35/step)*step;if(v<+i.min)i.min=Math.max(0,Math.floor(v*.5/step)*step);i.value=Math.max(+i.min,Math.min(+i.max,v));i.dispatchEvent(new Event('input',{bubbles:true}));return true};
-  const snapshot=r=>({key:key(r),at:Date.now(),title:clean(active().title||active().text||sourceText(r)).slice(0,120),category:category(r),decision:decisionClass(r),decisionText:decisionText(r),current:current(r),improved:improved(r),benchmark:benchmark(r),savings:savings(r),confidence:confidence(r),unknowns:unknowns(r).length,controls:Object.fromEntries(controls(r).map(x=>[x.label,x.raw]))});
+  const snapshot=r=>({key:key(r),at:Date.now(),title:clean(active().title||active().text||sourceText(r)).slice(0,120),source:sourceText(r).slice(0,500),url:clean(active().url||''),location:clean(active().location||''),category:category(r),decision:decisionClass(r),decisionText:decisionText(r),current:current(r),improved:improved(r),benchmark:benchmark(r),savings:savings(r),confidence:confidence(r),unknowns:unknowns(r).length,controls:Object.fromEntries(controls(r).map(x=>[x.label,x.raw]))});
   const events=new EventTarget(),mods=[];
   let queued=false;
   function run(){queued=false;const r=root();if(!r)return;mods.forEach(fn=>{try{fn(r)}catch(e){console.warn('[ExpenseIntel v17]',e)}});events.dispatchEvent(new CustomEvent('refresh',{detail:{root:r}}))}
