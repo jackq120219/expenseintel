@@ -1,48 +1,36 @@
 (()=>{
   'use strict';
   const nav=document.querySelector('.navlinks');
-  if(!nav)return;
-  const path=location.pathname;
-  const key=path.startsWith('/twin/')?'Twin':path.startsWith('/watch/')?'Watch':(path.startsWith('/project/')||path.startsWith('/find/')||path.startsWith('/analyze/')||path.startsWith('/screen/')||path.startsWith('/simulate/')||path.startsWith('/matrix/')||path.startsWith('/compare/')||path.startsWith('/tools/')||path.startsWith('/forecast/')||path.startsWith('/expense-map/'))?'Project':(path.startsWith('/data/')||path.startsWith('/developers/'))?'Evidence':(path.startsWith('/about/')||path.startsWith('/pricing/'))?'About':'Check';
-  const items=[['/check/','Check'],['/twin/','Twin'],['/watch/','Watch'],['/project/','Project'],['/data/','Evidence'],['/about/','About']];
-  const signature=items.map(x=>x[1]).join('|');
-  const current=[...nav.querySelectorAll(':scope>a')].map(a=>a.textContent.trim()).join('|');
-  if(current!==signature){
-    nav.innerHTML='';
-    for(const [href,label] of items){const a=document.createElement('a');a.href=href;a.textContent=label;nav.appendChild(a)}
-  }
-  const links=[...nav.querySelectorAll(':scope>a')];
-  const setActive=label=>links.forEach(a=>{
-    const active=a.textContent.trim()===label;
-    a.classList.toggle('active',active);
-    if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
-  });
-  setActive(key);
-  nav.dataset.eiStable='1';
-
   const right=document.querySelector('.navright');
-  if(right){
-    right.innerHTML='';
-    const secondary=document.createElement('a');secondary.className='textbtn';secondary.href='/truecost/';secondary.textContent='TrueCost';
-    const primary=document.createElement('a');primary.className='solidbtn';primary.href='/check/';primary.textContent='New check';
-    right.append(secondary,primary);
-  }
+  if(nav)nav.dataset.eiStable='1';
+  if(right)right.dataset.eiStable='1';
+  document.documentElement.dataset.eiHeaderStable='1';
 
-  /* Warm the six primary documents in idle time so cross-document navigation has less visible loading. */
+  /* This layer intentionally does not rewrite header labels. The base app is the
+     single source of truth for nav content; this file only improves continuity. */
   const prefetched=new Set();
-  const prefetch=href=>{
-    if(prefetched.has(href)||href===location.pathname)return;prefetched.add(href);
-    const l=document.createElement('link');l.rel='prefetch';l.as='document';l.href=href;document.head.appendChild(l);
+  const sameOriginPath=href=>{
+    try{
+      const u=new URL(href,location.href);
+      return u.origin===location.origin ? (u.pathname+u.search+u.hash) : '';
+    }catch(_e){return ''}
   };
-  const warmAll=()=>items.forEach(([href])=>prefetch(href));
-  if('requestIdleCallback'in window)requestIdleCallback(warmAll,{timeout:1800});else setTimeout(warmAll,700);
-
+  const prefetch=href=>{
+    const path=sameOriginPath(href);
+    if(!path||prefetched.has(path)||path===location.pathname)return;
+    prefetched.add(path);
+    const l=document.createElement('link');
+    l.rel='prefetch';
+    l.as='document';
+    l.href=path;
+    document.head.appendChild(l);
+  };
+  const links=[...document.querySelectorAll('.site-nav a[href],.ei-identity-rail a[href]')];
+  const warm=()=>links.forEach(a=>prefetch(a.getAttribute('href')||''));
+  if('requestIdleCallback'in window)requestIdleCallback(warm,{timeout:1400});else setTimeout(warm,500);
   links.forEach(a=>{
-    const label=a.textContent.trim(),href=a.getAttribute('href')||'';
+    const href=a.getAttribute('href')||'';
     a.addEventListener('pointerenter',()=>prefetch(href),{passive:true});
     a.addEventListener('focus',()=>prefetch(href));
-    a.addEventListener('pointerdown',()=>setActive(label),{passive:true});
   });
-
-  addEventListener('pageshow',()=>setActive(key),{passive:true});
 })();
