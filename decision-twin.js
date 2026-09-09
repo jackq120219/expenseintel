@@ -38,7 +38,8 @@
     '/vehicle-sanity-v11.js',
     '/check/free-evidence-v15.js',
     '/check/optimizer-v16.js',
-    '/check/intelligence-v17-loader.js'
+    '/check/intelligence-v17-loader.js',
+    '/sprint-sep9.js'
   ];
 
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
