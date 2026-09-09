@@ -1,0 +1,7 @@
+'use strict';
+(()=>{
+ const q=(s,r=document)=>r.querySelector(s),qa=(s,r=document)=>[...r.querySelectorAll(s)],out=q('[data-check-output]');
+ qa('a[href^="http"]').forEach(a=>{try{if(new URL(a.href,location.href).origin!==location.origin){a.target='_blank';a.rel='noopener noreferrer'}}catch(_e){}});
+ function mount(){if(!out)return;const shell=q('.shell',out),top=q('.check-output-top',shell);if(!top||q('#eiTrustRule',shell))return;const el=document.createElement('div');el.id='eiTrustRule';el.className='ei-trust-rule';el.innerHTML='<b>TRUST RULE</b><span>Observed and connected facts can support a decision. Modeled values are scenarios. Unknowns stay unknown until evidence resolves them.</span>';top.insertAdjacentElement('afterend',el);qa('[data-result-score],[data-result-label]',shell).forEach(x=>x.setAttribute('aria-live','polite'))}
+ const css=document.createElement('style');css.textContent='.ei-trust-rule{display:flex;gap:9px;align-items:flex-start;margin:8px 0 4px;padding:8px 10px;border-left:3px solid currentColor;background:rgba(255,255,255,.34);font-size:9px;line-height:1.45}.ei-trust-rule b{flex:0 0 auto;font:800 8px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em}.ei-trust-rule span{opacity:.68}';document.head.appendChild(css);if(out){new MutationObserver(mount).observe(out,{subtree:true,childList:true});mount()}
+})();
