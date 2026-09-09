@@ -7,8 +7,8 @@ module.exports=async function handler(req,res){
   if(req.method!=='GET'){res.statusCode=405;return res.end(JSON.stringify({ok:false,error:'Method not allowed'}))}
   res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');
   const host=req.headers['x-forwarded-host']||req.headers.host,proto=req.headers['x-forwarded-proto']||'https',base=`${proto}://${host}`;
-  const scripts=['/app.js','/find/find.js','/analyze/analyze.js','/simulate/simulate.js','/watch/watch.js','/matrix/matrix.js','/passport.js','/shock.js','/contractor/contractor.js','/home/home.js'];
-  const pages=['/','/find/','/analyze/','/simulate/','/watch/','/screen/','/matrix/','/data/','/pricing/','/developers/','/contractor/','/home/'];
+  const scripts=['/app.js','/check/check.js','/check/helpful.js','/check/visuals.js','/check/lease-intel.js','/decision-twin.js','/find/find.js','/analyze/analyze.js','/simulate/simulate.js','/watch/watch.js','/matrix/matrix.js','/passport.js','/shock.js','/contractor/contractor.js','/home/home.js'];
+  const pages=['/','/check/','/truecost/','/fairprice/','/timing/','/xray/','/project/','/costlab/','/watch/','/find/','/analyze/','/simulate/','/screen/','/matrix/','/data/','/pricing/','/developers/','/contractor/','/home/'];
   const scriptChecks=[];for(const path of scripts){try{const r=await fetch(base+path);const source=await r.text();if(!r.ok)throw new Error(`HTTP ${r.status}`);new Function(source);scriptChecks.push({path,ok:true,bytes:source.length})}catch(e){scriptChecks.push({path,ok:false,error:e.message})}}
   const pageChecks=[];for(const path of pages){try{const r=await fetch(base+path,{redirect:'manual'});pageChecks.push({path,ok:r.status>=200&&r.status<400,status:r.status})}catch(e){pageChecks.push({path,ok:false,error:e.message})}}
   const modelChecks=[];
@@ -22,6 +22,7 @@ module.exports=async function handler(req,res){
   const apiChecks=[];
   const liveAddress='32 Chestnut St, Westborough, MA 01581';
   const liveTests=[
+    {name:'check_vehicle_endpoint',path:'/api/check',body:{text:'I am considering a 2026 Toyota Camry for $35000 in Chicago',category:'auto',price:35000,location:'Chicago, IL'},assert:d=>d?.ok&&d?.detectedCategory==='vehicle'&&d?.vehicle?.identity?.make==='Toyota'&&d?.vehicle?.identity?.model==='Camry'&&Number(d?.price)===35000},
     {name:'home_decision_endpoint',path:'/api/home-decision',body:{address:liveAddress,sqft:2500,price:550000,downPct:20,rate:6.5,term:30,tax:8000,insurance:2500,maintPct:1,closingPct:2.5,app:3,salePct:6,budget:5000,rent:3200,rentGrowth:3},assert:d=>d?.ok&&d?.decision?.ownership?.monthly>0},
     {name:'contractor_decision_endpoint',path:'/api/contractor-decision',body:{address:liveAddress,scope:'renovation',sqft:25000,laborHours:3000,laborRate:70,materials:250000,equipDays:20,equipRate:1200,miles:40,trips:12,mileRate:2.2,tons:20,tonRate:130,permits:7000,service:20000,months:5,overhead:10000,unknowns:'medium',contingency:5,margin:18,verified:{wage:true}},assert:d=>d?.ok&&d?.decision?.costs?.target>d?.decision?.costs?.floor}
   ];
