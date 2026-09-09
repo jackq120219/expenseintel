@@ -1,0 +1,5 @@
+'use strict';
+(()=>{
+ const q=(s,r=document)=>r.querySelector(s),form=q('[data-check-form]');if(!form||q('#eiMobileRun'))return;const bar=document.createElement('div');bar.id='eiMobileRun';bar.className='ei-mobile-run';bar.innerHTML='<button type="button">Build Decision Passport →</button>';document.body.appendChild(bar);q('button',bar).onclick=()=>{const has=!!(q('#check-url')?.value.trim()||q('#check-text')?.value.trim());if(has)form.requestSubmit?.();else{q('#check-form')?.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>q('#check-url')?.focus(),300)}};
+ const css=document.createElement('style');css.textContent='.ei-mobile-run{display:none}@media(max-width:760px){body{padding-bottom:62px}.ei-mobile-run{display:block;position:fixed;left:0;right:0;bottom:0;z-index:1200;padding:8px max(12px,env(safe-area-inset-left));background:rgba(243,240,232,.96);backdrop-filter:blur(12px);border-top:1px solid rgba(30,35,40,.13)}.ei-mobile-run button{width:100%;min-height:44px;border:0;background:#1e2220;color:#fff;font-weight:750;letter-spacing:.02em;cursor:pointer}}';document.head.appendChild(css);
+})();
