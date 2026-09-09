@@ -1,10 +1,18 @@
 (()=>{
   if(!(location.pathname==='/'||location.pathname.startsWith('/check/')))return;
+  if(window.__eiClassicDashboardRestore)return;window.__eiClassicDashboardRestore=true;
 
-  /* Compatibility loader: restore the established ExpenseIntel Check result that had
-     the decision dashboard, readable chart, key total-cost metrics and Optimize & Save.
-     Keep the newer evidence/API work underneath; remove only the later overlay UX that
-     displaced the working dashboard. */
+  /* Restore the established ExpenseIntel Check result: the decision dashboard,
+     readable graph, top cost metrics and Optimize & Save. Block the later Passport /
+     workspace overlays that displaced this working result, while keeping the newer
+     evidence and API intelligence underneath. */
+
+  const markScript=(attr)=>{if(document.querySelector(`script[${attr}]`))return;const s=document.createElement('script');s.type='application/json';s.setAttribute(attr,'');document.head.appendChild(s)};
+  const markLink=(attr)=>{if(document.querySelector(`link[${attr}]`))return;const l=document.createElement('link');l.rel='stylesheet';l.href='data:text/css,';l.setAttribute(attr,'');document.head.appendChild(l)};
+  markScript('data-ei-clarity-js');markLink('data-ei-clarity-css');
+  markScript('data-ei-passport-js');markLink('data-ei-passport-css');
+  markScript('data-ei-lab-js');markLink('data-ei-lab-css');
+  if(document.currentScript)document.currentScript.setAttribute('data-ei-twin-js','');
 
   const css=[
     '/check/decision-dashboard-v2.css',
@@ -70,17 +78,8 @@
     cleanupLaterOverlays();restoreNav();
     setTimeout(()=>{cleanupLaterOverlays();restoreNav()},550);
     setTimeout(()=>{cleanupLaterOverlays();restoreNav()},1200);
-
-    const out=$('[data-check-output]');
-    if(out){
-      let queued=false;
-      new MutationObserver(()=>{
-        if(queued)return;queued=true;
-        requestAnimationFrame(()=>{queued=false;cleanupLaterOverlays()});
-      }).observe(out,{subtree:true,childList:true});
-    }
   }
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(start,40),{once:true});
-  else setTimeout(start,40);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(start,20),{once:true});
+  else setTimeout(start,20);
 })();
