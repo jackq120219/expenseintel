@@ -1,0 +1,8 @@
+'use strict';
+(()=>{
+ const q=(s,r=document)=>r.querySelector(s),qa=(s,r=document)=>[...r.querySelectorAll(s)];if(q('#eiSkipLink'))return;
+ const skip=document.createElement('a');skip.id='eiSkipLink';skip.className='ei-skip-link';skip.href='#check-form';skip.textContent='Skip to decision check';document.body.insertAdjacentElement('afterbegin',skip);
+ const tabs=qa('[data-mode]');tabs.forEach((b,i)=>{b.setAttribute('role','tab');b.setAttribute('aria-selected',b.classList.contains('active')?'true':'false');if(!b.id)b.id=`ei-mode-${i}`;b.addEventListener('click',()=>tabs.forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false')))});q('.check-tabs')?.setAttribute('role','tablist');q('[data-check-output]')?.setAttribute('aria-live','polite');q('[data-check-output]')?.setAttribute('aria-busy','false');
+ qa('a[target="_blank"]').forEach(a=>{a.rel='noopener noreferrer'});
+ const css=document.createElement('style');css.textContent='.ei-skip-link{position:fixed;left:12px;top:-60px;z-index:5000;padding:9px 12px;background:#111;color:#fff}.ei-skip-link:focus{top:12px}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid currentColor;outline-offset:3px}@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}';document.head.appendChild(css);
+})();
