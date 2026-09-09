@@ -1,0 +1,9 @@
+'use strict';
+(()=>{
+ const q=(s,r=document)=>r.querySelector(s),form=q('[data-check-form]');if(!form||q('#eiUnknownPreview'))return;
+ const host=document.createElement('div');host.id='eiUnknownPreview';host.className='ei-unknown-preview';form.querySelector('.check-run')?.insertAdjacentElement('afterend',host);
+ function list(){const cat=q('#check-category')?.value||'auto',price=Number(q('#check-price')?.value)||0,loc=q('#check-location')?.value.trim();const base=[];if(!price)base.push('Exact price / quote');if(!loc)base.push('Location-specific costs');if(cat==='vehicle'||cat==='auto')base.push('Insurance + depreciation');if(cat==='property')base.push('Taxes / HOA / comparable sales');if(cat==='home')base.push('Scope exclusions / permits');if(cat==='business-project')base.push('Approvals / utility bottlenecks');base.push('Exit or reversibility');return [...new Set(base)].slice(0,3)}
+ function render(){const items=list();host.innerHTML=`<span>LIKELY OPEN QUESTIONS</span><div>${items.map(x=>`<i>${x}</i>`).join('')}</div><small>ExpenseIntel will try to resolve these from connected evidence first and leave the rest explicitly unknown.</small>`}
+ const css=document.createElement('style');css.textContent='.ei-unknown-preview{margin:10px 0 0;padding:9px 10px;background:rgba(118,80,34,.06);border-left:2px solid rgba(118,80,34,.38)}.ei-unknown-preview>span{font:700 9px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em}.ei-unknown-preview>div{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.ei-unknown-preview i{font-style:normal;font-size:10px;padding:3px 6px;background:rgba(255,255,255,.52)}.ei-unknown-preview small{font-size:10px;line-height:1.4;opacity:.65}';document.head.appendChild(css);
+ form.addEventListener('input',render);form.addEventListener('change',render);render();
+})();
