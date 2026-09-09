@@ -1,0 +1,6 @@
+'use strict';
+(()=>{
+ const text=document.getElementById('check-text'),form=document.querySelector('[data-check-form]');if(!text||!form||document.getElementById('eiQuoteReadiness'))return;const el=document.createElement('small');el.id='eiQuoteReadiness';el.className='ei-quote-readiness';text.insertAdjacentElement('afterend',el);
+ function update(){const v=text.value.trim(),lines=v?v.split(/\n+/).filter(x=>x.trim()).length:0,money=(v.match(/\$\s?[\d,.]+/g)||[]).length,terms=(v.match(/\b(?:total|subtotal|labor|material|tax|fee|term|monthly|deposit|allowance|exclusion|warranty)\b/gi)||[]).length;if(!v){el.textContent='Paste the quote as-is; line items and dollar amounts help ExpenseIntel structure it.';return}el.textContent=`Quote structure: ${lines} line${lines===1?'':'s'} · ${money} dollar amount${money===1?'':'s'} · ${terms} cost/term signal${terms===1?'':'s'}. ${money?'Ready to analyze.':'Add the quoted amount if it is missing.'}`}
+ const style=document.createElement('style');style.textContent='.ei-quote-readiness{display:block;margin-top:5px;font:600 9px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;opacity:.58}';document.head.appendChild(style);text.addEventListener('input',update);update();
+})();
