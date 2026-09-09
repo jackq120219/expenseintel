@@ -1,0 +1,1 @@
+(()=>{const I=window.EIIdentity;if(!I)return;const path=location.pathname;if(path==='/'||path.startsWith('/check/'))return;const nav=document.querySelector('.navright');if(!nav||nav.querySelector('.ei-id-return'))return;const a=document.createElement('a');a.className='textbtn ei-id-return';a.href='/check/';a.textContent='Decision Passport';nav.insertBefore(a,nav.firstChild);})();
