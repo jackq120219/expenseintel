@@ -26,8 +26,6 @@
     '/check/chart-polish-v4.js',
     '/check/metric-expansion-v5.js',
     '/check/data-pedigree-v6.js',
-    '/check/optimize-plan-v7.js',
-    '/check/lease-consistency-v8.js',
     '/check/opportunity-model-v10.js',
     '/vehicle-sanity-v11.js',
     '/check/free-evidence-v15.js',
