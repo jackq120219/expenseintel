@@ -1,0 +1,10 @@
+'use strict';
+(()=>{
+ const q=(s,r=document)=>r.querySelector(s),form=q('[data-check-form]');if(!form||q('#eiRecentDecisions'))return;const KEY='ei_sep9_recent_decisions',ids=['check-url','check-text','check-category','check-price','check-location'];
+ const read=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(_e){return[]}},write=v=>{try{localStorage.setItem(KEY,JSON.stringify(v))}catch(_e){}};
+ const host=document.createElement('div');host.id='eiRecentDecisions';host.className='ei-recent-decisions';const examples=q('.check-examples');examples?.insertAdjacentElement('afterend',host);
+ function snap(){const x={};ids.forEach(id=>{const e=q(`#${id}`);x[id]=e?.value||''});x.label=(x['check-text']||x['check-url']||'Decision').replace(/^https?:\/\//,'').slice(0,54);x.savedAt=Date.now();return x}
+ function render(){const rows=read().slice(0,3);host.innerHTML=rows.length?`<span>RECENT DECISIONS</span><div>${rows.map((x,i)=>`<button type="button" data-i="${i}">${x.label}</button>`).join('')}</div>`:'';host.querySelectorAll('button').forEach(b=>b.onclick=()=>{const x=rows[Number(b.dataset.i)];ids.forEach(id=>{const e=q(`#${id}`);if(e)e.value=x[id]||''});form.dispatchEvent(new Event('input',{bubbles:true}));q('#check-form')?.scrollIntoView({behavior:'smooth',block:'start'})})}
+ form.addEventListener('submit',()=>{const x=snap();if(!x['check-url']&&!x['check-text'])return;const rows=read().filter(r=>r.label!==x.label);rows.unshift(x);write(rows.slice(0,5));setTimeout(render,0)});
+ const css=document.createElement('style');css.textContent='.ei-recent-decisions{margin-top:9px}.ei-recent-decisions>span{font:700 8px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em;opacity:.55}.ei-recent-decisions>div{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}.ei-recent-decisions button{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid rgba(30,35,40,.12);background:rgba(255,255,255,.42);padding:5px 7px;font-size:9px;cursor:pointer}';document.head.appendChild(css);render();
+})();
