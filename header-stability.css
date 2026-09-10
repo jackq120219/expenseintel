@@ -1,9 +1,8 @@
-/* Stable ExpenseIntel header: current location stays visible and page changes feel continuous. */
+/* Stable ExpenseIntel header: one navigation system only. */
 @view-transition{navigation:auto}
 html{background:#f3f0e8}
 .site-nav{contain:layout paint;transform:none!important;view-transition-name:ei-site-nav}
 .topline{view-transition-name:ei-topline}
-.ei-signal-rail{view-transition-name:ei-rail}
 .navinner{min-height:70px}
 .navlinks{position:relative;display:flex;align-items:center;gap:8px!important}
 .navlinks>a{position:relative;z-index:2;padding:10px 13px!important;border:1px solid transparent!important;border-radius:4px;color:#3c4238!important;opacity:.78;transition:color .16s ease,opacity .16s ease,background-color .16s ease,border-color .16s ease!important}
@@ -17,9 +16,12 @@ html{background:#f3f0e8}
 .ei-route-flash{display:none!important}
 .site-nav,.navinner,.navlinks,.navright{animation:none!important}
 
+/* Never allow a second navigation/rail to appear beneath the main header. */
+.ei-identity-rail,.ei-signal-rail{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;overflow:hidden!important;border:0!important;margin:0!important;padding:0!important;opacity:0!important;pointer-events:none!important}
+
 /* Keep the header visually continuous while the document underneath changes. */
-::view-transition-group(ei-site-nav),::view-transition-group(ei-topline),::view-transition-group(ei-rail){animation-duration:.001s;z-index:9999}
-::view-transition-old(ei-site-nav),::view-transition-new(ei-site-nav),::view-transition-old(ei-topline),::view-transition-new(ei-topline),::view-transition-old(ei-rail),::view-transition-new(ei-rail){animation:none;mix-blend-mode:normal}
+::view-transition-group(ei-site-nav),::view-transition-group(ei-topline){animation-duration:.001s;z-index:9999}
+::view-transition-old(ei-site-nav),::view-transition-new(ei-site-nav),::view-transition-old(ei-topline),::view-transition-new(ei-topline){animation:none;mix-blend-mode:normal}
 ::view-transition-old(root){animation:eiDocOut 110ms ease both}
 ::view-transition-new(root){animation:eiDocIn 230ms cubic-bezier(.2,.72,.2,1) both}
 @keyframes eiDocOut{to{opacity:.84;transform:translateY(-2px)}}
