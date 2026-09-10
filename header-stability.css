@@ -1,9 +1,12 @@
-/* ExpenseIntel header stability: no cross-document snapshots, no translucent shell duplication. */
-@supports (view-transition-name:none){
-  html,.topline,.site-nav,main{view-transition-name:none!important}
+/* ExpenseIntel header stability + app-like navigation.
+   The header never crossfades. Only page content glides between same-origin documents. */
+
+html{
+  background:var(--paper,#f3f0e8);
 }
+
 .topline,.site-nav{
-  background:var(--paper)!important;
+  background:var(--paper,#f3f0e8)!important;
   backdrop-filter:none!important;
   -webkit-backdrop-filter:none!important;
   animation:none!important;
@@ -12,6 +15,7 @@
 .navinner,.navlinks,.navright,.brand,.menu-btn{
   animation:none!important;
 }
+
 .ei-identity-rail,
 .ei-signal-rail,
 .ei-lens-card,
@@ -21,4 +25,84 @@
 .ei-evidence-contract,
 .ei-project-jump{
   display:none!important;
+}
+
+/* Chrome/Edge/Safari browsers that support cross-document View Transitions
+   keep the chrome stationary and animate only the changing page body. */
+@supports (view-transition-name: none){
+  @view-transition{
+    navigation:auto;
+  }
+
+  .topline{
+    view-transition-name:ei-topline!important;
+  }
+  .site-nav{
+    view-transition-name:ei-site-nav!important;
+  }
+  main{
+    view-transition-name:ei-page-main!important;
+  }
+
+  /* Never crossfade the page shell. This is what prevents the old doubled,
+     translucent-header effect from returning. */
+  ::view-transition-group(root),
+  ::view-transition-old(root),
+  ::view-transition-new(root){
+    animation:none!important;
+    mix-blend-mode:normal!important;
+  }
+
+  ::view-transition-group(ei-topline),
+  ::view-transition-group(ei-site-nav),
+  ::view-transition-old(ei-topline),
+  ::view-transition-new(ei-topline),
+  ::view-transition-old(ei-site-nav),
+  ::view-transition-new(ei-site-nav){
+    animation:none!important;
+    mix-blend-mode:normal!important;
+    opacity:1!important;
+  }
+
+  ::view-transition-image-pair(ei-page-main){
+    isolation:isolate;
+  }
+  ::view-transition-group(ei-page-main){
+    animation-duration:240ms;
+    animation-timing-function:cubic-bezier(.22,.75,.22,1);
+  }
+  ::view-transition-old(ei-page-main){
+    animation:ei-page-out 150ms cubic-bezier(.4,0,1,1) both;
+    mix-blend-mode:normal;
+  }
+  ::view-transition-new(ei-page-main){
+    animation:ei-page-in 240ms cubic-bezier(.22,.75,.22,1) both;
+    mix-blend-mode:normal;
+  }
+
+  @keyframes ei-page-out{
+    from{opacity:1;transform:translate3d(0,0,0)}
+    to{opacity:0;transform:translate3d(-10px,0,0)}
+  }
+  @keyframes ei-page-in{
+    from{opacity:0;transform:translate3d(14px,0,0)}
+    to{opacity:1;transform:translate3d(0,0,0)}
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  @supports (view-transition-name:none){
+    ::view-transition-group(root),
+    ::view-transition-old(root),
+    ::view-transition-new(root),
+    ::view-transition-group(ei-topline),
+    ::view-transition-group(ei-site-nav),
+    ::view-transition-old(ei-topline),
+    ::view-transition-new(ei-topline),
+    ::view-transition-old(ei-site-nav),
+    ::view-transition-new(ei-site-nav),
+    ::view-transition-group(ei-page-main),
+    ::view-transition-old(ei-page-main),
+    ::view-transition-new(ei-page-main){animation:none!important}
+  }
 }
