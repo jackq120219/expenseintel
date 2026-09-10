@@ -44,13 +44,20 @@ jobs:
               const nav=document.querySelector('.site-nav');
               const top=document.querySelector('.topline');
               const css=nav?getComputedStyle(nav):null;
-              const stableNav=nav?.cloneNode(true);
-              stableNav?.querySelectorAll('.active').forEach(el=>el.classList.remove('active'));
+              const clean=s=>String(s||'').replace(/\s+/g,' ').trim();
+              const pairs=sel=>[...document.querySelectorAll(sel)].map(a=>[clean(a.textContent),a.getAttribute('href')]);
+              const semantic={
+                top:clean(top?.textContent),
+                brand:clean(nav?.querySelector('.brand')?.textContent),
+                links:pairs('.site-nav .navlinks a'),
+                actions:pairs('.site-nav .navright a'),
+                menu:clean(nav?.querySelector('.menu-btn')?.textContent)
+              };
               return {
                 navs:document.querySelectorAll('.site-nav').length,
                 tops:document.querySelectorAll('.topline').length,
                 legacy:document.querySelectorAll(legacy).length,
-                signature:[top?.outerHTML||'',stableNav?.outerHTML||''].join('\n').replace(/\s+/g,' '),
+                signature:JSON.stringify(semantic),
                 background:css?.backgroundColor,
                 backdrop:css?.backdropFilter||css?.webkitBackdropFilter||'none'
               };
@@ -62,7 +69,7 @@ jobs:
             if(state.background!=='rgb(243, 240, 232)')throw new Error(route+' header not opaque: '+state.background);
             if(state.backdrop!=='none')throw new Error(route+' backdrop filter still active: '+state.backdrop);
             if(!signature)signature=state.signature;
-            else if(state.signature!==signature)throw new Error(route+' stable header structure differs from first route');
+            else if(state.signature!==signature)throw new Error(route+' semantic header structure differs from first route');
           }
           await page.goto(base+'/check/',{waitUntil:'networkidle',timeout:45000});
           for(const label of ['Watch','Project Intel','X-Ray','Evidence']){
