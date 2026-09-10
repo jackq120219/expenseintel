@@ -26,7 +26,8 @@
     '/vehicle-sanity-v11.css',
     '/check/free-evidence-v15.css',
     '/check/optimizer-v16.css',
-    '/check/intelligence-v17.css'
+    '/check/intelligence-v17.css',
+    '/check/product-pass-v18.css'
   ];
   const js=[
     '/check/lease-intel.js',
@@ -40,7 +41,8 @@
     '/check/free-evidence-v15.js',
     '/check/optimizer-v16.js',
     '/check/intelligence-v17-loader.js',
-    '/check/sprint-bundle-v18.js'
+    '/check/sprint-bundle-v18.js',
+    '/check/product-pass-v18.js'
   ];
 
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
