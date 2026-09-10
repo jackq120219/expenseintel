@@ -1,0 +1,28 @@
+name: ExpenseIntel Production Smoke
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 13 * * *'
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Critical pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://expenseintel-nine.vercel.app'
+          for path in / /check/ /watch/ /project/ /xray/ /data/ /truecost/ /fairprice/; do
+            code=$(curl -L -sS -o /tmp/page -w '%{http_code}' "$base$path")
+            test "$code" = '200'
+            test $(wc -c </tmp/page) -gt 300
+          done
+      - name: Health and status APIs
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://expenseintel-nine.vercel.app'
+          curl -fsS "$base/api/health" | grep -q '"ok":true'
+          curl -fsS "$base/api/status" | grep -q '"ok":true'
+          curl -fsS "$base/api/source-catalog" | grep -q '"schema":"expenseintel.source-catalog.v1"'

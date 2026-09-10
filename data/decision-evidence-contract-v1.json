@@ -1,30 +1,50 @@
 {
   "schema": "expenseintel.decision-evidence.v1",
-  "purpose": "Portable contract for storing, comparing, and later contributing pre-commitment decision evidence without pretending modeled values are verified facts.",
-  "evidence_classes": ["user", "public", "verified", "modeled", "unknown"],
+  "version": "1.1",
+  "purpose": "Portable contract for storing, comparing, and later contributing pre-commitment decision evidence without presenting modeled values as verified facts.",
+  "evidence_classes": {
+    "user": "Directly supplied or corrected by the user.",
+    "public": "Observed in an identifiable public source but not independently verified by ExpenseIntel.",
+    "verified": "Supported by a directly inspectable source or user-provided document with field-level provenance.",
+    "modeled": "Estimated from a model, baseline, comparable set, or heuristic.",
+    "unknown": "Material field with insufficient evidence to estimate responsibly."
+  },
+  "freshness": {
+    "required_fields": ["observed_at", "retrieved_at"],
+    "status_values": ["current", "aging", "stale", "unknown"],
+    "rule": "Freshness is source-specific and must not be inferred from retrieval time alone."
+  },
+  "quality_flags": ["direct", "parsed", "comparable", "modeled", "stale", "conflicting", "missing", "user_override"],
   "fields": {
     "decision_id": "stable local or account-scoped identifier",
+    "evidence_id": "stable identifier for this evidence record",
+    "source_id": "identifier from the ExpenseIntel source catalog when applicable",
     "category": "vehicle | lease | property | home | equipment | business-project | personal",
     "subject": "normalized item, project, property, quote, or commitment",
     "location": "optional market/location context",
     "source_uri": "optional listing, quote, document, or public source",
     "observed_at": "when the underlying evidence was observed",
     "retrieved_at": "when ExpenseIntel retrieved or parsed it",
+    "freshness_status": "current | aging | stale | unknown",
     "field": "price, rate, recurring cost, term, tax, insurance, residual value, lead time, etc.",
     "value": "normalized numeric or text value",
     "unit": "currency, percent, months, annual, monthly, etc.",
     "evidence_class": "user | public | verified | modeled | unknown",
     "confidence": "0-100 evidence confidence, separate from recommendation quality",
     "method": "direct input, parser, public source, comparable set, model, or user correction",
+    "quality_flags": "zero or more explicit quality flags",
     "replaced_by": "newer evidence record when an assumption is superseded",
     "outcome_value": "optional realized value after the decision",
     "outcome_status": "bought | signed | negotiated | walked-away | waiting"
   },
   "rules": [
-    "User-entered numbers always supersede modeled baselines for the same field.",
+    "User-entered numbers always supersede modeled baselines for the same field unless the user explicitly restores the model value.",
     "A modeled value may guide planning but must never be presented as a quote or verified market fact.",
     "Comparable claims require an identifiable comparable set or public source.",
     "Observation time and retrieval time are distinct.",
+    "Conflicting evidence must remain visible until resolved; do not silently choose a winner.",
+    "Stale evidence must retain its original observation date and carry an explicit freshness flag.",
+    "Unknown is a valid output when evidence is insufficient.",
     "Outcome data is opt-in and must remain distinguishable from modeled recommendations."
   ]
 }
