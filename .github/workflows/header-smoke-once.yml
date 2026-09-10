@@ -1,0 +1,92 @@
+name: ExpenseIntel header regression smoke test
+
+on:
+  push:
+    paths:
+      - '.github/workflows/header-smoke-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Test production header across routes
+        run: |
+          cat > /tmp/header-smoke.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          const base='https://expenseintel-nine.vercel.app';
+          const routes=['/check/','/watch/','/project/','/xray/','/truecost/','/expense-map/','/data/'];
+          const legacy='.ei-identity-rail,.ei-signal-rail,.ei-lens-card,.ei-case-dock,.ei-commitment-bridge,.ei-next-card,.ei-evidence-contract,.ei-project-jump';
+          const browser=await chromium.launch({headless:true});
+          const page=await browser.newPage({viewport:{width:1440,height:1000}});
+          const errors=[];
+          page.on('pageerror',e=>errors.push('pageerror: '+e.message));
+          page.on('console',m=>{if(m.type()==='error')errors.push('console: '+m.text())});
+          let signature='';
+          for(const route of routes){
+            const r=await page.goto(base+route,{waitUntil:'networkidle',timeout:45000});
+            if(!r||r.status()>=400)throw new Error(route+' returned '+(r?.status()??'no response'));
+            await page.waitForTimeout(500);
+            const state=await page.evaluate((legacy)=>{
+              const nav=document.querySelector('.site-nav');
+              const top=document.querySelector('.topline');
+              const css=nav?getComputedStyle(nav):null;
+              return {
+                navs:document.querySelectorAll('.site-nav').length,
+                tops:document.querySelectorAll('.topline').length,
+                legacy:document.querySelectorAll(legacy).length,
+                signature:[top?.outerHTML||'',nav?.outerHTML||''].join('\n').replace(/\s+/g,' '),
+                background:css?.backgroundColor,
+                backdrop:css?.backdropFilter||css?.webkitBackdropFilter||'none',
+                navText:nav?.textContent?.replace(/\s+/g,' ').trim()||''
+              };
+            },legacy);
+            console.log(route,JSON.stringify(state));
+            if(state.navs!==1)throw new Error(route+' has '+state.navs+' site-nav elements');
+            if(state.tops!==1)throw new Error(route+' has '+state.tops+' topline elements');
+            if(state.legacy!==0)throw new Error(route+' has '+state.legacy+' legacy shell elements');
+            if(state.background!=='rgb(243, 240, 232)')throw new Error(route+' header not opaque: '+state.background);
+            if(state.backdrop!=='none')throw new Error(route+' backdrop filter still active: '+state.backdrop);
+            if(!signature)signature=state.signature;
+            else if(state.signature!==signature)throw new Error(route+' header markup differs from first route');
+          }
+          await page.goto(base+'/check/',{waitUntil:'networkidle',timeout:45000});
+          for(const label of ['Watch','Project Intel','X-Ray','Evidence']){
+            await page.getByRole('link',{name:label,exact:true}).click();
+            await page.waitForLoadState('networkidle');
+            await page.waitForTimeout(350);
+            const counts=await page.evaluate((legacy)=>({navs:document.querySelectorAll('.site-nav').length,tops:document.querySelectorAll('.topline').length,legacy:document.querySelectorAll(legacy).length}),legacy);
+            console.log('clicked '+label,counts);
+            if(counts.navs!==1||counts.tops!==1||counts.legacy!==0)throw new Error('post-click duplicate after '+label+': '+JSON.stringify(counts));
+            await page.goto(base+'/check/',{waitUntil:'networkidle',timeout:45000});
+          }
+          const spend=await page.goto(base+'/spend/',{waitUntil:'domcontentloaded',timeout:45000});
+          await page.waitForURL(/\/check\/$/,{timeout:10000});
+          if(page.url()!==base+'/check/')throw new Error('spend redirect ended at '+page.url());
+          if(errors.length)throw new Error('Browser errors:\n'+errors.join('\n'));
+          await browser.close();
+          console.log('HEADER_SMOKE_OK');
+          EOF
+          node /tmp/header-smoke.mjs
+      - name: Remove one-time workflow
+        if: success()
+        run: |
+          rm -f .github/workflows/header-smoke-once.yml
+          git config user.name "ExpenseIntel Smoke Test"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "test: remove completed one-time header smoke workflow"
+          git push
