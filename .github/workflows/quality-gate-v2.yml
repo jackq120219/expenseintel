@@ -17,6 +17,8 @@ jobs:
         run: find . -type f -name '*.js' -not -path './node_modules/*' -print0 | xargs -0 -n1 node --check
       - name: Evidence and source data
         run: node scripts/data-audit.mjs
+      - name: Live integration contract
+        run: node scripts/live-integration-audit.mjs
       - name: SEO contract
         run: node scripts/seo-audit.mjs
       - name: Canonical route links

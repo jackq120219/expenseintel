@@ -18,7 +18,7 @@ jobs:
             test "$code" = '200'
             test $(wc -c </tmp/page) -gt 300
           done
-      - name: Health and status APIs
+      - name: Health status and live evidence APIs
         shell: bash
         run: |
           set -euo pipefail
@@ -26,3 +26,5 @@ jobs:
           curl -fsS "$base/api/health" | grep -q '"ok":true'
           curl -fsS "$base/api/status" | grep -q '"ok":true'
           curl -fsS "$base/api/source-catalog" | grep -q '"schema":"expenseintel.source-catalog.v1"'
+          curl -fsS "$base/api/nhtsa-vin?vin=1HGCM82633A004352" | grep -q '"source":"NHTSA vPIC"'
+          curl -fsS "$base/api/bls-vehicle-context" | grep -q '"source":"BLS Public Data API"'
