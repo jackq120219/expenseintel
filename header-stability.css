@@ -1,15 +1,24 @@
-/* ExpenseIntel shared shell: identical markup on every route; only page content transitions. */
-@view-transition{navigation:auto}
-.site-nav{view-transition-name:ei-site-nav}
-.topline{view-transition-name:ei-topline}
-main{view-transition-name:ei-page-content}
-.ei-identity-rail,.ei-signal-rail{display:none!important}
-.site-nav,.topline,.navinner,.navlinks,.navright{animation:none!important}
-::view-transition-group(ei-site-nav),::view-transition-group(ei-topline){animation-duration:.001s;z-index:9999}
-::view-transition-old(ei-site-nav),::view-transition-new(ei-site-nav),::view-transition-old(ei-topline),::view-transition-new(ei-topline){animation:none!important;mix-blend-mode:normal}
-::view-transition-old(root),::view-transition-new(root){animation:none!important}
-::view-transition-old(ei-page-content){animation:eiPageOut 90ms ease both}
-::view-transition-new(ei-page-content){animation:eiPageIn 180ms cubic-bezier(.2,.72,.2,1) both}
-@keyframes eiPageOut{to{opacity:.82;transform:translateY(-2px)}}
-@keyframes eiPageIn{from{opacity:.55;transform:translateY(5px)}to{opacity:1;transform:none}}
-@media(prefers-reduced-motion:reduce){@view-transition{navigation:none}::view-transition-old(ei-page-content),::view-transition-new(ei-page-content){animation:none!important}}
+/* ExpenseIntel header stability: no cross-document snapshots, no translucent shell duplication. */
+@supports (view-transition-name:none){
+  html,.topline,.site-nav,main{view-transition-name:none!important}
+}
+.topline,.site-nav{
+  background:var(--paper)!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  animation:none!important;
+  transition:none!important;
+}
+.navinner,.navlinks,.navright,.brand,.menu-btn{
+  animation:none!important;
+}
+.ei-identity-rail,
+.ei-signal-rail,
+.ei-lens-card,
+.ei-case-dock,
+.ei-commitment-bridge,
+.ei-next-card,
+.ei-evidence-contract,
+.ei-project-jump{
+  display:none!important;
+}

@@ -1,48 +1,46 @@
 (()=>{
   'use strict';
-  const nav=document.querySelector('.navlinks');
-  const right=document.querySelector('.navright');
-  if(nav)nav.dataset.eiStable='1';
-  if(right)right.dataset.eiStable='1';
-  document.documentElement.dataset.eiHeaderStable='1';
+  if(window.__eiHeaderStability)return;
+  window.__eiHeaderStability=1;
+
+  const legacySelector='.ei-identity-rail,.ei-signal-rail,.ei-lens-card,.ei-case-dock,.ei-commitment-bridge,.ei-next-card,.ei-evidence-contract,.ei-project-jump';
+  const removeLegacy=root=>{
+    if(!root)return;
+    if(root.nodeType===1&&root.matches?.(legacySelector))root.remove();
+    root.querySelectorAll?.(legacySelector).forEach(el=>el.remove());
+  };
+  removeLegacy(document);
+  addEventListener('pageshow',()=>removeLegacy(document));
+  const observer=new MutationObserver(records=>{
+    for(const record of records){
+      for(const node of record.addedNodes)removeLegacy(node);
+    }
+  });
+  if(document.body)observer.observe(document.body,{childList:true,subtree:true});
+  else document.addEventListener('DOMContentLoaded',()=>observer.observe(document.body,{childList:true,subtree:true}),{once:true});
 
   const warmed=new Set();
-  const prerendered=new Set();
   const sameOriginPath=href=>{
     try{
       const u=new URL(href,location.href);
-      return u.origin===location.origin ? (u.pathname+u.search) : '';
+      return u.origin===location.origin ? u.pathname+u.search : '';
     }catch(_e){return ''}
   };
   const prefetch=href=>{
     const path=sameOriginPath(href);
-    if(!path||warmed.has(path)||path===location.pathname)return;
+    if(!path||path===location.pathname||warmed.has(path))return;
     warmed.add(path);
-    const l=document.createElement('link');
-    l.rel='prefetch';
-    l.as='document';
-    l.href=path;
-    document.head.appendChild(l);
+    const link=document.createElement('link');
+    link.rel='prefetch';
+    link.as='document';
+    link.href=path;
+    document.head.appendChild(link);
   };
-  const prerender=href=>{
-    const path=sameOriginPath(href);
-    if(!path||prerendered.has(path)||path===location.pathname||!HTMLScriptElement.supports?.('speculationrules'))return;
-    prerendered.add(path);
-    const s=document.createElement('script');
-    s.type='speculationrules';
-    s.textContent=JSON.stringify({prerender:[{source:'list',urls:[path]}]});
-    document.head.appendChild(s);
-  };
-
   const links=[...document.querySelectorAll('.site-nav a[href]')].filter(a=>sameOriginPath(a.href));
-  const warm=()=>links.forEach(a=>prefetch(a.href));
-  if('requestIdleCallback'in window)requestIdleCallback(warm,{timeout:900});else setTimeout(warm,250);
-
   links.forEach(a=>{
-    const href=a.href;
-    const prepare=()=>{prefetch(href);prerender(href)};
-    a.addEventListener('pointerenter',prepare,{passive:true});
-    a.addEventListener('focus',prepare);
-    a.addEventListener('pointerdown',prepare,{passive:true});
+    const warm=()=>prefetch(a.href);
+    a.addEventListener('pointerenter',warm,{passive:true});
+    a.addEventListener('focus',warm);
+    a.addEventListener('pointerdown',warm,{passive:true});
   });
 })();
