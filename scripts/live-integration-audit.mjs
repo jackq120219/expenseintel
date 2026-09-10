@@ -1,12 +1,3 @@
 import fs from 'node:fs';
-const catalog=JSON.parse(fs.readFileSync('data/source-catalog-v1.json','utf8'));
-const twin=fs.readFileSync('decision-twin.js','utf8');
-const vehicle=fs.readFileSync('check/vehicle-public-evidence-v19.js','utf8');
-let bad=0;const fail=m=>{console.error(`LIVE INTEGRATION: ${m}`);bad++};
-const byId=new Map(catalog.sources.map(s=>[s.id,s]));
-for(const id of ['nhtsa-vin','bls-cpi'])if(byId.get(id)?.role!=='integrated')fail(`${id} must be marked integrated`);
-for(const file of ['/check/vehicle-public-evidence-v19.js','/check/vehicle-public-evidence-v19.css'])if(!twin.includes(file))fail(`Check loader missing ${file}`);
-if(!vehicle.includes('/api/nhtsa-vin'))fail('vehicle evidence UI not connected to NHTSA endpoint');
-if(!vehicle.includes('/api/bls-vehicle-context'))fail('vehicle evidence UI not connected to BLS endpoint');
-for(const endpoint of ['/api/nhtsa-vin','/api/bls-vehicle-context'])if(!catalog.sources.some(s=>s.endpoint===endpoint&&s.role==='integrated'))fail(`catalog missing integrated endpoint ${endpoint}`);
-if(bad)process.exit(1);console.log('LIVE INTEGRATION OK: Check ↔ NHTSA/BLS ↔ source catalog');
+const catalog=JSON.parse(fs.readFileSync('data/source-catalog-v1.json','utf8')),twin=fs.readFileSync('decision-twin.js','utf8'),vehicle=fs.readFileSync('check/vehicle-public-evidence-v19.js','utf8'),property=fs.readFileSync('check/property-public-evidence-v20.js','utf8');let bad=0;const fail=m=>{console.error(`LIVE INTEGRATION: ${m}`);bad++},byId=new Map(catalog.sources.map(s=>[s.id,s]));
+for(const id of ['nhtsa-vin','bls-cpi','census-geocoder'])if(byId.get(id)?.role!=='integrated')fail(`${id} must be marked integrated`);for(const file of ['/check/vehicle-public-evidence-v19.js','/check/vehicle-public-evidence-v19.css','/check/property-public-evidence-v20.js','/check/property-public-evidence-v20.css'])if(!twin.includes(file))fail(`Check loader missing ${file}`);if(!vehicle.includes('/api/nhtsa-vin')||!vehicle.includes('/api/bls-vehicle-context'))fail('vehicle UI missing live endpoint');if(!property.includes('/api/census-geocode'))fail('property UI missing Census endpoint');for(const endpoint of ['/api/nhtsa-vin','/api/bls-vehicle-context','/api/census-geocode'])if(!catalog.sources.some(s=>s.endpoint===endpoint&&s.role==='integrated'))fail(`catalog missing ${endpoint}`);if(bad)process.exit(1);console.log('LIVE INTEGRATION OK: vehicle + property evidence wired end-to-end');

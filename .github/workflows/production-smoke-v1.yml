@@ -13,11 +13,7 @@ jobs:
         run: |
           set -euo pipefail
           base='https://expenseintel-nine.vercel.app'
-          for path in / /check/ /watch/ /project/ /xray/ /data/ /truecost/ /fairprice/; do
-            code=$(curl -L -sS -o /tmp/page -w '%{http_code}' "$base$path")
-            test "$code" = '200'
-            test $(wc -c </tmp/page) -gt 300
-          done
+          for path in / /check/ /watch/ /project/ /xray/ /data/ /truecost/ /fairprice/; do code=$(curl -L -sS -o /tmp/page -w '%{http_code}' "$base$path"); test "$code" = '200'; test $(wc -c </tmp/page) -gt 300; done
       - name: Health status and live evidence APIs
         shell: bash
         run: |
@@ -28,3 +24,4 @@ jobs:
           curl -fsS "$base/api/source-catalog" | grep -q '"schema":"expenseintel.source-catalog.v1"'
           curl -fsS "$base/api/nhtsa-vin?vin=1HGCM82633A004352" | grep -q '"source":"NHTSA vPIC"'
           curl -fsS "$base/api/bls-vehicle-context" | grep -q '"source":"BLS Public Data API"'
+          curl -fsS --get --data-urlencode 'address=4600 Silver Hill Rd, Washington, DC 20233' "$base/api/census-geocode" | grep -q '"matched":true'
