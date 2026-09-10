@@ -1,0 +1,72 @@
+name: ExpenseIntel runtime refactor v18
+
+on:
+  push:
+    paths:
+      - '.github/workflows/runtime-refactor-v18.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  refactor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Bundle stable sprint modules and remove redundant UI loaders
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            01-input-readiness.js 02-decision-draft.js 03-category-guidance.js 04-unknowns-preview.js
+            05-keyboard-flow.js 06-result-navigation.js 07-evidence-legend.js 08-price-context.js
+            09-comparison-memory.js 10-mobile-commit-bar.js 11-accessibility-pass.js 12-performance-pass.js
+            13-result-actions.js 14-decision-timeline.js 15-trust-hardening.js 16-url-normalizer.js
+            17-result-focus.js 18-quote-readiness.js
+          )
+          {
+            echo "'use strict';"
+            echo "/* Consolidated Sep 9 enhancements. Generated without changing module order. */"
+            for f in "${files[@]}"; do
+              echo
+              echo "/* ---- $f ---- */"
+              cat "sprint/$f"
+            done
+          } > check/sprint-bundle-v18.js
+
+          python - <<'PY'
+          from pathlib import Path
+
+          twin = Path('decision-twin.js')
+          text = twin.read_text()
+          old = "    '/sprint-sep9.js'"
+          new = "    '/check/sprint-bundle-v18.js'"
+          if old not in text:
+              raise SystemExit('decision-twin sprint loader target not found')
+          twin.write_text(text.replace(old, new, 1))
+
+          polish = Path('polish.js')
+          text = polish.read_text()
+          old = "loadCss();loadSignalFlow();loadExperience();loadPassport();loadDecisionTwin();loadDecisionLab();loadDecisionMemory();loadIntegrity();loadAbout();loadSavings();loadClarity();loadIdentity();"
+          new = "loadCss();loadSignalFlow();loadExperience();loadDecisionTwin();loadDecisionMemory();loadIntegrity();loadAbout();loadSavings();loadClarity();"
+          if old not in text:
+              raise SystemExit('polish init sequence not found')
+          polish.write_text(text.replace(old, new, 1))
+          PY
+
+          node --check check/sprint-bundle-v18.js
+          node --check decision-twin.js
+          node --check polish.js
+          node --check check/optimize-plan-v7.js
+          node --check check/lease-consistency-v8.js
+      - name: Commit refactor
+        run: |
+          git config user.name "ExpenseIntel Runtime"
+          git config user.email "actions@users.noreply.github.com"
+          git add check/sprint-bundle-v18.js decision-twin.js polish.js check/optimize-plan-v7.js check/lease-consistency-v8.js
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "refactor: consolidate ExpenseIntel check runtime"
+          git push
