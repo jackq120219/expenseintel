@@ -25,7 +25,7 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Test production header across routes
         run: |
-          cat > /tmp/header-smoke.mjs <<'EOF'
+          cat > header-smoke.mjs <<'EOF'
           import { chromium } from 'playwright';
           const base='https://expenseintel-nine.vercel.app';
           const routes=['/check/','/watch/','/project/','/xray/','/truecost/','/expense-map/','/data/'];
@@ -50,8 +50,7 @@ jobs:
                 legacy:document.querySelectorAll(legacy).length,
                 signature:[top?.outerHTML||'',nav?.outerHTML||''].join('\n').replace(/\s+/g,' '),
                 background:css?.backgroundColor,
-                backdrop:css?.backdropFilter||css?.webkitBackdropFilter||'none',
-                navText:nav?.textContent?.replace(/\s+/g,' ').trim()||''
+                backdrop:css?.backdropFilter||css?.webkitBackdropFilter||'none'
               };
             },legacy);
             console.log(route,JSON.stringify(state));
@@ -73,18 +72,20 @@ jobs:
             if(counts.navs!==1||counts.tops!==1||counts.legacy!==0)throw new Error('post-click duplicate after '+label+': '+JSON.stringify(counts));
             await page.goto(base+'/check/',{waitUntil:'networkidle',timeout:45000});
           }
-          const spend=await page.goto(base+'/spend/',{waitUntil:'domcontentloaded',timeout:45000});
+          await page.goto(base+'/spend/',{waitUntil:'domcontentloaded',timeout:45000});
           await page.waitForURL(/\/check\/$/,{timeout:10000});
           if(page.url()!==base+'/check/')throw new Error('spend redirect ended at '+page.url());
           if(errors.length)throw new Error('Browser errors:\n'+errors.join('\n'));
           await browser.close();
           console.log('HEADER_SMOKE_OK');
           EOF
-          node /tmp/header-smoke.mjs
+          node ./header-smoke.mjs
       - name: Remove one-time workflow
         if: success()
         run: |
-          rm -f .github/workflows/header-smoke-once.yml
+          rm -f header-smoke.mjs .github/workflows/header-smoke-once.yml
+          rm -rf node_modules
+          git checkout -- package.json package-lock.json 2>/dev/null || true
           git config user.name "ExpenseIntel Smoke Test"
           git config user.email "actions@users.noreply.github.com"
           git add -A
