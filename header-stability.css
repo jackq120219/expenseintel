@@ -1,11 +1,25 @@
-/* Stable ExpenseIntel header: one navigation system only. */
+/* Stable ExpenseIntel shell: one visual header, no route-specific flash. */
 @view-transition{navigation:auto}
 html{background:#f3f0e8}
+
+/* The route belongs in the page body, not in a header that changes between documents. */
+.topline{height:34px;overflow:hidden;view-transition-name:ei-topline}
+.topline .shell{height:34px;min-height:34px;position:relative;display:flex;align-items:center;justify-content:space-between}
+.topline .shell>*{display:none!important}
+.topline .shell:before{content:"Pre-Commitment Decision Intelligence";display:block;font:10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.topline .shell:after{content:"Connected evidence · explicit unknowns";display:block;font:10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
 .site-nav{contain:layout paint;transform:none!important;view-transition-name:ei-site-nav}
-.topline{view-transition-name:ei-topline}
-.navinner{min-height:70px}
-.navlinks{position:relative;display:flex;align-items:center;gap:8px!important}
-.navlinks>a{position:relative;z-index:2;padding:10px 13px!important;border:1px solid transparent!important;border-radius:4px;color:#3c4238!important;opacity:.78;transition:color .16s ease,opacity .16s ease,background-color .16s ease,border-color .16s ease!important}
+.navinner{height:78px!important;min-height:78px!important}
+.brand{view-transition-name:ei-brand}
+.navlinks{position:relative;display:flex;align-items:center;gap:8px!important;min-height:44px}
+.navlinks>a{position:relative;z-index:2;padding:10px 13px!important;border:1px solid transparent!important;border-radius:4px;color:#3c4238!important;opacity:.82;transition:color .16s ease,opacity .16s ease,background-color .16s ease,border-color .16s ease!important}
+.navlinks>a[href="/check/"]{view-transition-name:ei-nav-check}
+.navlinks>a[href="/watch/"]{view-transition-name:ei-nav-watch}
+.navlinks>a[href="/project/"]{view-transition-name:ei-nav-project}
+.navlinks>a[href="/xray/"]{view-transition-name:ei-nav-xray}
+.navlinks>a[href="/data/"]{view-transition-name:ei-nav-evidence}
+.navlinks>a[href="/about/"]{display:none!important}
 .navlinks>a:hover,.navlinks>a:focus-visible{opacity:1;color:#11130f!important;background:rgba(17,19,15,.035)!important}
 .navlinks>a.active,.navlinks>a[aria-current="page"]{opacity:1!important;color:#11130f!important;background:#e8e4da!important;border-color:#c9c4b9!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)!important}
 .navlinks>a.active:after,.navlinks>a[aria-current="page"]:after{content:"";position:absolute;left:12px;right:12px;bottom:5px;height:2px;background:var(--lime);border-radius:2px}
@@ -16,18 +30,24 @@ html{background:#f3f0e8}
 .ei-route-flash{display:none!important}
 .site-nav,.navinner,.navlinks,.navright{animation:none!important}
 
+/* One stable action. Route-specific secondary actions live in page content. */
+.navright{min-width:104px;view-transition-name:ei-nav-action}
+.navright .textbtn{display:none!important}
+.navright .solidbtn{min-width:104px;text-align:center;font-size:0!important;white-space:nowrap}
+.navright .solidbtn:after{content:"New check";font:780 11px var(--sans);letter-spacing:.02em;text-transform:uppercase}
+
 /* Never allow a second navigation/rail to appear beneath the main header. */
 .ei-identity-rail,.ei-signal-rail{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;overflow:hidden!important;border:0!important;margin:0!important;padding:0!important;opacity:0!important;pointer-events:none!important}
 
-/* Keep the header visually continuous while the document underneath changes. */
-::view-transition-group(ei-site-nav),::view-transition-group(ei-topline){animation-duration:.001s;z-index:9999}
-::view-transition-old(ei-site-nav),::view-transition-new(ei-site-nav),::view-transition-old(ei-topline),::view-transition-new(ei-topline){animation:none;mix-blend-mode:normal}
-::view-transition-old(root){animation:eiDocOut 110ms ease both}
-::view-transition-new(root){animation:eiDocIn 230ms cubic-bezier(.2,.72,.2,1) both}
-@keyframes eiDocOut{to{opacity:.84;transform:translateY(-2px)}}
-@keyframes eiDocIn{from{opacity:.72;transform:translateY(5px)}to{opacity:1;transform:none}}
+/* Carry the shell between documents; animate only the content underneath it. */
+::view-transition-group(ei-site-nav),::view-transition-group(ei-topline),::view-transition-group(ei-brand),::view-transition-group(ei-nav-check),::view-transition-group(ei-nav-watch),::view-transition-group(ei-nav-project),::view-transition-group(ei-nav-xray),::view-transition-group(ei-nav-evidence),::view-transition-group(ei-nav-action){animation-duration:.001s;z-index:9999}
+::view-transition-old(ei-site-nav),::view-transition-new(ei-site-nav),::view-transition-old(ei-topline),::view-transition-new(ei-topline),::view-transition-old(ei-brand),::view-transition-new(ei-brand),::view-transition-old(ei-nav-check),::view-transition-new(ei-nav-check),::view-transition-old(ei-nav-watch),::view-transition-new(ei-nav-watch),::view-transition-old(ei-nav-project),::view-transition-new(ei-nav-project),::view-transition-old(ei-nav-xray),::view-transition-new(ei-nav-xray),::view-transition-old(ei-nav-evidence),::view-transition-new(ei-nav-evidence),::view-transition-old(ei-nav-action),::view-transition-new(ei-nav-action){animation:none!important;mix-blend-mode:normal}
+::view-transition-old(root){animation:eiDocOut 90ms ease both}
+::view-transition-new(root){animation:eiDocIn 180ms cubic-bezier(.2,.72,.2,1) both}
+@keyframes eiDocOut{to{opacity:.9;transform:translateY(-1px)}}
+@keyframes eiDocIn{from{opacity:.82;transform:translateY(3px)}to{opacity:1;transform:none}}
 
 @media(prefers-reduced-motion:no-preference){.ei-nav-locator{transition:transform .18s cubic-bezier(.2,.75,.2,1),width .18s cubic-bezier(.2,.75,.2,1),opacity .1s ease!important}}
 @media(max-width:930px){.navlinks>a{padding:9px 9px!important}.navlinks{gap:3px!important}}
-@media(max-width:760px){.navlinks>a{border-radius:0}.navlinks>a.active:after,.navlinks>a[aria-current="page"]:after{left:8px;right:8px}}
+@media(max-width:760px){.topline .shell:after{display:none}.navlinks>a{border-radius:0}.navlinks>a.active:after,.navlinks>a[aria-current="page"]:after{left:8px;right:8px}.navright{min-width:auto}.navright .solidbtn{min-width:auto}}
 @media(prefers-reduced-motion:reduce){@view-transition{navigation:none}::view-transition-old(root),::view-transition-new(root){animation:none!important}}
