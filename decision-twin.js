@@ -5,7 +5,8 @@
   /* Restore the established ExpenseIntel Check result: the decision dashboard,
      readable graph, top cost metrics and Optimize & Save. Block the later Passport /
      workspace overlays that displaced this working result, while keeping the newer
-     evidence and API intelligence underneath. */
+     evidence and API intelligence underneath. Header ownership is intentionally left
+     to the static shared shell. */
 
   const markScript=(attr)=>{if(document.querySelector(`script[${attr}]`))return;const s=document.createElement('script');s.type='application/json';s.setAttribute(attr,'');document.head.appendChild(s)};
   const markLink=(attr)=>{if(document.querySelector(`link[${attr}]`))return;const l=document.createElement('link');l.rel='stylesheet';l.href='data:text/css,';l.setAttribute(attr,'');document.head.appendChild(l)};
@@ -59,14 +60,6 @@
     [...d.children].filter(x=>x.tagName!=='SUMMARY').forEach(x=>parent.insertBefore(x,d));d.remove();
   }
 
-  function restoreNav(){
-    const nav=$('.navlinks');if(nav){
-      const links=[['/check/','Check'],['/watch/','Watch'],['/project/','Project Intel'],['/xray/','X-Ray'],['/data/','Evidence'],['/about/','About']];
-      nav.innerHTML=links.map(([href,label],i)=>`<a href="${href}"${i===0?' class="active"':''}>${label}</a>`).join('');
-    }
-    const right=$('.navright');if(right)right.innerHTML='<a class="textbtn" href="/truecost/">TrueCost</a><a class="solidbtn" href="#check-form">Run a check</a>';
-  }
-
   function cleanupLaterOverlays(){
     $$('.ei-passport-overview,.ei-live-passport,.ei-workspace-nav,.ei-action-bridge,details.ei-decision-lab').forEach(x=>x.remove());
     unwrapProductMap();
@@ -74,11 +67,11 @@
 
   async function start(){
     css.forEach(addCss);
-    cleanupLaterOverlays();restoreNav();
+    cleanupLaterOverlays();
     for(const src of js)await addScript(src);
-    cleanupLaterOverlays();restoreNav();
-    setTimeout(()=>{cleanupLaterOverlays();restoreNav()},550);
-    setTimeout(()=>{cleanupLaterOverlays();restoreNav()},1200);
+    cleanupLaterOverlays();
+    setTimeout(cleanupLaterOverlays,550);
+    setTimeout(cleanupLaterOverlays,1200);
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(start,20),{once:true});
