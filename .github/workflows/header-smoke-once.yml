@@ -73,7 +73,7 @@ jobs:
           }
           await page.goto(base+'/check/',{waitUntil:'networkidle',timeout:45000});
           for(const label of ['Watch','Project Intel','X-Ray','Evidence']){
-            await page.getByRole('link',{name:label,exact:true}).click();
+            await page.locator('.site-nav').getByRole('link',{name:label,exact:true}).click();
             await page.waitForLoadState('networkidle');
             await page.waitForTimeout(350);
             const counts=await page.evaluate((legacy)=>({navs:document.querySelectorAll('.site-nav').length,tops:document.querySelectorAll('.topline').length,legacy:document.querySelectorAll(legacy).length}),legacy);
