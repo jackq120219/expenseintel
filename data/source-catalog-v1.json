@@ -1,5 +1,5 @@
 {
-  "schema":"expenseintel.source-catalog.v1","version":3,"reviewed_at":"2026-09-10","disclaimer":"Catalog presence documents a relevant source. Only entries whose role is integrated and whose integration field names a live product path are currently queried by ExpenseIntel.",
+  "schema":"expenseintel.source-catalog.v1","version":4,"reviewed_at":"2026-09-10","disclaimer":"Catalog presence documents a relevant source. Only entries whose role is integrated and whose integration field names a live product path are currently queried by ExpenseIntel.",
   "sources":[
     {"id":"bls-cpi","authority":"U.S. Bureau of Labor Statistics","name":"Consumer Price Index","url":"https://www.bls.gov/cpi/","domains":["consumer","inflation","vehicle"],"role":"integrated","cadence":"monthly","integration":"check:vehicle-market-context","endpoint":"/api/bls-vehicle-context"},
     {"id":"bls-ppi","authority":"U.S. Bureau of Labor Statistics","name":"Producer Price Index","url":"https://www.bls.gov/ppi/","domains":["materials","services","business-project"],"role":"reference","cadence":"monthly","integration":"not-implied"},
@@ -11,6 +11,7 @@
     {"id":"hud-fmr","authority":"U.S. Department of Housing and Urban Development","name":"Fair Market Rents","url":"https://www.huduser.gov/portal/datasets/fmr.html","domains":["rent","housing","location"],"role":"reference","cadence":"annual","integration":"not-implied"},
     {"id":"eia-fuel","authority":"U.S. Energy Information Administration","name":"Gasoline and Diesel Fuel Update","url":"https://www.eia.gov/petroleum/gasdiesel/","domains":["vehicle","transportation","energy"],"role":"reference","cadence":"weekly","integration":"not-implied"},
     {"id":"nhtsa-vin","authority":"National Highway Traffic Safety Administration","name":"vPIC VIN Decoder","url":"https://vpic.nhtsa.dot.gov/","domains":["vehicle","identity"],"role":"integrated","cadence":"continuous","integration":"check:vin-identity","endpoint":"/api/nhtsa-vin"},
+    {"id":"nhtsa-recalls","authority":"National Highway Traffic Safety Administration","name":"Vehicle Safety Recalls","url":"https://www.nhtsa.gov/recalls","domains":["vehicle","safety","risk"],"role":"integrated","cadence":"daily","integration":"check:vehicle-safety-context","endpoint":"/api/nhtsa-recalls"},
     {"id":"fema-nri","authority":"Federal Emergency Management Agency","name":"National Risk Index","url":"https://hazards.fema.gov/nri/","domains":["property","location","risk"],"role":"reference","cadence":"periodic","integration":"not-implied"}
   ]
 }
