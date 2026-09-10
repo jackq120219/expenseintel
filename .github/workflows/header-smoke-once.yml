@@ -44,11 +44,13 @@ jobs:
               const nav=document.querySelector('.site-nav');
               const top=document.querySelector('.topline');
               const css=nav?getComputedStyle(nav):null;
+              const stableNav=nav?.cloneNode(true);
+              stableNav?.querySelectorAll('.active').forEach(el=>el.classList.remove('active'));
               return {
                 navs:document.querySelectorAll('.site-nav').length,
                 tops:document.querySelectorAll('.topline').length,
                 legacy:document.querySelectorAll(legacy).length,
-                signature:[top?.outerHTML||'',nav?.outerHTML||''].join('\n').replace(/\s+/g,' '),
+                signature:[top?.outerHTML||'',stableNav?.outerHTML||''].join('\n').replace(/\s+/g,' '),
                 background:css?.backgroundColor,
                 backdrop:css?.backdropFilter||css?.webkitBackdropFilter||'none'
               };
@@ -60,7 +62,7 @@ jobs:
             if(state.background!=='rgb(243, 240, 232)')throw new Error(route+' header not opaque: '+state.background);
             if(state.backdrop!=='none')throw new Error(route+' backdrop filter still active: '+state.backdrop);
             if(!signature)signature=state.signature;
-            else if(state.signature!==signature)throw new Error(route+' header markup differs from first route');
+            else if(state.signature!==signature)throw new Error(route+' stable header structure differs from first route');
           }
           await page.goto(base+'/check/',{waitUntil:'networkidle',timeout:45000});
           for(const label of ['Watch','Project Intel','X-Ray','Evidence']){
@@ -90,4 +92,5 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add -A
           git commit -m "test: remove completed one-time header smoke workflow"
+          git pull --rebase origin main
           git push
