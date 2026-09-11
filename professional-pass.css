@@ -29,3 +29,8 @@ textarea.input{min-height:122px;resize:vertical}
 .check-how-grid{gap:0;border-top:1px solid var(--ei-border);border-bottom:1px solid var(--ei-border)}
 .check-how-grid article{padding:28px 24px;border-right:1px solid var(--ei-border)}.check-how-grid article:last-child{border-right:0}
 .check-how-grid h3{margin-top:10px;margin-bottom:10px}.check-how-grid p{line-height:1.68}
+.check-deep{padding-top:clamp(76px,8vw,108px);padding-bottom:clamp(78px,8vw,112px)}
+.check-deep-head{gap:48px}.check-deep-head p{max-width:540px;line-height:1.7}
+.check-engine-row{gap:12px}.check-engine-row>a{padding:18px;border-color:var(--ei-border);background:rgba(255,255,255,.58);transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+.check-engine-row>a:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(32,25,20,.06);border-color:#9f9187}
+.check-engine-row strong{font-size:1rem}.check-engine-row span{line-height:1.55}
