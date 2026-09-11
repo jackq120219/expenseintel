@@ -38,3 +38,6 @@ textarea.input{min-height:122px;resize:vertical}
 .si-heading p{max-width:700px;line-height:1.7}.si-discipline{gap:0;border-top:1px solid rgba(255,255,255,.24);border-bottom:1px solid rgba(255,255,255,.24)}
 .si-discipline>div{padding:24px 20px;border-right:1px solid rgba(255,255,255,.18)}.si-discipline>div:last-child{border-right:0}
 .si-discipline p{line-height:1.58}
+footer{border-top:1px solid #3c332e}.footer-top{padding-top:44px;padding-bottom:44px;gap:34px}
+.footer-col h4{margin-bottom:14px}.footer-col a{line-height:1.85}.footer-brand p{max-width:300px;line-height:1.6}
+.footer-bottom{border-top:1px solid rgba(32,25,20,.16)}
