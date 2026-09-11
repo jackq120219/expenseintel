@@ -5,3 +5,8 @@ body{font-feature-settings:"kern" 1,"tnum" 1}
 .site-nav{min-height:68px;height:auto}
 .navinner{min-height:68px;gap:24px}.navlinks{gap:clamp(16px,2vw,28px)}
 .navlinks a{line-height:1.25}.solidbtn{min-height:40px;display:inline-flex;align-items:center;justify-content:center}
+.check-hero{padding-top:clamp(58px,7vw,90px);padding-bottom:clamp(62px,7vw,94px)}
+.check-hero-grid{gap:clamp(42px,6vw,84px);align-items:center}
+.check-hero h1{max-width:780px;line-height:.96;letter-spacing:-.05em}
+.check-hero p{max-width:680px;line-height:1.68}
+.check-promises{gap:8px 14px;margin-top:24px}
