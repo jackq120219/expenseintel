@@ -22,3 +22,6 @@ body{font-feature-settings:"kern" 1,"tnum" 1}
 textarea.input{min-height:122px;resize:vertical}
 .check-run{min-height:52px;margin-top:14px;font-weight:800;letter-spacing:.035em;box-shadow:0 5px 0 rgba(32,25,20,.12)}
 .check-run:active{transform:translateY(2px);box-shadow:0 3px 0 rgba(32,25,20,.12)}
+.check-examples{gap:7px;padding:14px 20px 18px}.check-examples span{font-weight:800}
+.check-examples button{border:1px solid var(--ei-border);background:#fff;padding:8px 10px;border-radius:2px}
+.check-examples button:hover{border-color:#8f8177;background:#f7f2ed}
