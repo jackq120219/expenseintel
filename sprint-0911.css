@@ -7,3 +7,4 @@ a,button,input,textarea,select,summary{scroll-margin-top:110px}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 @media print{.topline,.site-nav,.check-hero,.check-how,.check-deep,footer,button{display:none!important}.check-output-wrap[hidden]{display:none!important}.check-output-wrap:not([hidden]){display:block!important}body{background:#fff!important}.shell{max-width:none!important;width:100%!important}}
 ::selection{background:#f2c7bd;color:#201914}
+.site-nav{box-shadow:0 1px 0 rgba(32,25,20,.08),0 8px 22px rgba(32,25,20,.04)}
