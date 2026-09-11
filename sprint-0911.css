@@ -12,3 +12,4 @@ a,button,input,textarea,select,summary{scroll-margin-top:110px}
 button:disabled,.solidbtn[aria-disabled="true"],.check-run:disabled{cursor:not-allowed;opacity:.46;filter:grayscale(.35)}
 .check-advanced>summary{cursor:pointer;padding:10px 0}.check-advanced[open]>summary{margin-bottom:12px}
 @media(max-width:560px){.check-tabs{overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin}.check-tabs button{flex:0 0 auto;white-space:nowrap}}
+.check-engine-row>a{min-height:118px;display:flex;flex-direction:column;justify-content:space-between;gap:10px}
