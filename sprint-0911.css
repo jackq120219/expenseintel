@@ -4,3 +4,4 @@ a,button,input,textarea,select,summary{scroll-margin-top:110px}
 @media(pointer:coarse){button,.solidbtn,.check-run,summary{min-height:44px}input,textarea,select{font-size:16px}}
 .check-box,.check-output-wrap,.check-engine-row,.si-discipline{min-width:0}.check-box p,.check-output-wrap p,.check-engine-row span,.si-discipline p{overflow-wrap:anywhere}
 @media(max-width:680px){.check-hero-grid,.check-grid{grid-template-columns:1fr!important}.check-box{width:100%}.field.wide{grid-column:auto!important}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
