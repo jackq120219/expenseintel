@@ -1,4 +1,1 @@
-(() => {
-  const ready=fn=>document.readyState==='loading'?document.addEventListener('DOMContentLoaded',fn,{once:true}):fn();
-  ready(()=>{document.documentElement.dataset.network=navigator.onLine?'online':'offline';const sync=()=>document.documentElement.dataset.network=navigator.onLine?'online':'offline';addEventListener('online',sync);addEventListener('offline',sync)});
-})();
+(()=>{const ready=fn=>document.readyState==='loading'?document.addEventListener('DOMContentLoaded',fn,{once:true}):fn();ready(()=>{const status=document.querySelector('.topline .status');let flag=document.querySelector('[data-network-flag]');if(!flag&&status){flag=document.createElement('span');flag.dataset.networkFlag='true';status.appendChild(flag)}const sync=()=>{document.documentElement.dataset.network=navigator.onLine?'online':'offline';if(flag)flag.textContent=navigator.onLine?'Live web available':'Offline · connected evidence may be limited'};sync();addEventListener('online',sync);addEventListener('offline',sync)});})();
