@@ -14,3 +14,9 @@ body{font-feature-settings:"kern" 1,"tnum" 1}
 .check-box-head{padding:15px 18px;letter-spacing:.06em}
 .check-box form{padding:20px}
 .check-note{line-height:1.55;padding-top:12px}
+.check-tabs{gap:0;border:1px solid var(--ei-border);background:#f3eee8}
+.check-tabs button{min-height:42px;padding:10px 13px;border:0;border-right:1px solid var(--ei-border)}
+.check-tabs button:last-child{border-right:0}.check-tabs button.active{background:#fff}
+.field{gap:7px}.field label{font-weight:800;letter-spacing:.035em}
+.input{border-color:var(--ei-border);background:#fff;min-height:44px}.input:hover{border-color:#9f9187}
+textarea.input{min-height:122px;resize:vertical}
