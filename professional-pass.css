@@ -41,3 +41,12 @@ textarea.input{min-height:122px;resize:vertical}
 footer{border-top:1px solid #3c332e}.footer-top{padding-top:44px;padding-bottom:44px;gap:34px}
 .footer-col h4{margin-bottom:14px}.footer-col a{line-height:1.85}.footer-brand p{max-width:300px;line-height:1.6}
 .footer-bottom{border-top:1px solid rgba(32,25,20,.16)}
+@media(max-width:760px){
+  .topline .shell{gap:10px;flex-wrap:wrap}.status{gap:10px;flex-wrap:wrap}
+  .site-nav{min-height:62px}.navinner{min-height:62px}.navlinks,.navright{display:none}.menu-btn{display:block}
+  .check-hero{padding-top:48px;padding-bottom:64px}.check-hero-grid{gap:34px}.check-hero h1{font-size:clamp(3.2rem,15vw,5.4rem);line-height:.98}
+  .check-box form{padding:17px}.check-tabs{display:grid;grid-template-columns:1fr}.check-tabs button{border-right:0;border-bottom:1px solid var(--ei-border)}.check-tabs button:last-child{border-bottom:0}
+  .check-examples{align-items:flex-start;flex-direction:column}.check-examples button{width:100%;text-align:left}
+  .check-how-grid{grid-template-columns:1fr!important}.check-how-grid article{border-right:0;border-bottom:1px solid var(--ei-border)}.check-how-grid article:last-child{border-bottom:0}
+  .check-deep-head{grid-template-columns:1fr!important;gap:24px}.si-discipline{grid-template-columns:1fr!important}.si-discipline>div{border-right:0;border-bottom:1px solid rgba(255,255,255,.18)}
+}
