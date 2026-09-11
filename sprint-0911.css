@@ -2,3 +2,4 @@
 :focus-visible{outline:3px solid #a64b38;outline-offset:3px}
 a,button,input,textarea,select,summary{scroll-margin-top:110px}
 @media(pointer:coarse){button,.solidbtn,.check-run,summary{min-height:44px}input,textarea,select{font-size:16px}}
+.check-box,.check-output-wrap,.check-engine-row,.si-discipline{min-width:0}.check-box p,.check-output-wrap p,.check-engine-row span,.si-discipline p{overflow-wrap:anywhere}
