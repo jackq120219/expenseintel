@@ -1,3 +1,7 @@
 /* ExpenseIntel professional UI refinement — Sep 11 2026 */
 :root{--ei-shadow:0 14px 34px rgba(32,25,20,.08);--ei-border:#cfc5bd;--ei-ink:#201914}
 body{font-feature-settings:"kern" 1,"tnum" 1}
+.topline{font-size:10px;letter-spacing:.055em}
+.site-nav{min-height:68px;height:auto}
+.navinner{min-height:68px;gap:24px}.navlinks{gap:clamp(16px,2vw,28px)}
+.navlinks a{line-height:1.25}.solidbtn{min-height:40px;display:inline-flex;align-items:center;justify-content:center}
