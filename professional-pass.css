@@ -11,12 +11,13 @@ body{font-feature-settings:"kern" 1,"tnum" 1}
 .check-hero p{max-width:680px;line-height:1.68}
 .check-promises{gap:8px 14px;margin-top:24px}
 .check-box{box-shadow:var(--ei-shadow);border-color:#4d413a;background:#fbfaf7}
-.check-box-head{padding:15px 18px;letter-spacing:.06em}
+.check-box-head{padding:15px 18px;letter-spacing:.06em;background:var(--ei-ink);color:#fffdf8}
+.check-box-head b{background:#b8ff3f!important;color:#11130f!important;border-color:#11130f!important}
 .check-box form{padding:20px}
 .check-note{line-height:1.55;padding-top:12px}
 .check-tabs{gap:0;border:1px solid var(--ei-border);background:#f3eee8}
-.check-tabs button{min-height:42px;padding:10px 13px;border:0;border-right:1px solid var(--ei-border)}
-.check-tabs button:last-child{border-right:0}.check-tabs button.active{background:#fff}
+.check-tabs button{min-height:42px;padding:10px 13px;border:0;border-right:1px solid var(--ei-border);color:#5d514a}
+.check-tabs button:last-child{border-right:0}.check-tabs button.active{background:var(--ei-ink)!important;color:#fffdf8!important}
 .field{gap:7px}.field label{font-weight:800;letter-spacing:.035em}
 .input{border-color:var(--ei-border);background:#fff;min-height:44px}.input:hover{border-color:#9f9187}
 textarea.input{min-height:122px;resize:vertical}
@@ -40,7 +41,12 @@ textarea.input{min-height:122px;resize:vertical}
 .si-discipline p{line-height:1.58}
 footer{border-top:1px solid #3c332e}.footer-top{padding-top:44px;padding-bottom:44px;gap:34px}
 .footer-col h4{margin-bottom:14px}.footer-col a{line-height:1.85}.footer-brand p{max-width:300px;line-height:1.6}
-.footer-bottom{border-top:1px solid rgba(32,25,20,.16)}
+.footer-col a[href*="queenancapital"]{color:#fffdf8!important;font-weight:800}
+.footer-col a[href*="queenancapital"]:hover{color:#b8ff3f!important}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.16);color:#b8bcb3!important}
+.ei-viz-stage.is-changing{animation:none!important;transform:none!important}
+.ei-pressure-track i,.ei-cost-path circle{transition:none!important}
+.check-output-wrap :where(strong,b,.ei-ring-number,.ei-pressure-row strong,.ei-cost-kpis strong,.ei-market-head strong){font-variant-numeric:tabular-nums}
 @media(max-width:760px){
   .topline .shell{gap:10px;flex-wrap:wrap}.status{gap:10px;flex-wrap:wrap}
   .site-nav{min-height:62px}.navinner{min-height:62px}.navlinks,.navright{display:none}.menu-btn{display:block}
