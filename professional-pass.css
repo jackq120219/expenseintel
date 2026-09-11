@@ -47,6 +47,14 @@ footer{border-top:1px solid #3c332e}.footer-top{padding-top:44px;padding-bottom:
 .ei-viz-stage.is-changing{animation:none!important;transform:none!important}
 .ei-pressure-track i,.ei-cost-path circle{transition:none!important}
 .check-output-wrap :where(strong,b,.ei-ring-number,.ei-pressure-row strong,.ei-cost-kpis strong,.ei-market-head strong){font-variant-numeric:tabular-nums}
+
+/* Product-focus pass: one primary product, specialist engines remain available deeper in the application. */
+.navlinks a[href="/project/"],.navlinks a[href="/xray/"]{display:none!important}
+.check-deep{display:none!important}
+.check-how{border-bottom:1px solid var(--ei-border)}
+.si-section.dark{border-top:0}
+@media(min-width:761px){.navlinks{gap:clamp(24px,2.8vw,38px)}}
+
 @media(max-width:760px){
   .topline .shell{gap:10px;flex-wrap:wrap}.status{gap:10px;flex-wrap:wrap}
   .site-nav{min-height:62px}.navinner{min-height:62px}.navlinks,.navright{display:none}.menu-btn{display:block}
