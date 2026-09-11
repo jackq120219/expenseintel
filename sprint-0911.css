@@ -6,3 +6,4 @@ a,button,input,textarea,select,summary{scroll-margin-top:110px}
 @media(max-width:680px){.check-hero-grid,.check-grid{grid-template-columns:1fr!important}.check-box{width:100%}.field.wide{grid-column:auto!important}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 @media print{.topline,.site-nav,.check-hero,.check-how,.check-deep,footer,button{display:none!important}.check-output-wrap[hidden]{display:none!important}.check-output-wrap:not([hidden]){display:block!important}body{background:#fff!important}.shell{max-width:none!important;width:100%!important}}
+::selection{background:#f2c7bd;color:#201914}
