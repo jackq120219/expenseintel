@@ -10,3 +10,7 @@ body{font-feature-settings:"kern" 1,"tnum" 1}
 .check-hero h1{max-width:780px;line-height:.96;letter-spacing:-.05em}
 .check-hero p{max-width:680px;line-height:1.68}
 .check-promises{gap:8px 14px;margin-top:24px}
+.check-box{box-shadow:var(--ei-shadow);border-color:#4d413a;background:#fbfaf7}
+.check-box-head{padding:15px 18px;letter-spacing:.06em}
+.check-box form{padding:20px}
+.check-note{line-height:1.55;padding-top:12px}
