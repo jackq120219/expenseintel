@@ -16,3 +16,4 @@ button:disabled,.solidbtn[aria-disabled="true"],.check-run:disabled{cursor:not-a
 @supports(content-visibility:auto){.check-how,.check-deep,.si-section,footer{content-visibility:auto;contain-intrinsic-size:700px}}
 @media(forced-colors:active){.mark,.dot,.check-run,.solidbtn,.check-tabs button{border:1px solid ButtonText}.check-tabs .active{outline:2px solid Highlight}}
 .check-tabs button.active{font-weight:800;box-shadow:inset 0 -3px 0 #a64b38}
+@media(max-width:720px){.footer-top{grid-template-columns:1fr 1fr!important;gap:28px!important}.footer-brand{grid-column:1/-1}.footer-bottom .shell{gap:12px;flex-wrap:wrap}}
