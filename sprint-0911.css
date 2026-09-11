@@ -9,3 +9,4 @@ a,button,input,textarea,select,summary{scroll-margin-top:110px}
 ::selection{background:#f2c7bd;color:#201914}
 .site-nav{box-shadow:0 1px 0 rgba(32,25,20,.08),0 8px 22px rgba(32,25,20,.04)}
 .field:focus-within label{font-weight:800;color:#201914}.field:focus-within small{color:#5c4a42}
+button:disabled,.solidbtn[aria-disabled="true"],.check-run:disabled{cursor:not-allowed;opacity:.46;filter:grayscale(.35)}
