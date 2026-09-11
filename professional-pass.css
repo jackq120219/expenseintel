@@ -34,3 +34,7 @@ textarea.input{min-height:122px;resize:vertical}
 .check-engine-row{gap:12px}.check-engine-row>a{padding:18px;border-color:var(--ei-border);background:rgba(255,255,255,.58);transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
 .check-engine-row>a:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(32,25,20,.06);border-color:#9f9187}
 .check-engine-row strong{font-size:1rem}.check-engine-row span{line-height:1.55}
+.si-section.dark{padding-top:clamp(78px,8vw,112px);padding-bottom:clamp(82px,8vw,116px)}
+.si-heading p{max-width:700px;line-height:1.7}.si-discipline{gap:0;border-top:1px solid rgba(255,255,255,.24);border-bottom:1px solid rgba(255,255,255,.24)}
+.si-discipline>div{padding:24px 20px;border-right:1px solid rgba(255,255,255,.18)}.si-discipline>div:last-child{border-right:0}
+.si-discipline p{line-height:1.58}
