@@ -20,3 +20,5 @@ body{font-feature-settings:"kern" 1,"tnum" 1}
 .field{gap:7px}.field label{font-weight:800;letter-spacing:.035em}
 .input{border-color:var(--ei-border);background:#fff;min-height:44px}.input:hover{border-color:#9f9187}
 textarea.input{min-height:122px;resize:vertical}
+.check-run{min-height:52px;margin-top:14px;font-weight:800;letter-spacing:.035em;box-shadow:0 5px 0 rgba(32,25,20,.12)}
+.check-run:active{transform:translateY(2px);box-shadow:0 3px 0 rgba(32,25,20,.12)}
