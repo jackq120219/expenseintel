@@ -35,5 +35,8 @@
     if(!document.querySelector('script[data-ei-commitment-lab]')){
       const script=document.createElement('script');script.src='/commitment-lab.js';script.dataset.eiCommitmentLab='true';document.body.appendChild(script);
     }
+    if(!document.querySelector('script[data-ei-flip-map]')){
+      const script=document.createElement('script');script.src='/decision-flip-map.js';script.dataset.eiFlipMap='true';document.body.appendChild(script);
+    }
   });
 })();
