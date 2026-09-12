@@ -38,5 +38,8 @@
     if(!document.querySelector('script[data-ei-flip-map]')){
       const script=document.createElement('script');script.src='/decision-flip-map.js';script.dataset.eiFlipMap='true';document.body.appendChild(script);
     }
+    if(!document.querySelector('script[data-ei-negotiation-levers]')){
+      const script=document.createElement('script');script.src='/negotiation-levers.js';script.dataset.eiNegotiationLevers='true';document.body.appendChild(script);
+    }
   });
 })();
