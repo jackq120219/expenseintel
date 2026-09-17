@@ -3,17 +3,19 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const {createHmac}=require('node:crypto');
 const {LINK_ID,validSession,verifySignature,notReversed}=require('../lib/deep-check-payments');
-const paid=()=>({object:'checkout.session',livemode:false,payment_link:LINK_ID,mode:'payment',amount_total:1900,currency:'usd',payment_status:'paid',payment_intent:{latest_charge:{refunded:false,disputed:false,amount_refunded:0}}});
+const paid=()=>({object:'checkout.session',livemode:false,payment_link:LINK_ID,mode:'payment',amount_total:1900,currency:'usd',payment_status:'paid',payment_intent:{status:'succeeded',latest_charge:{refunded:false,disputed:false,amount_refunded:0}}});
 test('only the correct sandbox payment link and one-time $19 payment qualifies',()=>{
   assert.equal(validSession(paid()),true);
   for(const patch of [{livemode:true},{payment_link:'plink_other'},{amount_total:900},{currency:'eur'},{payment_status:'unpaid'},{mode:'subscription'}]){
     assert.equal(validSession({...paid(),...patch}),false);
   }
 });
-test('refunds and disputes revoke access',()=>{
+test('refunds, disputes and unverifiable charge data prevent access',()=>{
   assert.equal(notReversed(paid()),true);
-  assert.equal(notReversed({...paid(),payment_intent:{latest_charge:{amount_refunded:100}}}),false);
-  assert.equal(notReversed({...paid(),payment_intent:{latest_charge:{disputed:true}}}),false);
+  assert.equal(notReversed({...paid(),payment_intent:{status:'succeeded',latest_charge:{amount_refunded:100}}}),false);
+  assert.equal(notReversed({...paid(),payment_intent:{status:'succeeded',latest_charge:{disputed:true}}}),false);
+  assert.equal(notReversed({...paid(),payment_intent:'pi_unexpanded'}),false);
+  assert.equal(notReversed({...paid(),payment_intent:{status:'processing'}}),false);
 });
 test('webhook verifier rejects tampering and old events',()=>{
   const raw=Buffer.from('{"type":"checkout.session.completed"}');
