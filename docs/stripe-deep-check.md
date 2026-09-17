@@ -1,51 +1,41 @@
 # ExpenseIntel Deep Check — Stripe sandbox integration
 
-**Status: draft sandbox checkout plus payment verification/order-recording code. Not a live paid product; no report delivery exists yet.** Keep this pull request unmerged until reviewed, tested and the Deep Check deliverable is actually implemented.
+Status: **draft test implementation; not a live product**. No real charges or payouts. A report workflow is coded, but end-to-end purchase and delivery have **not** been tested because Vercel server secrets, Stripe webhook and Payment Link return URL still need configuration.
 
-## Existing Stripe sandbox objects
+## Sandbox resources
+- Stripe account: Queenan Capital sandbox (`acct_1UGmIBFq94edrQR4`).
+- Product `prod_VHL404cILPAsKY`: ExpenseIntel Deep Check.
+- One-time USD $19 price: `price_1UGmOSFq94edrQR47gq0QAFZ`.
+- Payment Link `plink_1UGmP1Fq94edrQR4Z8rmJUmT`: https://buy.stripe.com/test_cNi14nejc8Y5b7A1rz6wE00.
+- Managed Payments and automatic tax disabled on this test link because the default tax code was missing. Confirm tax classification before any live sale.
 
-- Product: `prod_VHL404cILPAsKY` — ExpenseIntel Deep Check.
-- One-time USD price: `price_1UGmOSFq94edrQR47gq0QAFZ` — $19.00.
-- Payment Link ID: `plink_1UGmP1Fq94edrQR4Z8rmJUmT`.
-- Test-only URL: `https://buy.stripe.com/test_cNi14nejc8Y5b7A1rz6wE00`.
-- Link currently uses a Stripe-hosted confirmation message. It has **not** been reconfigured to redirect to the newly drafted `/deep-check/complete/` page. Managed Payments and automatic tax remain disabled in sandbox pending tax classification and compliance review.
+## What a successful test purchase is intended to deliver
+- A confirmed ExpenseIntel account using the **same email** as checkout unlocks a private, one-decision workspace at `/deep-check/report/?session_id=...` only after the server independently confirms Stripe payment, purchase amount, correct test Payment Link, customer identity and private order status.
+- Two options: compare purchase price, extra upfront costs, monthly and yearly costs and user-estimated resale over a 1–10-year horizon.
+- A baseline net-cost comparison, a separately identified hypothetical cost-pressure case and hypothetical operating-relief case. Outputs show exact assumptions, not statistical forecasts.
+- User-entered quote scope/source notes are compared for potential keyword asymmetries; findings are **questions**, never assertions that a contract excludes something. Category-specific questions and missing evidence are listed.
+- Save/revise the same decision privately and print/save as PDF with the browser. This is distinct from the free single-decision Check but is not an independent verified-price service.
+- The product does **not** claim source-file OCR, actual contractor vetting, financing quotes, automatic monitoring, professional advice or unlimited distinct decisions. A free Check remains free.
 
-## Implemented changes in this draft PR
+## Security and database changes
+- `lib/deep-check-payments.js` validates sandbox-only Stripe session details and raw-body signed webhooks, checks refund/dispute charge state and provides server-only Supabase access.
+- `api/stripe-webhook.js` validates signed Stripe test events, writes paid orders idempotently and changes status on refunds/disputes.
+- `api/deep-check-status.js` and `/deep-check/complete/` check purchase state and link to the private report. The status endpoint reveals no buyer email, order record or dossier.
+- `api/deep-check-report.js` validates confirmed Supabase Auth bearer token against Supabase, insists the verified user email matches Stripe and the private paid order, binds the order to its owner and only then reads/saves the dossier. It rejects a different decision title for the same $19 purchase.
+- `public.ei_deep_check_orders` is test-only, row-level security enabled and inaccessible to public/authenticated clients, with server service-role access only. Both the initial orders schema and `deep_check_sandbox_dossiers` migration have been successfully applied to the existing ExpenseIntel Supabase project (`tzwjiokoxfsruvobkiok`).
+- No Stripe or Supabase private API keys are in GitHub or the browser. All user-provided figures are clearly identified and not treated as external evidence.
 
-1. `/deep-check/` sandbox-only landing page and a test CTA from the planned $19 Deep Check pricing card. No changes to the free Check engine.
-2. `lib/deep-check-payments.js`: sandbox-only Stripe session/product/amount validation, raw webhook HMAC signature verification with five-minute timestamp tolerance, safe lookup with expanded latest charge, rejection of unverified, disputed or refunded purchases, and server-side Supabase helper.
-3. `api/stripe-webhook.js`: accepts signed sandbox checkout success events, writes eligible order records once (unique session key), and records refund/dispute state. Errors return a retryable status. Do not expose this endpoint until its signing secret and database credentials are configured.
-4. `supabase/deep-check-orders.sql`: private, service-role-only sandbox order ledger. **The matching migration was applied to the existing ExpenseIntel Supabase project**, project ref `tzwjiokoxfsruvobkiok`. RLS is enabled with no public read policies intentionally.
-5. `api/deep-check-status.js` and `/deep-check/complete/`: read-only sandbox confirmation. They check Stripe directly and the private order ledger. The endpoint returns no purchaser email, private report, entitlement token, or customer secrets. Confirmation explicitly states no report will be delivered.
-6. `tests/deep-check-payments.test.cjs` exercises amount, correct link, test/live separation, payment status, refund/dispute and signature validation. GitHub Actions workflow includes syntax checks and Node tests, but an end-to-end payment test has not been completed yet.
+## Remaining configuration — do in order
+1. In ExpenseIntel's **Vercel Preview** environment, add `STRIPE_SECRET_KEY` (`sk_test_...` or a permitted `rk_test_...` key able to retrieve Checkout Sessions), `SUPABASE_URL` = `https://tzwjiokoxfsruvobkiok.supabase.co`, and `SUPABASE_SERVICE_ROLE_KEY` from ExpenseIntel Supabase API settings. Redeploy preview. These are server-only secrets: never expose them in browser JavaScript, commit them, or paste them in chat.
+2. Once you have the stable HTTPS preview URL, create a **sandbox** Stripe webhook pointing to `https://<preview-host>/api/stripe-webhook`, subscribed to `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `charge.refunded`, and `charge.dispute.created`. Copy its destination-specific `whsec_...` signing secret securely into Vercel Preview variable `STRIPE_WEBHOOK_SECRET`. Redeploy and verify sample webhook deliveries.
+3. After the endpoint works, change the existing **test Payment Link** after-completion behavior to redirect to `https://<preview-host>/deep-check/complete/?session_id={CHECKOUT_SESSION_ID}`. Stripe replaces that exact placeholder with the actual session ID. Do not redirect to a route that has not deployed.
+4. Allowlist the preview report URL in Supabase Auth redirect settings for email confirmation. Login needs a confirmed account using the checkout email.
+5. Run a test-card purchase: free Check → test pricing CTA → sandbox Stripe $19 one-time checkout → signed webhook writes one order → return page recognizes it → same-email login → create dossier → saved retrieval/revision → print/PDF. Also test wrong email, unpaid/wrong-price sessions, webhook retries, refunds/disputes, duplicate callbacks and secret/configuration failures. The current GitHub tests do not substitute for this end-to-end pass.
 
-## Configuration that must be done securely BEFORE these new server routes can operate
+## Blockers to collecting real money
+- Current checkout remains Stripe **test mode**. The full customer flow and payment delivery are not yet tested, so do not merge this draft as a paid launch.
+- Publish accurate product terms, support contact, refund policy, privacy/retention/deletion guidance for stored buyer data and tax/merchant disclosures.
+- Determine whether this user-input-only comparison earns its $19 price in actual customer tests. If it doesn't, improve the output or change the offer before launch; do not substitute invented market quotes.
+- Set up verified merchant identity, live payout instructions, tax code/treatment, separate live product/price/link, live webhook, live environment secrets and separate live order constraints. `validSession`, the table check constraint and the report route intentionally reject live transactions; do not simply turn on live Stripe keys with this code.
 
-Set these as **server-only** Vercel environment variables for the intended preview/test environment (never commit their values, put in browser JavaScript, or paste into chat):
-
-- `STRIPE_SECRET_KEY`: sandbox/test secret key (sk_test_ or suitably permissioned rk_test_).
-- `STRIPE_WEBHOOK_SECRET`: signing secret from the *specific Stripe sandbox webhook destination*.
-- `SUPABASE_URL`: `https://tzwjiokoxfsruvobkiok.supabase.co`.
-- `SUPABASE_SERVICE_ROLE_KEY`: private server-side Supabase key for ExpenseIntel; NEVER prefix with `NEXT_PUBLIC_` or `VITE_`.
-
-Deploy a reviewable preview build and configure the sandbox webhook destination to the HTTPS `/api/stripe-webhook` URL of **that build**, with events `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `charge.refunded`, `charge.dispute.created`. Verify Stripe webhook deliveries and database order state. Do not point a webhook at unconfigured main/production code.
-
-Once a stable deployed test page is confirmed, update the **sandbox** Payment Link after-completion redirect to `https://<test-host>/deep-check/complete/?session_id={CHECKOUT_SESSION_ID}` and rerun the checkout/status flow. Until then the link displays Stripe's hosted test-only confirmation. Never infer paid status from a redirect query parameter by itself.
-
-## Tests to run before merging
-
-- CI syntax and Node test suite must pass; inspect the GitHub Actions result.
-- On preview verify `/pricing/` CTA leads to the sandbox `/deep-check/` page, which points to a Stripe `test_` checkout.
-- Submit a Stripe *test card only*: $19 one-time payment appears in **sandbox**, a signed event creates exactly one Supabase row, repeated events do not duplicate/reopen orders, and status endpoint returns paid but `reportReady: false`.
-- Test failed or incomplete payment, incorrect link or amount, tampered/expired signature, refunds and disputes. Check Stripe's webhook delivery log and database status.
-- Verify no customer email/order records can be read with public Supabase keys or by browsing public pages.
-
-## Hard blockers for real revenue
-
-- Define/build a **real distinctive Deep Check** report workflow beyond the free Check (inputs, reliable results, export, regeneration/history). Payment alone is not delivery.
-- Add authenticated buyer identity, order ownership checks, report storage/access only for entitled purchasers and reliable report delivery. Current confirmation page deliberately discloses no report and does not grant an entitlement.
-- Configure/verify Stripe webhook, server secrets and environment isolation; add reconciliation, support/refunds and customer communication. Validate a full test purchase end to end.
-- Finish merchant identity, tax/product classification, payment fees, checkout disclosures, terms, privacy/quote retention and refund policy. Determine if Managed Payments is appropriate before enabling it.
-- Provision **separate live Stripe resources and bank payouts** when approved, then make a controlled live deployment. Never reuse this sandbox price/link/ledger logic for live orders unchanged.
-
-Stripe reference: https://docs.stripe.com/checkout/fulfillment?payment-ui=stripe-hosted and https://docs.stripe.com/testing/overview.
+CI checks syntax, existing site regressions, payment signature/isolation/refund tests, dossier mathematics/validation and quoted-scope comparison; check the latest branch Actions status. No real or sandbox checkout has been completed end to end by this implementation yet.
