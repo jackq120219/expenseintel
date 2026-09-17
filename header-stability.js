@@ -52,6 +52,20 @@
   };
   wireNavLinks();
 
+  /* Sandbox-only integration proof: never suggest a live paid report exists. */
+  const wireSandboxCheckout=()=>{
+    if(location.pathname!=='/pricing/'&&location.pathname!=='/pricing')return;
+    const card=document.querySelector('.price-card.featured');
+    const cta=card?.querySelector('a.solidbtn');
+    if(!cta)return;
+    cta.href='/deep-check/';
+    cta.textContent='Try $19 test checkout';
+    const status=card.querySelector('.planned');
+    if(status)status.textContent='Sandbox only · no real charges or report delivery';
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wireSandboxCheckout,{once:true});
+  else wireSandboxCheckout();
+
   /* Warm the five primary destinations once the current page is idle.
      This keeps clicks from waiting on the next HTML document over slower Wi-Fi. */
   const warmPrimary=()=>primaryPaths.forEach(prefetch);
