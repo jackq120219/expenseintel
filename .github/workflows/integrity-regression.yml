@@ -24,3 +24,10 @@ jobs:
         run: node tests/integrity-regression.mjs
       - name: Run free data regression
         run: node tests/free-data-regression.mjs
+      - name: Validate sandbox payment server syntax
+        run: |
+          node --check lib/deep-check-payments.js
+          node --check api/stripe-webhook.js
+          node --check api/deep-check-status.js
+      - name: Run sandbox payment verification tests
+        run: node --test tests/deep-check-payments.test.cjs
