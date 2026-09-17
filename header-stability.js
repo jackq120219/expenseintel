@@ -52,7 +52,7 @@
   };
   wireNavLinks();
 
-  /* Sandbox-only integration proof: never suggest a live paid report exists. */
+  /* Preview mode: only advertise what the sandbox dossier actually does. */
   const wireSandboxCheckout=()=>{
     if(location.pathname!=='/pricing/'&&location.pathname!=='/pricing')return;
     const card=document.querySelector('.price-card.featured');
@@ -60,14 +60,17 @@
     if(!cta)return;
     cta.href='/deep-check/';
     cta.textContent='Try $19 test checkout';
+    const description=card.querySelector('p');
+    if(description)description.textContent='Compare two options using your own quoted costs, test adverse assumptions and create a private, printable decision dossier. No independently verified price is promised.';
+    const features=card.querySelectorAll('.price-list li');
+    ['Two-option total-cost comparison','Entered, cost-pressure and operating-relief scenarios','Category-specific due-diligence questions','Saved dossier · print or save as PDF'].forEach((copy,i)=>{if(features[i])features[i].textContent=copy;});
     const status=card.querySelector('.planned');
-    if(status)status.textContent='Sandbox only · no real charges or report delivery';
+    if(status)status.textContent='Sandbox only · no real charges; report requires sandbox integration setup';
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wireSandboxCheckout,{once:true});
   else wireSandboxCheckout();
 
-  /* Warm the five primary destinations once the current page is idle.
-     This keeps clicks from waiting on the next HTML document over slower Wi-Fi. */
+  /* Warm the five primary destinations once the current page is idle. */
   const warmPrimary=()=>primaryPaths.forEach(prefetch);
   if('requestIdleCallback' in window)requestIdleCallback(warmPrimary,{timeout:1200});
   else setTimeout(warmPrimary,450);
