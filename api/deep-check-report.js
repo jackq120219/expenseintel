@@ -1,6 +1,7 @@
 'use strict';
 const {validSession,fetchSession,notReversed,supabase}=require('../lib/deep-check-payments');
 const {makeDossier}=require('../lib/deep-check-dossier');
+const {compareScopes}=require('../lib/deep-check-scope');
 
 function send(res,code,data){
   res.statusCode=code;
@@ -41,7 +42,12 @@ module.exports=async function handler(req,res){
     if(!email||order.customer_email!==email||user.email!==email||order.owner_id&&order.owner_id!==user.id)return send(res,403,{ok:false,error:'Use the verified account matching your checkout email.'});
     if(req.method==='GET')return send(res,200,{ok:true,paid:true,reportReady:!!order.dossier,report:order.dossier||null});
     let dossier;
-    try{dossier=makeDossier(body.input)}catch(e){return send(res,400,{ok:false,error:e.message})}
+    try{
+      dossier=makeDossier(body.input);
+      dossier.scopeFindings=compareScopes(dossier.options);
+      dossier.missing.unshift(...dossier.scopeFindings);
+      dossier.methodology+=' Scope flags are keyword differences in user-entered notes, not proof that an item is included or excluded.';
+    }catch(e){return send(res,400,{ok:false,error:e.message})}
     if(order.decision_title&&order.decision_title.toLowerCase()!==dossier.title.toLowerCase())return send(res,409,{ok:false,error:'Each payment covers one decision. Keep the original decision title when revising this report.'});
     // Bind the first verified buyer account and prevent another owner overwriting the dossier.
     const filter=`ei_deep_check_orders?session_id=eq.${encodeURIComponent(id)}&status=eq.paid&${order.owner_id?'owner_id=eq.'+encodeURIComponent(user.id):'owner_id=is.null'}`;
