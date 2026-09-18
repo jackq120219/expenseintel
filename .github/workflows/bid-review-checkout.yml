@@ -1,0 +1,30 @@
+name: ExpenseIntel Sandbox Checkout Checks
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  sandbox-bid-payments:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JS syntax
+        run: |
+          node --check lib/bid-review-payments.js
+          node --check api/bid-review-checkout.js
+          node --check api/bid-review-webhook.js
+          node --check api/bid-review-status.js
+      - name: Test checkout guards and business input
+        run: node --test tests/bid-review-payment.test.cjs
+      - name: Verify sandbox labels and no embedded keys
+        run: |
+          grep -q 'STRIPE SANDBOX' bid-review/order/index.html
+          grep -q 'not accepting orders yet' bid-review/index.html
+          ! grep -E 'sk_(live|test)_[A-Za-z0-9]{15,}|whsec_[A-Za-z0-9]{15,}' lib/bid-review-payments.js api/bid-review-*.js

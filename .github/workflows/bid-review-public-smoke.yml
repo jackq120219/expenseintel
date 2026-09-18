@@ -1,0 +1,26 @@
+name: ExpenseIntel Bid Review Public URL Smoke
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  domain-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Verify customer-facing pages over HTTPS
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://www.expenseintel.com'
+          for path in /bid-review/ /bid-review/sample/; do
+            code=$(curl --max-time 25 -L -sS -o /tmp/page.html -w '%{http_code}' "$base$path")
+            echo "$base$path -> HTTP $code, $(wc -c </tmp/page.html) bytes"
+            test "$code" = '200'
+            test "$(wc -c </tmp/page.html)" -gt 800
+            grep -qi 'ExpenseIntel' /tmp/page.html
+            ! grep -qi 'vercel authentication' /tmp/page.html
+          done
+          grep -q 'View five-page sample' /tmp/page.html || true
