@@ -1,0 +1,21 @@
+name: ExpenseIntel Bid Review Checks
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  bid-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: node --check bid-review/calculator.js
+      - name: Validate cost and scenario math
+        run: node --test tests/bid-review.test.cjs
